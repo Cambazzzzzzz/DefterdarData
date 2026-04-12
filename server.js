@@ -16,8 +16,12 @@ app.use(session({
   cookie: { maxAge: 8 * 60 * 60 * 1000 }
 }));
 
+app.use('/api/auth', require('./src/auth'));
 app.use('/api', require('./src/routes'));
 app.use('/api/medya', require('./src/cloudinary'));
+
+app.get('/giris', (req, res) => res.sendFile(path.join(__dirname, 'public', 'giris.html')));
+app.get('/kayit', (req, res) => res.sendFile(path.join(__dirname, 'public', 'giris.html')));
 
 app.get('*', (req, res) => {
   if (req.path.startsWith('/api')) return res.status(404).json({ ok: false });

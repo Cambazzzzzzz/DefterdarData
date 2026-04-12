@@ -16,8 +16,15 @@
   </div>
   <div class="topbar-right">
     <div class="topbar-badge"><i class="fa-solid fa-shield-halved" style="color:var(--accent);margin-right:5px"></i>CMS Team</div>
+    <div class="topbar-badge" id="user-badge" style="display:none">
+      <i class="fa-solid fa-user" style="color:var(--accent);margin-right:5px"></i>
+      <span id="user-name"></span>
+    </div>
     <div class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="Tema Degistir">
       <i class="fa-solid fa-moon" id="theme-icon"></i>
+    </div>
+    <div class="theme-toggle" onclick="cikisYap()" title="Cikis Yap" style="color:var(--red)">
+      <i class="fa-solid fa-right-from-bracket"></i>
     </div>
     <div class="topbar-dot" title="Sistem aktif"></div>
   </div>

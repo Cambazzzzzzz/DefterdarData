@@ -67,6 +67,7 @@ class DbWrapper {
 const SCHEMA = `
   CREATE TABLE IF NOT EXISTS organizasyonlar (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    kullanici_id INTEGER NOT NULL DEFAULT 0,
     ad TEXT NOT NULL,
     yil INTEGER NOT NULL,
     max_kurban INTEGER NOT NULL,
@@ -111,6 +112,13 @@ const SCHEMA = `
     veri TEXT NOT NULL,
     silme_tarihi DATETIME DEFAULT CURRENT_TIMESTAMP
   );
+  CREATE TABLE IF NOT EXISTS kullanicilar (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    kullanici_adi TEXT NOT NULL UNIQUE,
+    email TEXT NOT NULL UNIQUE,
+    sifre_hash TEXT NOT NULL,
+    olusturma DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
 `;
 
 let _db = null;
@@ -129,6 +137,7 @@ async function getDb() {
   try { sqlDb.run("ALTER TABLE kurbanlar ADD COLUMN kurban_turu TEXT DEFAULT 'Udhiye'"); } catch(e) {}
   try { sqlDb.run("ALTER TABLE kurbanlar ADD COLUMN kesen_kisi TEXT"); } catch(e) {}
   try { sqlDb.run("ALTER TABLE kurbanlar ADD COLUMN kucukbas_sayi INTEGER DEFAULT 1"); } catch(e) {}
+  try { sqlDb.run("ALTER TABLE organizasyonlar ADD COLUMN kullanici_id INTEGER NOT NULL DEFAULT 0"); } catch(e) {}
   const data = sqlDb.export();
   fs.writeFileSync(DB_PATH, Buffer.from(data));
   _db = new DbWrapper(sqlDb);

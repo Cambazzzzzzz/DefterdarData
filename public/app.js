@@ -1,4 +1,23 @@
-﻿// ─── STATE ───────────────────────────────────────────────────────────────────
+﻿// ─── AUTH KONTROL ────────────────────────────────────────────────────────────
+(async function checkAuth() {
+  const r = await fetch('/api/auth/durum');
+  const d = await r.json();
+  if (!d.girisYapildi) {
+    window.location.href = '/giris.html';
+    return;
+  }
+  const badge = document.getElementById('user-badge');
+  const name = document.getElementById('user-name');
+  if (badge) badge.style.display = '';
+  if (name) name.textContent = d.kullanici_adi;
+})();
+
+async function cikisYap() {
+  await fetch('/api/auth/cikis', { method: 'POST' });
+  window.location.href = '/giris.html';
+}
+
+// ─── STATE ───────────────────────────────────────────────────────────────────
 const S = { page:'organizasyonlar', orgId:null, orgAd:'', orgYil:'' };
 
 const KURBAN_TURLERI = ['Udhiye','Adak','Akika','Vacip','Hedy','Sukur','Kiran','Temmettu','Ceza','Ihsar','Sadaka','Nafile','Olu','Kefaret','Sifa','Hacet','Fidye','Zekat','Nesike','Vesile','Atire'];

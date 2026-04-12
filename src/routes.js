@@ -3,33 +3,43 @@ const { getDb } = process.env.RAILWAY_ENVIRONMENT || process.env.PORT
   ? require('./database-web')
   : require('./database');
 
+// ─── AUTH MIDDLEWARE ────────────────────────────────────────────────────────
+function requireAuth(req, res, next) {
+  if (!req.session || !req.session.userId) {
+    return res.status(401).json({ hata: 'Giris yapmaniz gerekiyor' });
+  }
+  next();
+}
+
+router.use(requireAuth);
+
 // ─── ORGANİZASYONLAR ───────────────────────────────────────────────────────
 
 router.get('/organizasyonlar', async (req, res) => {
   const db = await getDb();
-  res.json(db.prepare('SELECT * FROM organizasyonlar ORDER BY olusturma DESC').all());
+  res.json(db.prepare('SELECT * FROM organizasyonlar WHERE kullanici_id=? ORDER BY olusturma DESC').all(req.session.userId));
 });
 
 router.post('/organizasyonlar', async (req, res) => {
   const db = await getDb();
   const { ad, yil, max_kurban, buyukbas_hisse_fiyati, kucukbas_hisse_fiyati, aciklama } = req.body;
   if (!ad || !yil || !max_kurban) return res.status(400).json({ hata: 'Zorunlu alanlar eksik' });
-  const r = db.prepare(`INSERT INTO organizasyonlar (ad,yil,max_kurban,buyukbas_hisse_fiyati,kucukbas_hisse_fiyati,aciklama)
-    VALUES (?,?,?,?,?,?)`).run(ad, yil, max_kurban, buyukbas_hisse_fiyati || 0, kucukbas_hisse_fiyati || 0, aciklama || null);
+  const r = db.prepare(`INSERT INTO organizasyonlar (ad,yil,max_kurban,buyukbas_hisse_fiyati,kucukbas_hisse_fiyati,aciklama,kullanici_id)
+    VALUES (?,?,?,?,?,?,?)`).run(ad, yil, max_kurban, buyukbas_hisse_fiyati || 0, kucukbas_hisse_fiyati || 0, aciklama || null, req.session.userId);
   res.status(201).json({ id: r.lastInsertRowid });
 });
 
 router.put('/organizasyonlar/:id', async (req, res) => {
   const db = await getDb();
   const { ad, yil, max_kurban, buyukbas_hisse_fiyati, kucukbas_hisse_fiyati, aciklama, aktif } = req.body;
-  db.prepare(`UPDATE organizasyonlar SET ad=?,yil=?,max_kurban=?,buyukbas_hisse_fiyati=?,kucukbas_hisse_fiyati=?,aciklama=?,aktif=? WHERE id=?`)
-    .run(ad, yil, max_kurban, buyukbas_hisse_fiyati, kucukbas_hisse_fiyati, aciklama, aktif ?? 1, req.params.id);
+  db.prepare(`UPDATE organizasyonlar SET ad=?,yil=?,max_kurban=?,buyukbas_hisse_fiyati=?,kucukbas_hisse_fiyati=?,aciklama=?,aktif=? WHERE id=? AND kullanici_id=?`)
+    .run(ad, yil, max_kurban, buyukbas_hisse_fiyati, kucukbas_hisse_fiyati, aciklama, aktif ?? 1, req.params.id, req.session.userId);
   res.json({ ok: true });
 });
 
 router.delete('/organizasyonlar/:id', async (req, res) => {
   const db = await getDb();
-  const org = db.prepare('SELECT * FROM organizasyonlar WHERE id=?').get(req.params.id);
+  const org = db.prepare('SELECT * FROM organizasyonlar WHERE id=? AND kullanici_id=?').get(req.params.id, req.session.userId);
   if (!org) return res.status(404).json({ hata: 'Bulunamadi' });
   // Tüm kurban ve hisseleri topla
   const kurbanlar = db.prepare('SELECT * FROM kurbanlar WHERE organizasyon_id=?').all(req.params.id);
