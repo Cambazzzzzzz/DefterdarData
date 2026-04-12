@@ -985,66 +985,60 @@ function kurbanYazdirHTML(kurbanNo, tur, hisseler, kurbanData) {
   const dolu = hisseler.filter(h => h.bagisci_adi).length;
   const oLabel = {odendi:'Odendi',iptal:'Iptal',bekliyor:'Bekliyor'};
   const kurbanTuru = (kurbanData && kurbanData.kurban_turu) || 'Udhiye';
-  const kesenKisi = (kurbanData && kurbanData.kesen_kisi) || '-';
-  const alisFiyati = (kurbanData && kurbanData.alis_fiyati) ? para(kurbanData.alis_fiyati) : '-';
-  const kupeNo = (kurbanData && kurbanData.kupe_no) || '-';
-  const kesildi = (kurbanData && kurbanData.kesildi) ? 'Evet' : 'Hayir';
-  const kesimTarihi = (kurbanData && kurbanData.kesim_tarihi) || '-';
 
   let rows = '';
   hisseler.forEach(h => {
     rows += '<tr>';
-    rows += '<td style="text-align:center;font-weight:bold">' + h.hisse_no + '</td>';
-    rows += '<td>' + (h.bagisci_adi || '<span style="color:#aaa">Bos</span>') + '</td>';
-    rows += '<td>' + (h.bagisci_telefon || '-') + '</td>';
-    rows += '<td>' + (h.kimin_adina || '-') + '</td>';
-    rows += '<td>' + (oLabel[h.odeme_durumu] || h.odeme_durumu) + '</td>';
-    rows += '<td style="text-align:center">' + (h.video_ister ? 'Evet' : 'Hayir') + '</td>';
+    rows += '<td style="text-align:center;font-weight:bold;border:1px solid #000;padding:8px">' + h.hisse_no + '</td>';
+    rows += '<td style="border:1px solid #000;padding:8px">' + (h.bagisci_adi || '') + '</td>';
+    rows += '<td style="border:1px solid #000;padding:8px">' + kurbanTuru + '</td>';
     rows += '</tr>';
   });
 
-  const printStyle = `body{font-family:Arial,sans-serif;font-size:12px;color:#000;margin:20px}
-    .header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;border-bottom:2px solid #1a2a50;padding-bottom:10px}
-    .header-left{font-size:18px;font-weight:bold;color:#1a2a50}
-    .header-left small{display:block;font-size:11px;color:#666;font-weight:normal}
-    .meta{font-size:12px;color:#555;margin-bottom:12px}
-    .info{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px;background:#f0f4ff;padding:12px;border-radius:6px}
-    .info div{font-size:12px;min-width:100px}.info strong{display:block;font-size:15px;color:#1a2a50}
-    table{width:100%;border-collapse:collapse}
-    th{background:#1a2a50;color:#fff;padding:8px;text-align:left;font-size:11px}
-    td{padding:8px;border-bottom:1px solid #ddd;font-size:12px}
-    tr:nth-child(even){background:#f9f9f9}
-    .footer{margin-top:24px;font-size:10px;color:#999;display:flex;justify-content:space-between;border-top:1px solid #ddd;padding-top:8px}
-    @media print{body{margin:10px}}`;
+  // Boş satırlar ekle (7 hisse için)
+  for (let i = hisseler.length; i < 7; i++) {
+    rows += '<tr>';
+    rows += '<td style="text-align:center;border:1px solid #000;padding:8px">' + (i + 1) + '</td>';
+    rows += '<td style="border:1px solid #000;padding:8px"></td>';
+    rows += '<td style="border:1px solid #000;padding:8px">' + kurbanTuru + '</td>';
+    rows += '</tr>';
+  }
 
+  const printStyle = `
+    @page { margin: 15mm; }
+    body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+    .header img { height: 80px; object-fit: contain; }
+    .header-center { text-align: center; flex: 1; }
+    .header-center img { height: 60px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #000; padding: 12px 8px; text-align: left; font-size: 14px; }
+    th { background: #fff; font-weight: bold; }
+    .footer { margin-top: 30px; text-align: center; font-size: 11px; color: #666; }
+    @media print { body { margin: 0; padding: 15mm; } }
+  `;
+
+  // Railway URL'lerini kullan (production)
+  const baseUrl = window.location.origin;
+  
   return '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Kurban #' + kurbanNo + '</title>' +
     '<style>' + printStyle + '</style></head><body>' +
     '<div class="header">' +
-    '<div style="display:flex;align-items:center;gap:10px">' +
-    '<img src="http://127.0.0.1:4500/icder.png" style="height:48px;object-fit:contain" onerror="this.style.display=\'none\'" />' +
-    '<div class="header-left">DEFTERDAR MUHASEBE<small>Kurban Belgesi &mdash; ' + new Date().toLocaleDateString('tr-TR') + '</small></div>' +
+    '<img src="' + baseUrl + '/turkbayrak.png" alt="Türk Bayrağı" onerror="this.src=\'' + baseUrl + '/icder.png\'" />' +
+    '<div class="header-center">' +
+    '<img src="' + baseUrl + '/yazi.png" alt="İÇDER" onerror="this.src=\'' + baseUrl + '/icder.png\'" />' +
     '</div>' +
-    '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">' +
-    '<img src="http://127.0.0.1:4500/cad.png" style="height:48px;object-fit:contain" onerror="this.style.display=\'none\'" />' +
-    '<div style="font-size:12px;color:#555;text-align:right">Organizasyon: <strong>' + esc(S.orgAd) + '</strong><br>' + S.orgYil + '</div>' +
+    '<img src="' + baseUrl + '/tanzanya.svg" alt="Tanzanya Bayrağı" onerror="this.src=\'' + baseUrl + '/cad.png\'" />' +
     '</div>' +
-    '</div>' +
-    '<div class="info">' +
-    '<div>Kurban No<strong>#' + kurbanNo + '</strong></div>' +
-    '<div>Hayvan Turu<strong>' + (tur==='buyukbas'?'Buyukbas':'Kucukbas') + '</strong></div>' +
-    '<div>Kurban Turu<strong>' + kurbanTuru + '</strong></div>' +
-    '<div>Kupe No<strong>' + kupeNo + '</strong></div>' +
-    '<div>Alis Fiyati<strong>' + alisFiyati + '</strong></div>' +
-    '<div>Kesen Kisi<strong>' + kesenKisi + '</strong></div>' +
-    '<div>Kesildi<strong>' + kesildi + '</strong></div>' +
-    '<div>Kesim Tarihi<strong>' + kesimTarihi + '</strong></div>' +
-    '<div>Toplam Hisse<strong>' + toplam + '</strong></div>' +
-    '<div>Dolu Hisse<strong>' + dolu + '</strong></div>' +
-    '<div>Bos Hisse<strong>' + (toplam-dolu) + '</strong></div>' +
-    '</div>' +
-    '<table><thead><tr><th>Hisse No</th><th>Bagisci Adi</th><th>Telefon</th><th>Kimin Adina</th><th>Odeme</th><th>Video</th></tr></thead>' +
-    '<tbody>' + rows + '</tbody></table>' +
-    '<div class="footer"><span>Defterdar Muhasebe &mdash; CMS Team</span></div>' +
+    '<table>' +
+    '<thead><tr>' +
+    '<th style="width:80px;text-align:center">Hisse No</th>' +
+    '<th>İsim Soyisim</th>' +
+    '<th style="width:120px">Kurban Türü</th>' +
+    '</tr></thead>' +
+    '<tbody>' + rows + '</tbody>' +
+    '</table>' +
+    '<div class="footer">Defterdar Muhasebe - defterdar.xyz</div>' +
     '</body></html>';
 }
 
