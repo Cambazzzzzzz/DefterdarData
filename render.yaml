@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: defterdar
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    disk:
+      name: defterdar-data
+      mountPath: /app/data
+      sizeGB: 1
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DB_PATH
+        value: /app/data/defterdar.db
+      - key: SESSION_SECRET
+        generateValue: true
