@@ -1,0 +1,65 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Admin Paneli - Defterdar</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="fa/css/all.min.css"/>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-brand">
+    <div class="logo-icon"><i class="fa-solid fa-shield-halved"></i></div>
+    <div class="brand-text">DEFTERDAR <span>Admin</span></div>
+  </div>
+  <div class="topbar-right">
+    <div class="topbar-badge"><i class="fa-solid fa-crown" style="color:var(--yellow);margin-right:5px"></i>Admin Panel</div>
+    <div class="theme-toggle" onclick="window.location.href='/'"><i class="fa-solid fa-home"></i></div>
+    <div class="theme-toggle" onclick="cikisYap()" title="Cikis Yap" style="color:var(--red)">
+      <i class="fa-solid fa-right-from-bracket"></i>
+    </div>
+  </div>
+</div>
+
+<div class="layout">
+  <nav class="sidebar">
+    <div class="sidebar-section">Admin</div>
+    <div class="sidebar-item active" data-page="dashboard" onclick="showPage('dashboard')">
+      <i class="fa-solid fa-chart-line"></i> Dashboard
+    </div>
+    <div class="sidebar-item" data-page="kullanicilar" onclick="showPage('kullanicilar')">
+      <i class="fa-solid fa-users"></i> Kullanicilar
+    </div>
+    <div class="sidebar-item" data-page="pro-keyler" onclick="showPage('pro-keyler')">
+      <i class="fa-solid fa-key"></i> PRO Keyler
+    </div>
+    <div class="sidebar-item" data-page="pro-talepler" onclick="showPage('pro-talepler')">
+      <i class="fa-solid fa-envelope"></i> PRO Talepleri
+      <span class="badge-count" id="talep-badge" style="display:none">0</span>
+    </div>
+    <div class="sidebar-item" data-page="ip-yasaklar" onclick="showPage('ip-yasaklar')">
+      <i class="fa-solid fa-ban"></i> IP Yasaklari
+    </div>
+  </nav>
+
+  <main class="main" id="main-content"></main>
+</div>
+
+<div class="footer">Admin Panel &nbsp;&mdash;&nbsp; CMS Team</div>
+<div class="toast-container" id="toast-container"></div>
+
+<div class="modal-overlay hidden" id="modal-overlay" onclick="closeModalOutside(event)">
+  <div class="modal" id="modal-box">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-title"></span>
+      <button class="modal-close" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<script src="app-admin.js"></script>
+</body>
+</html>

@@ -16,6 +16,10 @@
   </div>
   <div class="topbar-right">
     <div class="topbar-badge"><i class="fa-solid fa-shield-halved" style="color:var(--accent);margin-right:5px"></i>CMS Team</div>
+    <div class="topbar-badge" id="pro-badge" style="display:none">
+      <i class="fa-solid fa-crown" style="color:var(--yellow);margin-right:5px"></i>
+      <span>PRO</span>
+    </div>
     <div class="topbar-badge" id="user-badge" style="display:none">
       <i class="fa-solid fa-user" style="color:var(--accent);margin-right:5px"></i>
       <span id="user-name"></span>
@@ -70,6 +74,11 @@
     <div class="sidebar-section">Medya</div>
     <div class="sidebar-item" data-page="medya" onclick="showPage('medya')">
       <i class="fa-solid fa-photo-film"></i> Medya Deposu
+    </div>
+    <hr class="sidebar-divider"/>
+    <div class="sidebar-section">PRO</div>
+    <div class="sidebar-item" data-page="pro" onclick="showPage('pro')">
+      <i class="fa-solid fa-crown"></i> Defterdar PRO
     </div>
   </nav>
 

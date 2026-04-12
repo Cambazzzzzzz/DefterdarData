@@ -2,6 +2,8 @@
 // Kullanıcı ayarları global
 let _kullaniciAyarlar = { logo_data: null, bayrak_data: null, kurulum_tamamlandi: 0 };
 let _kullaniciAdi = '';
+let _kullaniciSurum = 'normal';
+let _kullaniciRol = 'kullanici';
 
 (async function checkAuth() {
   const lastLogin = localStorage.getItem('defterdar-last-login');
@@ -13,10 +15,16 @@ let _kullaniciAdi = '';
     const d = await r.json();
     if (d.girisYapildi) {
       _kullaniciAdi = d.kullanici_adi;
+      _kullaniciSurum = d.surum || 'normal';
+      _kullaniciRol = d.rol || 'kullanici';
       const badge = document.getElementById('user-badge');
       const name = document.getElementById('user-name');
       if (badge) badge.style.display = '';
       if (name) name.textContent = d.kullanici_adi;
+      if (_kullaniciSurum === 'pro' || _kullaniciRol === 'admin') {
+        const proBadge = document.getElementById('pro-badge');
+        if (proBadge) proBadge.style.display = '';
+      }
       await yukleKullaniciAyarlar();
       return;
     }
@@ -30,10 +38,16 @@ let _kullaniciAdi = '';
     return;
   }
   _kullaniciAdi = d.kullanici_adi;
+  _kullaniciSurum = d.surum || 'normal';
+  _kullaniciRol = d.rol || 'kullanici';
   const badge = document.getElementById('user-badge');
   const name = document.getElementById('user-name');
   if (badge) badge.style.display = '';
   if (name) name.textContent = d.kullanici_adi;
+  if (_kullaniciSurum === 'pro' || _kullaniciRol === 'admin') {
+    const proBadge = document.getElementById('pro-badge');
+    if (proBadge) proBadge.style.display = '';
+  }
   await yukleKullaniciAyarlar();
 })();
 
@@ -231,6 +245,7 @@ function showPage(page) {
   else if (page==='cop')         renderCopKutusu();
   else if (page==='denetim')     renderDenetim();
   else if (page==='medya')       renderMedyaDeposu();
+  else if (page==='pro')         renderProSayfasi();
 }
 
 function setSidebarOrg(ad, yil) {
@@ -1139,6 +1154,7 @@ function yazdirilabilirHTML(tip) {
 
 
 function kurbanYazdirHTML(kurbanNo, tur, hisseler, kurbanData) {
+  const isPro = _kullaniciSurum === 'pro' || _kullaniciRol === 'admin';
   const kurbanTuru = (kurbanData && kurbanData.kurban_turu) || 'Udhiye';
 
   const minSatir = tur === 'buyukbas' ? 7 : 1;
@@ -1168,16 +1184,17 @@ function kurbanYazdirHTML(kurbanNo, tur, hisseler, kurbanData) {
     @page { margin: 12mm 15mm; size: A4; }
     * { box-sizing: border-box; }
     body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #fff; color: #000; }
-    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+    .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
     .header-left { width: 140px; display: flex; align-items: center; }
-    .header-center { flex: 1; text-align: center; }
+    .header-center { flex: 1; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px; }
     .header-center img { height: 90px; max-width: 220px; object-fit: contain; }
+    .kurban-sayisi { font-size: 14px; color: #666; font-weight: 600; }
     .header-right { width: 140px; display: flex; align-items: center; justify-content: flex-end; }
     .header-right img { height: 93px; width: 140px; object-fit: contain; }
     table { width: 100%; border-collapse: collapse; margin-top: 8px; }
     th { border: 1.5px solid #000; padding: 10px 14px; text-align: left; font-size: 16px; font-weight: bold; background: #fff; }
     td { border: 1.5px solid #000; padding: 8px 14px; font-size: 16px; }
-    .footer { position: fixed; bottom: 12mm; left: 15mm; right: 15mm; text-align: center; font-size: 12px; color: #888; border-top: 1px solid #ddd; padding-top: 6px; }
+    .footer { position: fixed; bottom: 12mm; left: 15mm; right: 15mm; text-align: center; font-size: ${isPro?'10px':'14px'}; color: ${isPro?'#888':'#333'}; border-top: 1px solid #ddd; padding-top: 6px; ${isPro?'':'font-weight: 600;'} }
     @media print { body { margin: 0; } }
   `;
 
@@ -1185,11 +1202,16 @@ function kurbanYazdirHTML(kurbanNo, tur, hisseler, kurbanData) {
     ? '<img src="' + bayrakSrc + '" alt="Bayrak" style="height:93px;width:140px;object-fit:contain" onerror="this.style.visibility=\'hidden\'"/>'
     : '';
 
+  const watermark = isPro ? 'Defterdar Muhasebe &mdash; defterdar.xyz' : 'defterdar.xyz - CMS Team';
+
   return '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Kurban #' + kurbanNo + '</title>' +
     '<style>' + printStyle + '</style></head><body>' +
     '<div class="header">' +
     '<div class="header-left">' + turkBayrakSVG + '</div>' +
-    '<div class="header-center"><img src="' + logoSrc + '" alt="Logo" onerror="this.style.visibility=\'hidden\'"/></div>' +
+    '<div class="header-center">' +
+    '<img src="' + logoSrc + '" alt="Logo" onerror="this.style.visibility=\'hidden\'"/>' +
+    '<div class="kurban-sayisi">Kurban Sayısı: ' + kurbanNo + '</div>' +
+    '</div>' +
     '<div class="header-right">' + bayrakImg + '</div>' +
     '</div>' +
     '<table>' +
@@ -1200,7 +1222,7 @@ function kurbanYazdirHTML(kurbanNo, tur, hisseler, kurbanData) {
     '</tr></thead>' +
     '<tbody>' + rows + '</tbody>' +
     '</table>' +
-    '<div class="footer">Defterdar Muhasebe &mdash; defterdar.xyz</div>' +
+    '<div class="footer">' + watermark + '</div>' +
     '</body></html>';
 }
 
@@ -1615,6 +1637,7 @@ function toggleTheme() {
 // MEDYA DEPOSU (Cloudinary)
 // ═══════════════════════════════════════════════════════════════════════════
 async function renderMedyaDeposu() {
+  const isPro = _kullaniciSurum === 'pro' || _kullaniciRol === 'admin';
   const m = document.getElementById('main-content');
   m.innerHTML = `
     <div class="page-header">
@@ -1622,6 +1645,7 @@ async function renderMedyaDeposu() {
         <div class="icon-wrap"><i class="fa-solid fa-photo-film"></i></div>
         Medya Deposu
         <small>Cloudinary</small>
+        ${!isPro?'<span class="badge badge-yellow" style="margin-left:10px"><i class="fa-solid fa-lock"></i> Maks. 3 dosya</span>':'<span class="badge badge-green" style="margin-left:10px"><i class="fa-solid fa-infinity"></i> Sinirsiz</span>'}
       </div>
       <div style="display:flex;gap:8px">
         <select id="medya-folder" onchange="loadMedyaListesi()" style="background:var(--bg4);border:1px solid var(--border2);border-radius:8px;padding:8px 12px;color:var(--text);font-size:13px;outline:none">
@@ -1635,6 +1659,16 @@ async function renderMedyaDeposu() {
         </button>
       </div>
     </div>
+
+    ${!isPro?`<div class="card" style="background:rgba(245,158,11,0.1);border-color:rgba(245,158,11,0.3);margin-bottom:16px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <i class="fa-solid fa-info-circle" style="font-size:24px;color:var(--yellow)"></i>
+        <div style="flex:1">
+          <div style="font-weight:600;margin-bottom:4px">Normal surumde maksimum 3 dosya yukleyebilirsiniz</div>
+          <div style="font-size:12px;color:var(--text3)">Sinirsiz medya deposu icin <a href="#" onclick="showPage('pro');return false" style="color:var(--accent)">Defterdar PRO</a>'ya gecin</div>
+        </div>
+      </div>
+    </div>`:''}
 
     <div class="card">
       <div class="card-title"><i class="fa-solid fa-cloud"></i> Yuklenen Dosyalar</div>
@@ -1738,6 +1772,19 @@ function handleMedyaDrop(e) {
 
 async function yukleSeciliDosya(file, folder) {
   if (!file) return;
+  
+  // PRO kontrolü
+  const isPro = _kullaniciSurum === 'pro' || _kullaniciRol === 'admin';
+  if (!isPro) {
+    try {
+      const list = await api('GET', `/medya/list?folder=${encodeURIComponent(folder)}`);
+      if (list.length >= 3) {
+        toast('Normal surumde maksimum 3 dosya yukleyebilirsiniz. PRO surume gecin!', 'error');
+        return;
+      }
+    } catch(e) {}
+  }
+  
   const prog = document.getElementById('upload-progress');
   const fill = document.getElementById('upload-progress-fill');
   const result = document.getElementById('upload-result');
@@ -1752,7 +1799,14 @@ async function yukleSeciliDosya(file, folder) {
     const r = await fetch('/api/medya/upload', { method: 'POST', body: formData });
     if (fill) fill.style.width = '90%';
     const data = await r.json();
-    if (!r.ok) throw new Error(data.hata || 'Yuklenemedi');
+    if (!r.ok) {
+      if (data.proGerekli) {
+        toast('Bu ozellik icin PRO gerekli!', 'error');
+        setTimeout(() => showPage('pro'), 1000);
+        return;
+      }
+      throw new Error(data.hata || 'Yuklenemedi');
+    }
     if (fill) fill.style.width = '100%';
     if (result) result.innerHTML = `
       <div class="badge badge-green" style="font-size:12px;padding:8px 14px">
@@ -1795,4 +1849,142 @@ function handleHisseDrop(e, folder) {
   document.getElementById('upload-zone').classList.remove('drag-over');
   const file = e.dataTransfer.files[0];
   if (file) yukleSeciliDosya(file, folder);
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════
+// DEFTERDAR PRO
+// ═══════════════════════════════════════════════════════════════════════════
+async function renderProSayfasi() {
+  const isPro = _kullaniciSurum === 'pro' || _kullaniciRol === 'admin';
+  const m = document.getElementById('main-content');
+  
+  m.innerHTML = `
+    <div class="page-header">
+      <div class="page-title">
+        <div class="icon-wrap" style="background:linear-gradient(135deg,#f59e0b,#d97706)"><i class="fa-solid fa-crown"></i></div>
+        Defterdar PRO
+        ${isPro?'<span class="badge badge-green" style="margin-left:10px"><i class="fa-solid fa-check"></i> Aktif</span>':''}
+      </div>
+    </div>
+
+    ${isPro ? `
+      <div class="card" style="background:linear-gradient(135deg,rgba(245,158,11,0.1),rgba(217,118,6,0.05));border-color:rgba(245,158,11,0.3)">
+        <div style="text-align:center;padding:20px">
+          <div style="font-size:48px;margin-bottom:12px">🎉</div>
+          <div style="font-size:20px;font-weight:800;color:var(--yellow);margin-bottom:8px">Defterdar PRO Aktif!</div>
+          <div style="font-size:14px;color:var(--text2)">Tum PRO ozelliklere erisim sagliyorsunuz</div>
+        </div>
+      </div>
+    ` : ''}
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px">
+      <div class="card">
+        <div class="card-title"><i class="fa-solid fa-star" style="color:var(--yellow)"></i> Normal Surum Ozellikleri</div>
+        <ul style="list-style:none;padding:0;margin:0">
+          <li style="padding:8px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px">
+            <i class="fa-solid fa-check" style="color:var(--green)"></i> Organizasyon yonetimi
+          </li>
+          <li style="padding:8px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px">
+            <i class="fa-solid fa-check" style="color:var(--green)"></i> Kurban ve hisse takibi
+          </li>
+          <li style="padding:8px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px">
+            <i class="fa-solid fa-check" style="color:var(--green)"></i> Bagisci yonetimi (maks. 100)
+          </li>
+          <li style="padding:8px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px">
+            <i class="fa-solid fa-check" style="color:var(--green)"></i> Raporlar ve Excel
+          </li>
+          <li style="padding:8px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px">
+            <i class="fa-solid fa-check" style="color:var(--green)"></i> Yazdirma (watermark ile)
+          </li>
+          <li style="padding:8px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px">
+            <i class="fa-solid fa-check" style="color:var(--green)"></i> Medya deposu (maks. 3 dosya)
+          </li>
+          <li style="padding:8px 0;display:flex;align-items:center;gap:8px">
+            <i class="fa-solid fa-check" style="color:var(--green)"></i> Cop kutusu ve denetim
+          </li>
+        </ul>
+      </div>
+
+      <div class="card" style="border-color:rgba(245,158,11,0.4);background:linear-gradient(135deg,rgba(245,158,11,0.05),transparent)">
+        <div class="card-title"><i class="fa-solid fa-crown" style="color:var(--yellow)"></i> PRO Surum Ozellikleri</div>
+        <ul style="list-style:none;padding:0;margin:0">
+          <li style="padding:8px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px">
+            <i class="fa-solid fa-star" style="color:var(--yellow)"></i> <strong>Sinirsiz bagisci</strong>
+          </li>
+          <li style="padding:8px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px">
+            <i class="fa-solid fa-star" style="color:var(--yellow)"></i> <strong>Sinirsiz medya deposu</strong>
+          </li>
+          <li style="padding:8px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px">
+            <i class="fa-solid fa-star" style="color:var(--yellow)"></i> <strong>Watermark olmadan yazdirma</strong>
+          </li>
+          <li style="padding:8px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px">
+            <i class="fa-solid fa-star" style="color:var(--yellow)"></i> <strong>Yatay/Dikey yazdirma secenegi</strong>
+          </li>
+          <li style="padding:8px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px">
+            <i class="fa-solid fa-star" style="color:var(--yellow)"></i> <strong>Gelismis raporlama</strong>
+          </li>
+          <li style="padding:8px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px">
+            <i class="fa-solid fa-star" style="color:var(--yellow)"></i> <strong>Oncelikli destek</strong>
+          </li>
+          <li style="padding:8px 0;display:flex;align-items:center;gap:8px">
+            <i class="fa-solid fa-star" style="color:var(--yellow)"></i> <strong>Gelecek tum ozellikler</strong>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    ${!isPro ? `
+      <div class="card">
+        <div class="card-title"><i class="fa-solid fa-rocket"></i> PRO Surume Gecis</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div>
+            <div style="font-size:14px;font-weight:600;margin-bottom:8px">PRO Key ile Aktiflestime</div>
+            <div style="font-size:12px;color:var(--text3);margin-bottom:12px">Elinizde DDM- ile baslayan bir PRO key varsa buradan aktiflestirebilirsiniz</div>
+            <div class="form-group">
+              <input id="pro-key-input" placeholder="DDM-XXXXXX-XXXXXX" style="text-transform:uppercase"/>
+            </div>
+            <button class="btn btn-primary" onclick="proKeyKullan()">
+              <i class="fa-solid fa-key"></i> Key ile Aktiflestir
+            </button>
+          </div>
+          <div>
+            <div style="font-size:14px;font-weight:600;margin-bottom:8px">Satin Alma Talebi Gonder</div>
+            <div style="font-size:12px;color:var(--text3);margin-bottom:12px">PRO surume gecmek icin talebinizi gonderin, en kisa surede donecegiz</div>
+            <div class="form-group">
+              <textarea id="pro-talep-mesaj" placeholder="Mesajiniz (opsiyonel)..." style="min-height:60px"></textarea>
+            </div>
+            <button class="btn btn-success" onclick="proTalepGonder()">
+              <i class="fa-solid fa-paper-plane"></i> Talep Gonder
+            </button>
+          </div>
+        </div>
+      </div>
+    ` : ''}
+  `;
+}
+
+async function proKeyKullan() {
+  const key = document.getElementById('pro-key-input').value.trim().toUpperCase();
+  if (!key) return toast('Key giriniz', 'error');
+  if (!key.startsWith('DDM-')) return toast('Gecersiz key formati', 'error');
+  
+  try {
+    await api('POST', '/auth/pro-key', { key });
+    toast('PRO aktivasyonu basarili! Sayfa yenileniyor...');
+    setTimeout(() => window.location.reload(), 1500);
+  } catch(e) {
+    toast(e.message, 'error');
+  }
+}
+
+async function proTalepGonder() {
+  const mesaj = document.getElementById('pro-talep-mesaj').value.trim();
+  try {
+    await api('POST', '/auth/pro-talep', { mesaj });
+    toast('Talebiniz gonderildi! En kisa surede donecegiz.');
+    document.getElementById('pro-talep-mesaj').value = '';
+  } catch(e) {
+    toast(e.message, 'error');
+  }
 }

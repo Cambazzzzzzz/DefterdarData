@@ -11,6 +11,17 @@ function requireAuth(req, res, next) {
   next();
 }
 
+// PRO kontrolü helper
+async function isPro(req) {
+  if (req.session.rol === 'admin') return true;
+  if (req.session.surum === 'pro') return true;
+  try {
+    const db = await getDb();
+    const user = db.prepare('SELECT surum, rol FROM kullanicilar WHERE id=?').get(req.session.userId);
+    return user && (user.surum === 'pro' || user.rol === 'admin');
+  } catch(e) { return false; }
+}
+
 router.use(requireAuth);
 
 // ─── ORGANİZASYONLAR ───────────────────────────────────────────────────────
@@ -129,6 +140,21 @@ router.get('/kurbanlar/:kurbanId/hisseler', async (req, res) => {
 router.put('/hisseler/:id', async (req, res) => {
   const db = await getDb();
   const { bagisci_adi, bagisci_telefon, kimin_adina, kimin_adina_telefon, odeme_durumu, video_ister, aciklama } = req.body;
+
+  // Normal üye bağışçı limiti: 100
+  if (bagisci_adi) {
+    const pro = await isPro(req);
+    if (!pro) {
+      const hisse = db.prepare('SELECT h.kurban_id, k.organizasyon_id FROM hisseler h JOIN kurbanlar k ON h.kurban_id=k.id WHERE h.id=?').get(req.params.id);
+      if (hisse) {
+        const toplamBagisci = db.prepare(`SELECT COUNT(*) as c FROM hisseler h JOIN kurbanlar k ON h.kurban_id=k.id JOIN organizasyonlar o ON k.organizasyon_id=o.id WHERE o.kullanici_id=? AND h.bagisci_adi IS NOT NULL`).get(req.session.userId);
+        if (toplamBagisci && toplamBagisci.c >= 100) {
+          return res.status(403).json({ hata: 'Normal uyelerde maksimum 100 bagisci eklenebilir. PRO surume gecin!', proGerekli: true });
+        }
+      }
+    }
+  }
+
   db.prepare(`UPDATE hisseler SET bagisci_adi=?,bagisci_telefon=?,kimin_adina=?,kimin_adina_telefon=?,odeme_durumu=?,video_ister=?,aciklama=? WHERE id=?`)
     .run(bagisci_adi || null, bagisci_telefon || null, kimin_adina || null, kimin_adina_telefon || null,
       odeme_durumu || 'bekliyor', video_ister ? 1 : 0, aciklama || null, req.params.id);

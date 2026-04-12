@@ -3,172 +3,170 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>Defterdar — Giriş</title>
+  <title>Giriş - Defterdar Muhasebe</title>
+  <link rel="stylesheet" href="style.css"/>
   <link rel="stylesheet" href="fa/css/all.min.css"/>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:'Inter',sans-serif;background:#070b12;color:#e2e8f0;min-height:100vh;display:flex;align-items:center;justify-content:center;}
-    .auth-wrap{width:100%;max-width:420px;padding:24px;}
-    .auth-logo{text-align:center;margin-bottom:32px;}
-    .auth-logo .icon{width:56px;height:56px;background:linear-gradient(135deg,#1a2a50,#0d1830);border:1px solid #263348;border-radius:14px;display:inline-flex;align-items:center;justify-content:center;margin-bottom:12px;box-shadow:0 0 24px rgba(79,126,248,0.2);}
-    .auth-logo .icon i{font-size:24px;color:#4f7ef8;}
-    .auth-logo h1{font-size:22px;font-weight:800;letter-spacing:1px;}
-    .auth-logo h1 span{color:#4f7ef8;}
-    .auth-logo p{font-size:13px;color:#4b5e7a;margin-top:4px;}
-    .auth-card{background:linear-gradient(135deg,#0d1220,#111827);border:1px solid #1f2d45;border-radius:16px;padding:28px;box-shadow:0 8px 32px rgba(0,0,0,0.5);}
-    .auth-tabs{display:flex;gap:4px;margin-bottom:24px;background:#070b12;border-radius:10px;padding:4px;}
-    .auth-tab{flex:1;padding:9px;text-align:center;font-size:13px;font-weight:600;border-radius:8px;cursor:pointer;color:#4b5e7a;transition:all .15s;}
-    .auth-tab.active{background:#1a2235;color:#4f7ef8;}
-    .form-group{margin-bottom:16px;}
-    .form-group label{display:block;font-size:12px;color:#94a3b8;font-weight:500;margin-bottom:6px;}
-    .form-group input{width:100%;background:#1a2235;border:1px solid #263348;border-radius:8px;padding:10px 14px;color:#e2e8f0;font-size:13px;font-family:inherit;outline:none;transition:border-color .15s;}
-    .form-group input:focus{border-color:#4f7ef8;box-shadow:0 0 0 3px rgba(79,126,248,0.12);}
-    .btn-auth{width:100%;padding:12px;background:linear-gradient(135deg,#4f7ef8,#3d6ef0);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;margin-top:4px;}
-    .btn-auth:hover{background:linear-gradient(135deg,#7c9ffa,#4f7ef8);box-shadow:0 4px 20px rgba(79,126,248,0.4);}
-    .auth-error{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:#ef4444;border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:16px;display:none;}
-    .auth-success{background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.3);color:#10b981;border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:16px;display:none;}
-    .auth-footer{text-align:center;margin-top:20px;font-size:12px;color:#4b5e7a;}
-    .auth-footer a{color:#4f7ef8;text-decoration:none;}
-  </style>
 </head>
-<body>
-<div class="auth-wrap">
-  <div class="auth-logo">
-    <div class="icon"><i class="fa-solid fa-book-open"></i></div>
-    <h1>DEFTERDAR <span>Muhasebe</span></h1>
-    <p>STK Kurban Yonetim Sistemi</p>
+<body style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:radial-gradient(ellipse at 20% 0%, rgba(79,126,248,0.08) 0%, transparent 60%), radial-gradient(ellipse at 80% 100%, rgba(167,139,250,0.06) 0%, transparent 60%), var(--bg)">
+
+<div style="width:100%;max-width:420px;padding:20px">
+  <div style="text-align:center;margin-bottom:32px">
+    <div style="width:64px;height:64px;background:linear-gradient(135deg,#1a2a50,#0d1830);border:1px solid var(--border2);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;box-shadow:0 0 20px var(--glow)">
+      <i class="fa-solid fa-book-open" style="font-size:28px;color:var(--accent)"></i>
+    </div>
+    <div style="font-size:24px;font-weight:800;margin-bottom:4px">DEFTERDAR</div>
+    <div style="font-size:14px;color:var(--text3)">Muhasebe Sistemi</div>
   </div>
 
-  <div class="auth-card">
-    <div class="auth-tabs">
-      <div class="auth-tab active" id="tab-giris" onclick="switchTab('giris')">
-        <i class="fa-solid fa-right-to-bracket"></i> Giris Yap
-      </div>
-      <div class="auth-tab" id="tab-kayit" onclick="switchTab('kayit')">
-        <i class="fa-solid fa-user-plus"></i> Kayit Ol
-      </div>
+  <div class="card" style="padding:32px">
+    <div class="tabs" style="margin-bottom:24px">
+      <button class="tab-btn active" id="tab-giris" onclick="switchTab('giris')">Giriş Yap</button>
+      <button class="tab-btn" id="tab-kayit" onclick="switchTab('kayit')">Kayıt Ol</button>
     </div>
-
-    <div id="msg-error" class="auth-error"></div>
-    <div id="msg-success" class="auth-success"></div>
 
     <!-- GİRİŞ FORMU -->
     <div id="form-giris">
       <div class="form-group">
-        <label>Kullanici Adi</label>
-        <input id="g-kullanici" type="text" placeholder="kullanici_adiniz" autocomplete="username"/>
+        <label>Kullanıcı Adı</label>
+        <input type="text" id="giris-kullanici" placeholder="Kullanıcı adınız"/>
       </div>
       <div class="form-group">
-        <label>Sifre</label>
-        <input id="g-sifre" type="password" placeholder="••••••••" autocomplete="current-password"
-          onkeydown="if(event.key==='Enter') girisYap()"/>
+        <label>Şifre</label>
+        <input type="password" id="giris-sifre" placeholder="Şifreniz"/>
       </div>
-      <button class="btn-auth" onclick="girisYap()">
-        <i class="fa-solid fa-right-to-bracket"></i> Giris Yap
+      <button class="btn btn-primary" style="width:100%;margin-top:16px" onclick="girisYap()">
+        <i class="fa-solid fa-right-to-bracket"></i> Giriş Yap
       </button>
     </div>
 
     <!-- KAYIT FORMU -->
     <div id="form-kayit" style="display:none">
       <div class="form-group">
-        <label>Kullanici Adi *</label>
-        <input id="k-kullanici" type="text" placeholder="kullanici_adiniz" autocomplete="username"/>
+        <label>Kullanıcı Adı</label>
+        <input type="text" id="kayit-kullanici" placeholder="Kullanıcı adınız"/>
       </div>
       <div class="form-group">
-        <label>E-posta *</label>
-        <input id="k-email" type="email" placeholder="ornek@mail.com" autocomplete="email"/>
+        <label>E-posta</label>
+        <input type="email" id="kayit-email" placeholder="E-posta adresiniz"/>
       </div>
       <div class="form-group">
-        <label>Sifre * (en az 6 karakter)</label>
-        <input id="k-sifre" type="password" placeholder="••••••••" autocomplete="new-password"
-          onkeydown="if(event.key==='Enter') kayitOl()"/>
+        <label>Şifre</label>
+        <input type="password" id="kayit-sifre" placeholder="En az 6 karakter"/>
       </div>
-      <button class="btn-auth" onclick="kayitOl()">
-        <i class="fa-solid fa-user-plus"></i> Kayit Ol
+      <button class="btn btn-primary" style="width:100%;margin-top:16px" onclick="kayitOl()">
+        <i class="fa-solid fa-user-plus"></i> Kayıt Ol
       </button>
     </div>
+
+    <div id="mesaj" style="margin-top:16px;text-align:center;font-size:13px"></div>
   </div>
 
-  <div class="auth-footer">
-    Defterdar Muhasebe &mdash; <a href="https://defterdar.xyz" target="_blank">defterdar.xyz</a>
+  <div style="text-align:center;margin-top:24px;font-size:12px;color:var(--text3)">
+    CMS Team &copy; 2025 &nbsp;|&nbsp; Founder: Ismail DEMIRCAN
   </div>
 </div>
 
+<div class="toast-container" id="toast-container"></div>
+
 <script>
 function switchTab(tab) {
-  document.getElementById('tab-giris').classList.toggle('active', tab==='giris');
-  document.getElementById('tab-kayit').classList.toggle('active', tab==='kayit');
-  document.getElementById('form-giris').style.display = tab==='giris' ? '' : 'none';
-  document.getElementById('form-kayit').style.display = tab==='kayit' ? '' : 'none';
-  clearMsg();
+  document.getElementById('tab-giris').classList.toggle('active', tab === 'giris');
+  document.getElementById('tab-kayit').classList.toggle('active', tab === 'kayit');
+  document.getElementById('form-giris').style.display = tab === 'giris' ? '' : 'none';
+  document.getElementById('form-kayit').style.display = tab === 'kayit' ? '' : 'none';
+  document.getElementById('mesaj').innerHTML = '';
 }
 
-function showError(msg) {
-  const el = document.getElementById('msg-error');
-  if (!el) return console.error('msg-error element not found');
-  el.textContent = msg; el.style.display = 'block';
-  const successEl = document.getElementById('msg-success');
-  if (successEl) successEl.style.display = 'none';
-}
-function showSuccess(msg) {
-  const el = document.getElementById('msg-success');
-  if (!el) return console.error('msg-success element not found');
-  el.textContent = msg; el.style.display = 'block';
-  const errorEl = document.getElementById('msg-error');
-  if (errorEl) errorEl.style.display = 'none';
-}
-function clearMsg() {
-  const errorEl = document.getElementById('msg-error');
-  const successEl = document.getElementById('msg-success');
-  if (errorEl) errorEl.style.display = 'none';
-  if (successEl) successEl.style.display = 'none';
+function toast(msg, type='success') {
+  const c = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.innerHTML = `<i class="fa-solid fa-${type==='success'?'circle-check':'circle-xmark'}"></i> ${msg}`;
+  c.appendChild(t);
+  setTimeout(() => t.remove(), 3200);
 }
 
 async function girisYap() {
-  const kullanici_adi = document.getElementById('g-kullanici').value.trim();
-  const sifre = document.getElementById('g-sifre').value;
-  if (!kullanici_adi || !sifre) return showError('Tum alanlari doldurun');
+  const kullanici_adi = document.getElementById('giris-kullanici').value.trim();
+  const sifre = document.getElementById('giris-sifre').value;
+  
+  if (!kullanici_adi || !sifre) {
+    toast('Tüm alanları doldurun', 'error');
+    return;
+  }
+
   try {
     const r = await fetch('/api/auth/giris', {
       method: 'POST',
-      headers: {'Content-Type':'application/json'},
+      headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({ kullanici_adi, sifre })
     });
     const d = await r.json();
-    if (!r.ok) return showError(d.hata);
+    
+    if (!r.ok) {
+      toast(d.hata || 'Giriş başarısız', 'error');
+      return;
+    }
+
     localStorage.setItem('defterdar-last-login', Date.now().toString());
-    showSuccess('Giris basarili, yonlendiriliyor...');
-    setTimeout(() => window.location.href = '/', 800);
-  } catch(e) { showError('Baglanti hatasi'); }
+    toast('Giriş başarılı! Yönlendiriliyorsunuz...');
+    setTimeout(() => {
+      if (d.rol === 'admin') {
+        window.location.href = '/admin';
+      } else {
+        window.location.href = '/';
+      }
+    }, 800);
+  } catch(e) {
+    toast('Bağlantı hatası: ' + e.message, 'error');
+  }
 }
 
 async function kayitOl() {
-  const kullanici_adi = document.getElementById('k-kullanici').value.trim();
-  const email = document.getElementById('k-email').value.trim();
-  const sifre = document.getElementById('k-sifre').value;
-  if (!kullanici_adi || !email || !sifre) return showError('Tum alanlari doldurun');
+  const kullanici_adi = document.getElementById('kayit-kullanici').value.trim();
+  const email = document.getElementById('kayit-email').value.trim();
+  const sifre = document.getElementById('kayit-sifre').value;
+  
+  if (!kullanici_adi || !email || !sifre) {
+    toast('Tüm alanları doldurun', 'error');
+    return;
+  }
+
+  if (sifre.length < 6) {
+    toast('Şifre en az 6 karakter olmalı', 'error');
+    return;
+  }
+
   try {
     const r = await fetch('/api/auth/kayit', {
       method: 'POST',
-      headers: {'Content-Type':'application/json'},
+      headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({ kullanici_adi, email, sifre })
     });
     const d = await r.json();
-    if (!r.ok) return showError(d.hata);
+    
+    if (!r.ok) {
+      toast(d.hata || 'Kayıt başarısız', 'error');
+      return;
+    }
+
     localStorage.setItem('defterdar-last-login', Date.now().toString());
-    showSuccess('Kayit basarili, yonlendiriliyor...');
+    toast('Kayıt başarılı! Yönlendiriliyorsunuz...');
     setTimeout(() => window.location.href = '/', 800);
-  } catch(e) { showError('Baglanti hatasi'); }
+  } catch(e) {
+    toast('Bağlantı hatası: ' + e.message, 'error');
+  }
 }
 
-// URL'de #kayit varsa kayıt tabını aç
-if (window.location.hash === '#kayit') switchTab('kayit');
-
-// Zaten giriş yapılmışsa ana sayfaya yönlendir
-fetch('/api/auth/durum').then(r=>r.json()).then(d => {
-  if (d.girisYapildi) window.location.href = '/';
+// Enter tuşu ile giriş
+document.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+    const activeTab = document.getElementById('tab-giris').classList.contains('active') ? 'giris' : 'kayit';
+    if (activeTab === 'giris') girisYap();
+    else kayitOl();
+  }
 });
 </script>
+
 </body>
 </html>
