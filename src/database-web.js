@@ -5,20 +5,33 @@ const Database = require('better-sqlite3');
 const fs = require('fs');
 const path = require('path');
 
-// Railway volume /app/data'ya mount edilmeli
-// DB_PATH env variable ile override edilebilir
-const DB_PATH = process.env.DB_PATH || '/app/data/defterdar.db';
+// DB path öncelik sırası: env > /app/data > /data > /tmp
+function findWritablePath() {
+  const candidates = [
+    process.env.DB_PATH,
+    '/app/data/defterdar.db',
+    '/data/defterdar.db',
+    '/tmp/defterdar.db'
+  ].filter(Boolean);
 
-// Data klasörünü oluştur - recursive ve hata yakalama ile
-try {
-  const dataDir = path.dirname(DB_PATH);
-  if (!fs.existsSync(dataDir)) {
-    fs.mkdirSync(dataDir, { recursive: true, mode: 0o755 });
+  for (const p of candidates) {
+    try {
+      const dir = path.dirname(p);
+      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+      // Yazma testi
+      const testFile = path.join(dir, '.write_test');
+      fs.writeFileSync(testFile, 'test');
+      fs.unlinkSync(testFile);
+      console.log('DB path secildi:', p);
+      return p;
+    } catch(e) {
+      console.warn('DB path yazilabilir degil:', p, '-', e.message);
+    }
   }
-  console.log('DB klasoru:', dataDir, '- yazilabilir:', fs.accessSync ? 'kontrol ediliyor' : 'ok');
-} catch(e) {
-  console.error('DB klasoru olusturulamadi:', e.message);
+  return '/tmp/defterdar.db';
 }
+
+const DB_PATH = findWritablePath();
 
 const SCHEMA = `
   CREATE TABLE IF NOT EXISTS kullanicilar (
@@ -118,15 +131,6 @@ async function getDb() {
   if (_db) return _db;
 
   let dbPath = DB_PATH;
-  
-  // DB açılamazsa /tmp'ye fallback
-  try {
-    fs.accessSync(path.dirname(dbPath), fs.constants.W_OK);
-  } catch(e) {
-    console.warn('DB klasoru yazilabilir degil, /tmp kullaniliyor');
-    dbPath = '/tmp/defterdar.db';
-  }
-
   console.log('DB aciliyor:', dbPath);
   const db = new Database(dbPath);
   db.pragma('foreign_keys = ON');
