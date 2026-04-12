@@ -21,7 +21,7 @@ app.use('/api', require('./src/routes'));
 app.use('/api/medya', require('./src/cloudinary'));
 app.use('/api/admin', require('./src/admin'));
 
-app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'public', 'admin.html')));
+app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'public', 'ddm.html')));
 
 app.get('/giris', (req, res) => res.sendFile(path.join(__dirname, 'public', 'giris.html')));
 app.get('/kayit', (req, res) => res.sendFile(path.join(__dirname, 'public', 'giris.html')));
