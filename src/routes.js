@@ -1,7 +1,14 @@
 const router = require('express').Router();
-const { getDb } = process.env.RAILWAY_ENVIRONMENT || process.env.PORT
-  ? require('./database-web')
-  : require('./database');
+
+// Vercel Postgres kullan, yoksa SQLite
+let getDb;
+if (process.env.POSTGRES_URL) {
+  getDb = require('./database-postgres').getDb;
+} else if (process.env.RAILWAY_ENVIRONMENT || process.env.VERCEL) {
+  getDb = require('./database-web').getDb;
+} else {
+  getDb = require('./database').getDb;
+}
 
 // ─── AUTH MIDDLEWARE ────────────────────────────────────────────────────────
 function requireAuth(req, res, next) {

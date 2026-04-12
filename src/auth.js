@@ -1,6 +1,15 @@
 const router = require('express').Router();
 const bcrypt = require('bcryptjs');
-const { getDb } = require('./database-web');
+
+// Vercel Postgres kullan, yoksa SQLite
+let getDb;
+if (process.env.POSTGRES_URL) {
+  getDb = require('./database-postgres').getDb;
+} else if (process.env.RAILWAY_ENVIRONMENT || process.env.VERCEL) {
+  getDb = require('./database-web').getDb;
+} else {
+  getDb = require('./database').getDb;
+}
 
 // ─── KAYIT ─────────────────────────────────────────────────────────────────
 router.post('/kayit', async (req, res) => {
