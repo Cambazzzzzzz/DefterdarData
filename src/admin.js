@@ -5,11 +5,8 @@ const { getDb } = process.env.RAILWAY_ENVIRONMENT || process.env.PORT
 
 // Admin middleware
 function requireAdmin(req, res, next) {
-  if (!req.session || !req.session.userId) {
-    return res.status(401).json({ hata: 'Giris yapmaniz gerekiyor' });
-  }
-  if (req.session.rol !== 'admin') {
-    return res.status(403).json({ hata: 'Admin yetkisi gerekiyor' });
+  if (!req.session || !req.session.ddmAdmin) {
+    return res.status(401).json({ hata: 'DDM girisi gerekiyor' });
   }
   next();
 }

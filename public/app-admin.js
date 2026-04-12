@@ -1,16 +1,6 @@
-// ─── AUTH KONTROL ────────────────────────────────────────────────────────────
-(async function checkAuth() {
-  const r = await fetch('/api/auth/durum');
-  const d = await r.json();
-  if (!d.girisYapildi || d.rol !== 'admin') {
-    window.location.href = '/giris.html';
-    return;
-  }
-})();
-
-async function cikisYap() {
-  await fetch('/api/auth/cikis', { method: 'POST' });
-  window.location.href = '/giris.html';
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+function initPanel() {
+  showPage('dashboard');
 }
 
 // ─── API ─────────────────────────────────────────────────────────────────────
@@ -451,6 +441,10 @@ async function ipYasakKaldir(id) {
 }
 
 // ─── INIT ─────────────────────────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
+function initPanel() {
   showPage('dashboard');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  // initPanel ddm.html tarafından çağrılır, burada çağırmıyoruz
 });

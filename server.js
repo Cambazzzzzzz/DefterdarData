@@ -21,6 +21,36 @@ app.use('/api', require('./src/routes'));
 app.use('/api/medya', require('./src/cloudinary'));
 app.use('/api/admin', require('./src/admin'));
 
+// DDM Admin şifre (env'den veya default)
+let DDM_SIFRE = process.env.DDM_SIFRE || 'ddm-4128-316-4128';
+
+app.post('/api/ddm/giris', (req, res) => {
+  const { sifre } = req.body;
+  if (sifre === DDM_SIFRE) {
+    req.session.ddmAdmin = true;
+    res.json({ ok: true });
+  } else {
+    res.status(401).json({ ok: false, hata: 'Hatalı şifre' });
+  }
+});
+
+app.post('/api/ddm/cikis', (req, res) => {
+  req.session.ddmAdmin = false;
+  res.json({ ok: true });
+});
+
+app.post('/api/ddm/sifre-degistir', (req, res) => {
+  if (!req.session.ddmAdmin) return res.status(401).json({ ok: false });
+  const { yeni_sifre } = req.body;
+  if (!yeni_sifre || yeni_sifre.length < 6) return res.status(400).json({ hata: 'En az 6 karakter' });
+  DDM_SIFRE = yeni_sifre;
+  res.json({ ok: true });
+});
+
+app.get('/api/ddm/durum', (req, res) => {
+  res.json({ giris: !!req.session.ddmAdmin });
+});
+
 app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'public', 'ddm.html')));
 
 app.get('/giris', (req, res) => res.sendFile(path.join(__dirname, 'public', 'giris.html')));
