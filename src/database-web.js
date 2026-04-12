@@ -109,7 +109,6 @@ async function getDb() {
   if (_db) return _db;
 
   const db = new Database(DB_PATH);
-  db.pragma('journal_mode = WAL');
   db.pragma('foreign_keys = ON');
 
   // Schema oluştur
