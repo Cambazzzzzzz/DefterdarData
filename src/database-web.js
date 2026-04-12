@@ -149,15 +149,8 @@ async function getDb() {
   ];
   migrations.forEach(m => { try { db.exec(m); } catch(e) {} });
 
-  // İlk admin yoksa oluştur
-  const adminCheck = db.prepare("SELECT id FROM kullanicilar WHERE rol='admin' LIMIT 1").get();
-  if (!adminCheck) {
-    const bcrypt = require('bcryptjs');
-    const hash = bcrypt.hashSync('admin123', 10);
-    db.prepare("INSERT OR IGNORE INTO kullanicilar (kullanici_adi, email, sifre_hash, surum, rol) VALUES (?, ?, ?, 'pro', 'admin')")
-      .run('admin', 'admin@defterdar.local', hash);
-    console.log('Admin kullanici olusturuldu: admin / admin123');
-  }
+  // İlk admin yoksa oluşturma - kullanicilar kayit olarak girecek
+
 
   _db = db;
   return _db;
