@@ -1,68 +1,15 @@
-// Web deployment için database wrapper (Railway, Heroku vb.)
-// Electron database.js ile aynı API'yi sağlar
+// Web deployment için database (Railway, Heroku vb.)
+// better-sqlite3 kullanır - WASM sorunu yok
 
-const initSqlJs = require('sql.js');
+const Database = require('better-sqlite3');
 const fs = require('fs');
 const path = require('path');
 
-const DB_PATH = path.join(__dirname, '..', 'data', 'defterdar.db');
+const DB_PATH = process.env.DB_PATH || path.join(__dirname, '..', 'data', 'defterdar.db');
 
 // Data klasörünü oluştur
-const dataDir = path.join(__dirname, '..', 'data');
+const dataDir = path.dirname(DB_PATH);
 if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
-
-let saveTimer = null;
-function scheduleSave(sqlDb) {
-  if (saveTimer) return;
-  saveTimer = setTimeout(() => {
-    saveTimer = null;
-    try {
-      const data = sqlDb.export();
-      fs.writeFileSync(DB_PATH, Buffer.from(data));
-    } catch (e) { console.error('DB kayit hatasi:', e); }
-  }, 1000);
-}
-
-class Statement {
-  constructor(sqlDb, sql) {
-    this._sqlDb = sqlDb;
-    this._sql = sql;
-  }
-  run(...params) {
-    const flat = params.length === 1 && Array.isArray(params[0]) ? params[0] : params;
-    this._sqlDb.run(this._sql, flat.length ? flat : []);
-    scheduleSave(this._sqlDb);
-    const rows = this._sqlDb.exec('SELECT last_insert_rowid() as id');
-    const lastId = rows.length > 0 ? rows[0].values[0][0] : 0;
-    return { changes: this._sqlDb.getRowsModified(), lastInsertRowid: lastId };
-  }
-  get(...params) {
-    const flat = params.length === 1 && Array.isArray(params[0]) ? params[0] : params;
-    const stmt = this._sqlDb.prepare(this._sql);
-    try {
-      stmt.bind(flat.length ? flat : []);
-      if (stmt.step()) return stmt.getAsObject();
-      return undefined;
-    } finally { stmt.free(); }
-  }
-  all(...params) {
-    const flat = params.length === 1 && Array.isArray(params[0]) ? params[0] : params;
-    const stmt = this._sqlDb.prepare(this._sql);
-    const results = [];
-    try {
-      stmt.bind(flat.length ? flat : []);
-      while (stmt.step()) results.push(stmt.getAsObject());
-    } finally { stmt.free(); }
-    return results;
-  }
-}
-
-class DbWrapper {
-  constructor(sqlDb) { this._sqlDb = sqlDb; }
-  prepare(sql) { return new Statement(this._sqlDb, sql); }
-  exec(sql) { this._sqlDb.run(sql); scheduleSave(this._sqlDb); }
-  pragma(str) { try { this._sqlDb.run(`PRAGMA ${str}`); } catch (e) {} }
-}
 
 const SCHEMA = `
   CREATE TABLE IF NOT EXISTS kullanicilar (
@@ -109,7 +56,7 @@ const SCHEMA = `
   );
   CREATE TABLE IF NOT EXISTS organizasyonlar (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    kullanici_id INTEGER NOT NULL,
+    kullanici_id INTEGER NOT NULL DEFAULT 1,
     ad TEXT NOT NULL,
     yil INTEGER NOT NULL,
     max_kurban INTEGER NOT NULL,
@@ -160,34 +107,36 @@ let _db = null;
 
 async function getDb() {
   if (_db) return _db;
-  const SQL = await initSqlJs();
-  let sqlDb;
-  if (fs.existsSync(DB_PATH)) {
-    sqlDb = new SQL.Database(fs.readFileSync(DB_PATH));
-  } else {
-    sqlDb = new SQL.Database();
-  }
-  sqlDb.run('PRAGMA foreign_keys = ON');
-  SCHEMA.split(';').map(s => s.trim()).filter(Boolean).forEach(s => sqlDb.run(s));
-  
-  // Migration: eski DB'ye yeni kolonları ekle
-  try { sqlDb.run("ALTER TABLE kurbanlar ADD COLUMN kurban_turu TEXT DEFAULT 'Udhiye'"); } catch(e) {}
-  try { sqlDb.run("ALTER TABLE kurbanlar ADD COLUMN kesen_kisi TEXT"); } catch(e) {}
-  try { sqlDb.run("ALTER TABLE kurbanlar ADD COLUMN kucukbas_sayi INTEGER DEFAULT 1"); } catch(e) {}
-  try { sqlDb.run("ALTER TABLE organizasyonlar ADD COLUMN kullanici_id INTEGER DEFAULT 1"); } catch(e) {}
-  
-  // İlk admin kullanıcısı yoksa oluştur
-  const adminCheck = sqlDb.exec("SELECT id FROM kullanicilar WHERE rol='admin' LIMIT 1");
-  if (!adminCheck || adminCheck.length === 0 || adminCheck[0].values.length === 0) {
+
+  const db = new Database(DB_PATH);
+  db.pragma('journal_mode = WAL');
+  db.pragma('foreign_keys = ON');
+
+  // Schema oluştur
+  SCHEMA.split(';').map(s => s.trim()).filter(Boolean).forEach(s => {
+    try { db.exec(s + ';'); } catch(e) {}
+  });
+
+  // Migration: eski kolonları ekle
+  const migrations = [
+    "ALTER TABLE kurbanlar ADD COLUMN kurban_turu TEXT DEFAULT 'Udhiye'",
+    "ALTER TABLE kurbanlar ADD COLUMN kesen_kisi TEXT",
+    "ALTER TABLE kurbanlar ADD COLUMN kucukbas_sayi INTEGER DEFAULT 1",
+    "ALTER TABLE organizasyonlar ADD COLUMN kullanici_id INTEGER DEFAULT 1",
+  ];
+  migrations.forEach(m => { try { db.exec(m); } catch(e) {} });
+
+  // İlk admin yoksa oluştur
+  const adminCheck = db.prepare("SELECT id FROM kullanicilar WHERE rol='admin' LIMIT 1").get();
+  if (!adminCheck) {
     const bcrypt = require('bcryptjs');
     const hash = bcrypt.hashSync('admin123', 10);
-    console.log('Admin olusturuluyor, hash test:', bcrypt.compareSync('admin123', hash));
-    sqlDb.run("INSERT OR IGNORE INTO kullanicilar (kullanici_adi, email, sifre_hash, surum, rol) VALUES (?, ?, ?, 'pro', 'admin')", ['admin', 'admin@defterdar.local', hash]);
+    db.prepare("INSERT OR IGNORE INTO kullanicilar (kullanici_adi, email, sifre_hash, surum, rol) VALUES (?, ?, ?, 'pro', 'admin')")
+      .run('admin', 'admin@defterdar.local', hash);
+    console.log('Admin kullanici olusturuldu: admin / admin123');
   }
-  
-  const data = sqlDb.export();
-  fs.writeFileSync(DB_PATH, Buffer.from(data));
-  _db = new DbWrapper(sqlDb);
+
+  _db = db;
   return _db;
 }
 
