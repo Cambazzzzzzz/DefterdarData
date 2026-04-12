@@ -29,25 +29,28 @@ class Statement {
     this._sql = sql;
   }
   run(...params) {
-    this._sqlDb.run(this._sql, params.length ? params : []);
+    const flat = params.length === 1 && Array.isArray(params[0]) ? params[0] : params;
+    this._sqlDb.run(this._sql, flat.length ? flat : []);
     scheduleSave(this._sqlDb);
     const rows = this._sqlDb.exec('SELECT last_insert_rowid() as id');
     const lastId = rows.length > 0 ? rows[0].values[0][0] : 0;
     return { changes: this._sqlDb.getRowsModified(), lastInsertRowid: lastId };
   }
   get(...params) {
+    const flat = params.length === 1 && Array.isArray(params[0]) ? params[0] : params;
     const stmt = this._sqlDb.prepare(this._sql);
     try {
-      stmt.bind(params.length ? params : []);
+      stmt.bind(flat.length ? flat : []);
       if (stmt.step()) return stmt.getAsObject();
       return undefined;
     } finally { stmt.free(); }
   }
   all(...params) {
+    const flat = params.length === 1 && Array.isArray(params[0]) ? params[0] : params;
     const stmt = this._sqlDb.prepare(this._sql);
     const results = [];
     try {
-      stmt.bind(params.length ? params : []);
+      stmt.bind(flat.length ? flat : []);
       while (stmt.step()) results.push(stmt.getAsObject());
     } finally { stmt.free(); }
     return results;
