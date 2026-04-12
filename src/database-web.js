@@ -181,7 +181,8 @@ async function getDb() {
   if (!adminCheck || adminCheck.length === 0 || adminCheck[0].values.length === 0) {
     const bcrypt = require('bcryptjs');
     const hash = bcrypt.hashSync('admin123', 10);
-    sqlDb.run("INSERT OR IGNORE INTO kullanicilar (kullanici_adi, email, sifre_hash, surum, rol) VALUES ('admin', 'admin@defterdar.local', ?, 'pro', 'admin')", [hash]);
+    console.log('Admin olusturuluyor, hash test:', bcrypt.compareSync('admin123', hash));
+    sqlDb.run("INSERT OR IGNORE INTO kullanicilar (kullanici_adi, email, sifre_hash, surum, rol) VALUES (?, ?, ?, 'pro', 'admin')", ['admin', 'admin@defterdar.local', hash]);
   }
   
   const data = sqlDb.export();
