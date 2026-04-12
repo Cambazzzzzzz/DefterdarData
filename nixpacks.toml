@@ -1,8 +1,8 @@
 [phases.setup]
-nixPkgs = ['nodejs-18_x', 'npm-9_x']
+nixPkgs = ['nodejs_20', 'python3', 'gnumake', 'gcc']
 
 [phases.install]
-cmds = ['npm ci --only=production']
+cmds = ['npm ci']
 
 [phases.build]
 cmds = ['echo "Build completed"']
@@ -12,4 +12,3 @@ cmd = 'npm start'
 
 [variables]
 NODE_ENV = 'production'
-NPM_CONFIG_PRODUCTION = 'true'
