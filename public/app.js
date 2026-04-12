@@ -49,6 +49,7 @@ function showPage(page) {
   else if (page==='raporlar')    renderRaporlar();
   else if (page==='cop')         renderCopKutusu();
   else if (page==='denetim')     renderDenetim();
+  else if (page==='medya')       renderMedyaDeposu();
 }
 
 function setSidebarOrg(ad, yil) {
@@ -485,10 +486,14 @@ function hisseKart(h, kurbanId) {
         ${h.kimin_adina?`<div class="hisse-adina"><i class="fa-solid fa-heart"></i> ${esc(h.kimin_adina)}</div>`:''}
         ${h.video_ister?`<div style="font-size:11px;color:var(--accent);margin-top:4px"><i class="fa-solid fa-video"></i> Video istiyor</div>`:''}
         <div class="hisse-odeme"><span class="badge ${odemeRenk[h.odeme_durumu]||'badge-gray'}" style="font-size:10px">${odemeLabel[h.odeme_durumu]||h.odeme_durumu}</span></div>
+        <div style="margin-top:6px" onclick="event.stopPropagation()">
+          <button class="btn btn-purple btn-sm" style="font-size:10px;padding:4px 8px" onclick="modalHisseMedya(${h.id},${h.kurban_id||kurbanId},${h.hisse_no})">
+            <i class="fa-solid fa-cloud-arrow-up"></i> Medya
+          </button>
+        </div>
       ` : `
         <div class="hisse-bos"><i class="fa-solid fa-user-plus"></i> Bos — Tikla ekle</div>
-      `}
-    </div>`;
+      `}    </div>`;
 }
 
 async function modalBagisciDuzenle(hisseId, kurbanId) {
@@ -1396,4 +1401,211 @@ async function tumKurbanlariYazdir() {
 async function tumKurbanlariExcel() {
   if (!S.orgId) return toast('Once organizasyon secin', 'error');
   downloadExcel('/api/organizasyonlar/' + S.orgId + '/excel', 'defterdar-rapor.xlsx');
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════
+// TEMA TOGGLE
+// ═══════════════════════════════════════════════════════════════════════════
+function toggleTheme() {
+  const isLight = document.body.classList.toggle('light');
+  const icon = document.getElementById('theme-icon');
+  if (icon) icon.className = isLight ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+  localStorage.setItem('defterdar-tema', isLight ? 'light' : 'dark');
+}
+
+// Sayfa yüklenince kayıtlı temayı uygula
+(function initTheme() {
+  const saved = localStorage.getItem('defterdar-tema');
+  if (saved === 'light') {
+    document.body.classList.add('light');
+    const icon = document.getElementById('theme-icon');
+    if (icon) icon.className = 'fa-solid fa-sun';
+  }
+})();
+
+// ═══════════════════════════════════════════════════════════════════════════
+// MEDYA DEPOSU (Cloudinary)
+// ═══════════════════════════════════════════════════════════════════════════
+async function renderMedyaDeposu() {
+  const m = document.getElementById('main-content');
+  m.innerHTML = `
+    <div class="page-header">
+      <div class="page-title">
+        <div class="icon-wrap"><i class="fa-solid fa-photo-film"></i></div>
+        Medya Deposu
+        <small>Cloudinary</small>
+      </div>
+      <div style="display:flex;gap:8px">
+        <select id="medya-folder" onchange="loadMedyaListesi()" style="background:var(--bg4);border:1px solid var(--border2);border-radius:8px;padding:8px 12px;color:var(--text);font-size:13px;outline:none">
+          <option value="defterdar">Genel</option>
+          <option value="defterdar/videolar">Videolar</option>
+          <option value="defterdar/fotograflar">Fotograflar</option>
+          <option value="defterdar/belgeler">Belgeler</option>
+        </select>
+        <button class="btn btn-primary" onclick="modalMedyaYukle()">
+          <i class="fa-solid fa-upload"></i> Dosya Yukle
+        </button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><i class="fa-solid fa-cloud"></i> Yuklenen Dosyalar</div>
+      <div id="medya-grid-wrap">
+        <div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i><p>Yukleniyor...</p></div>
+      </div>
+    </div>`;
+
+  await loadMedyaListesi();
+}
+
+async function loadMedyaListesi() {
+  const folder = document.getElementById('medya-folder')?.value || 'defterdar';
+  const wrap = document.getElementById('medya-grid-wrap');
+  if (!wrap) return;
+  wrap.innerHTML = `<div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i><p>Yukleniyor...</p></div>`;
+  try {
+    const list = await api('GET', `/medya/list?folder=${encodeURIComponent(folder)}`);
+    if (!list.length) {
+      wrap.innerHTML = `<div class="empty-state"><i class="fa-solid fa-photo-film"></i><p>Henuz dosya yok.</p></div>`;
+      return;
+    }
+    wrap.innerHTML = `<div class="medya-grid">${list.map(item => medyaKart(item)).join('')}</div>`;
+  } catch(e) {
+    wrap.innerHTML = `<div class="empty-state"><i class="fa-solid fa-triangle-exclamation"></i><p>${e.message}</p></div>`;
+  }
+}
+
+function medyaKart(item) {
+  const isVideo = item.resource_type === 'video';
+  const kb = Math.round(item.bytes / 1024);
+  const boyut = kb > 1024 ? (kb/1024).toFixed(1) + ' MB' : kb + ' KB';
+  const thumb = isVideo
+    ? `<div class="medya-video-thumb"><i class="fa-solid fa-circle-play"></i></div>`
+    : `<img src="${item.secure_url}" alt="medya" loading="lazy"/>`;
+  return `
+    <div class="medya-item" onclick="medyaOnizle('${item.secure_url}','${item.resource_type}')">
+      ${thumb}
+      <div class="medya-info">
+        <div class="medya-type">${isVideo ? 'Video' : 'Fotograf'} &bull; ${item.format||''}</div>
+        <div class="medya-size">${boyut}</div>
+      </div>
+      <button class="medya-del" onclick="event.stopPropagation();medyaSil('${item.public_id}','${item.resource_type}')" title="Sil">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>`;
+}
+
+function medyaOnizle(url, type) {
+  const isVideo = type === 'video';
+  const content = isVideo
+    ? `<video src="${url}" controls style="width:100%;border-radius:8px;max-height:60vh"></video>`
+    : `<img src="${url}" style="width:100%;border-radius:8px;max-height:70vh;object-fit:contain"/>`;
+  openModal('Onizleme', `
+    ${content}
+    <div class="form-actions" style="margin-top:12px">
+      <a href="${url}" target="_blank" class="btn btn-secondary"><i class="fa-solid fa-external-link"></i> Yeni Sekmede Ac</a>
+      <button class="btn btn-secondary" onclick="closeModal()">Kapat</button>
+    </div>`, true, 'eye');
+}
+
+async function medyaSil(publicId, resourceType) {
+  if (!confirm('Bu dosyayi silmek istediginizden emin misiniz?')) return;
+  try {
+    await api('DELETE', '/medya/delete', { public_id: publicId, resource_type: resourceType });
+    toast('Dosya silindi');
+    await loadMedyaListesi();
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+function modalMedyaYukle() {
+  const folder = document.getElementById('medya-folder')?.value || 'defterdar';
+  openModal('Dosya Yukle', `
+    <div class="upload-zone" id="upload-zone" onclick="document.getElementById('medya-file-input').click()"
+      ondragover="event.preventDefault();this.classList.add('drag-over')"
+      ondragleave="this.classList.remove('drag-over')"
+      ondrop="handleMedyaDrop(event)">
+      <i class="fa-solid fa-cloud-arrow-up"></i>
+      <p>Dosyayi buraya surukle veya tikla</p>
+      <small>Resim: JPG, PNG, WEBP &bull; Video: MP4, MOV, WEBM (maks. 100MB)</small>
+      <div class="upload-progress" id="upload-progress">
+        <div class="upload-progress-fill" id="upload-progress-fill" style="width:0%"></div>
+      </div>
+    </div>
+    <input type="file" id="medya-file-input" style="display:none"
+      accept="image/*,video/*"
+      onchange="yukleSeciliDosya(this.files[0],'${folder}')"/>
+    <div id="upload-result" style="margin-top:12px"></div>
+    <div class="form-actions">
+      <button class="btn btn-secondary" onclick="closeModal()">Kapat</button>
+    </div>`, false, 'upload');
+}
+
+function handleMedyaDrop(e) {
+  e.preventDefault();
+  document.getElementById('upload-zone').classList.remove('drag-over');
+  const folder = document.getElementById('medya-folder')?.value || 'defterdar';
+  const file = e.dataTransfer.files[0];
+  if (file) yukleSeciliDosya(file, folder);
+}
+
+async function yukleSeciliDosya(file, folder) {
+  if (!file) return;
+  const prog = document.getElementById('upload-progress');
+  const fill = document.getElementById('upload-progress-fill');
+  const result = document.getElementById('upload-result');
+  if (prog) { prog.style.display = 'block'; fill.style.width = '10%'; }
+
+  const formData = new FormData();
+  formData.append('dosya', file);
+  formData.append('folder', folder);
+
+  try {
+    if (fill) fill.style.width = '40%';
+    const r = await fetch('/api/medya/upload', { method: 'POST', body: formData });
+    if (fill) fill.style.width = '90%';
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.hata || 'Yuklenemedi');
+    if (fill) fill.style.width = '100%';
+    if (result) result.innerHTML = `
+      <div class="badge badge-green" style="font-size:12px;padding:8px 14px">
+        <i class="fa-solid fa-circle-check"></i> Yuklendi: ${file.name}
+      </div>`;
+    toast('Dosya yuklendi');
+    setTimeout(() => { closeModal(); loadMedyaListesi(); }, 800);
+  } catch(e) {
+    if (result) result.innerHTML = `<div class="badge badge-red" style="font-size:12px;padding:8px 14px"><i class="fa-solid fa-circle-xmark"></i> ${e.message}</div>`;
+    toast(e.message, 'error');
+  }
+}
+
+// Hisse modalına medya yükleme butonu ekle (hisse kaydedilince çağrılabilir)
+async function modalHisseMedya(hisseId, kurbanNo, hisseNo) {
+  const folder = `defterdar/kurban-${kurbanNo}/hisse-${hisseNo}`;
+  openModal(`Kurban #${kurbanNo} Hisse ${hisseNo} — Medya`, `
+    <div class="upload-zone" id="upload-zone" onclick="document.getElementById('hisse-file-input').click()"
+      ondragover="event.preventDefault();this.classList.add('drag-over')"
+      ondragleave="this.classList.remove('drag-over')"
+      ondrop="handleHisseDrop(event,'${folder}')">
+      <i class="fa-solid fa-video"></i>
+      <p>Video veya fotograf yukle</p>
+      <small>Bu hisseye ait kesim videosu veya fotografini yukleyin</small>
+      <div class="upload-progress" id="upload-progress">
+        <div class="upload-progress-fill" id="upload-progress-fill" style="width:0%"></div>
+      </div>
+    </div>
+    <input type="file" id="hisse-file-input" style="display:none"
+      accept="image/*,video/*"
+      onchange="yukleSeciliDosya(this.files[0],'${folder}')"/>
+    <div id="upload-result" style="margin-top:12px"></div>
+    <div class="form-actions">
+      <button class="btn btn-secondary" onclick="closeModal()">Kapat</button>
+    </div>`, false, 'video');
+}
+
+function handleHisseDrop(e, folder) {
+  e.preventDefault();
+  document.getElementById('upload-zone').classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if (file) yukleSeciliDosya(file, folder);
 }

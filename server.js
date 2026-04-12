@@ -17,6 +17,7 @@ app.use(session({
 }));
 
 app.use('/api', require('./src/routes'));
+app.use('/api/medya', require('./src/cloudinary'));
 
 app.get('*', (req, res) => {
   if (req.path.startsWith('/api')) return res.status(404).json({ ok: false });
