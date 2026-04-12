@@ -88,27 +88,20 @@ async function renderDashboard() {
 // ═══════════════════════════════════════════════════════════════════════════
 // KULLANICILAR
 // ═══════════════════════════════════════════════════════════════════════════
-async function renderKullanicilar() {
-  const m = document.getElementById('main-content');
-  m.innerHTML = `
-    <div class="page-header">
-      <div class="page-title">
-        <div class="icon-wrap"><i class="fa-solid fa-users"></i></div>
-        Kullanicilar
-      </div>
-    </div>
-    <div class="card">
-      <div class="table-wrap">
-        <table>
-          <thead><tr>
-            <th>#</th><th>Kullanici Adi</th><th>Email</th><th>Surum</th><th>Rol</th><th>Durum</th><th>Kayit IP</th><th>Son IP</th><th>Kayit Tarihi</th><th>Islemler</th>
-          </tr></thead>
-          <tbody id="kullanici-tbody"></tbody>
-        </table>
-      </div>
-    </div>`;
-  
-  const list = await api('GET', '/kullanicilar');
+let _kullaniciList = [];
+
+function filterKullanicilar() {
+  const q = document.getElementById('kullanici-ara').value.toLowerCase();
+  const filtered = q ? _kullaniciList.filter(u =>
+    (u.kullanici_adi||'').toLowerCase().includes(q) ||
+    (u.email||'').toLowerCase().includes(q) ||
+    (u.kayit_ip||'').toLowerCase().includes(q) ||
+    (u.son_ip||'').toLowerCase().includes(q)
+  ) : _kullaniciList;
+  renderKullaniciTablo(filtered);
+}
+
+function renderKullaniciTablo(list) {
   const tbody = document.getElementById('kullanici-tbody');
   tbody.innerHTML = list.map((u,i) => `
     <tr>
@@ -132,8 +125,38 @@ async function renderKullanicilar() {
     </tr>`).join('');
 }
 
+async function renderKullanicilar() {
+  const m = document.getElementById('main-content');
+  m.innerHTML = `
+    <div class="page-header">
+      <div class="page-title">
+        <div class="icon-wrap"><i class="fa-solid fa-users"></i></div>
+        Kullanicilar
+      </div>
+    </div>
+    <div style="margin-bottom:12px">
+      <input id="kullanici-ara" type="text" placeholder="İsim, email veya IP ara..." oninput="filterKullanicilar()"
+        style="padding:8px 12px;background:#0d0d0d;border:1px solid #333;border-radius:6px;color:#e0e0e0;font-size:13px;outline:none;width:280px"/>
+    </div>
+    <div class="card">
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>#</th><th>Kullanici Adi</th><th>Email</th><th>Surum</th><th>Rol</th><th>Durum</th><th>Kayit IP</th><th>Son IP</th><th>Kayit Tarihi</th><th>Islemler</th>
+          </tr></thead>
+          <tbody id="kullanici-tbody"></tbody>
+        </table>
+      </div>
+    </div>`;
+  
+  _kullaniciList = await api('GET', '/kullanicilar');
+  renderKullaniciTablo(_kullaniciList);
+}
+
+// ESKI renderKullanicilar tbody kodu asagida kaldirildi
+
 async function modalKullaniciDetay(id) {
-  const list = await api('GET', '/kullanicilar');
+  const list = _kullaniciList.length ? _kullaniciList : await api('GET', '/kullanicilar');
   const u = list.find(x=>x.id===id);
   if (!u) return;
   
@@ -235,28 +258,18 @@ async function sifreDegistir(id) {
 // ═══════════════════════════════════════════════════════════════════════════
 // PRO KEYLER
 // ═══════════════════════════════════════════════════════════════════════════
-async function renderProKeyler() {
-  const m = document.getElementById('main-content');
-  m.innerHTML = `
-    <div class="page-header">
-      <div class="page-title">
-        <div class="icon-wrap"><i class="fa-solid fa-key"></i></div>
-        PRO Keyler
-      </div>
-      <button class="btn btn-primary" onclick="modalYeniKey()"><i class="fa-solid fa-plus"></i> Key Olustur</button>
-    </div>
-    <div class="card">
-      <div class="table-wrap">
-        <table>
-          <thead><tr>
-            <th>#</th><th>Key Kodu</th><th>Durum</th><th>Kullanan</th><th>Olusturma</th><th>Kullanilma</th><th>Islemler</th>
-          </tr></thead>
-          <tbody id="key-tbody"></tbody>
-        </table>
-      </div>
-    </div>`;
-  
-  const list = await api('GET', '/pro-keyler');
+let _keyList = [];
+
+function filterKeyler() {
+  const q = document.getElementById('key-ara').value.toLowerCase();
+  const filtered = q ? _keyList.filter(k =>
+    (k.key_kodu||'').toLowerCase().includes(q) ||
+    (k.kullanan_adi||'').toLowerCase().includes(q)
+  ) : _keyList;
+  renderKeyTablo(filtered);
+}
+
+function renderKeyTablo(list) {
   const tbody = document.getElementById('key-tbody');
   tbody.innerHTML = list.map((k,i) => `
     <tr>
@@ -273,6 +286,35 @@ async function renderProKeyler() {
         </div>
       </td>
     </tr>`).join('');
+}
+
+async function renderProKeyler() {
+  const m = document.getElementById('main-content');
+  m.innerHTML = `
+    <div class="page-header">
+      <div class="page-title">
+        <div class="icon-wrap"><i class="fa-solid fa-key"></i></div>
+        PRO Keyler
+      </div>
+      <button class="btn btn-primary" onclick="modalYeniKey()"><i class="fa-solid fa-plus"></i> Key Olustur</button>
+    </div>
+    <div style="margin-bottom:12px">
+      <input id="key-ara" type="text" placeholder="Key kodu veya kullanıcı ara..." oninput="filterKeyler()"
+        style="padding:8px 12px;background:#0d0d0d;border:1px solid #333;border-radius:6px;color:#e0e0e0;font-size:13px;outline:none;width:280px"/>
+    </div>
+    <div class="card">
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>#</th><th>Key Kodu</th><th>Durum</th><th>Kullanan</th><th>Olusturma</th><th>Kullanilma</th><th>Islemler</th>
+          </tr></thead>
+          <tbody id="key-tbody"></tbody>
+        </table>
+      </div>
+    </div>`;
+  
+  _keyList = await api('GET', '/pro-keyler');
+  renderKeyTablo(_keyList);
 }
 
 function modalYeniKey() {
