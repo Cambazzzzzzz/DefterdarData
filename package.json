@@ -10,7 +10,8 @@
   "scripts": {
     "start": "node server.js",
     "electron": "electron .",
-    "build": "electron-builder"
+    "build": "electron-builder",
+    "vercel-build": "echo 'Build complete'"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
