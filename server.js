@@ -26,9 +26,10 @@ let DDM_SIFRE = process.env.DDM_SIFRE || 'ddm-4128-316-4128';
 
 app.post('/api/ddm/giris', (req, res) => {
   const { sifre } = req.body;
-  if (sifre === DDM_SIFRE) {
+  console.log('DDM giris denemesi:', JSON.stringify(sifre), '===', JSON.stringify(DDM_SIFRE), '->', sifre === DDM_SIFRE);
+  if (sifre && sifre.trim() === DDM_SIFRE) {
     req.session.ddmAdmin = true;
-    res.json({ ok: true });
+    req.session.save(() => res.json({ ok: true }));
   } else {
     res.status(401).json({ ok: false, hata: 'Hatalı şifre' });
   }
@@ -52,6 +53,7 @@ app.get('/api/ddm/durum', (req, res) => {
 });
 
 app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'public', 'ddm.html')));
+app.get('/ddm', (req, res) => res.sendFile(path.join(__dirname, 'public', 'ddm.html')));
 
 app.get('/giris', (req, res) => res.sendFile(path.join(__dirname, 'public', 'giris.html')));
 app.get('/kayit', (req, res) => res.sendFile(path.join(__dirname, 'public', 'giris.html')));
