@@ -1,9 +1,10 @@
 {
   "name": "defterdar-muhasebe",
-  "version": "2.0.0",
-  "description": "Defterdar Muhasebe - STK Muhasebe Sistemi",
+  "version": "2.1.0",
+  "description": "DefterdarMuhasebe - Profesyonel STK Muhasebe Sistemi",
   "main": "electron.js",
-  "author": "CMS Team",
+  "author": "CMS Team <info@cmsteam.com>",
+  "homepage": "https://cmsteam.com",
   "engines": {
     "node": ">=18.0.0"
   },
@@ -11,13 +12,16 @@
     "start": "node server.js",
     "dev": "node server.js",
     "electron": "electron .",
-    "build": "electron-builder",
+    "build": "electron-builder --win --x64",
+    "build-dir": "electron-builder --win --x64 --dir",
+    "dist": "npm run build",
     "railway": "node server.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "better-sqlite3": "^9.6.0",
     "cloudinary": "^2.9.0",
+    "electron-updater": "^6.8.3",
     "exceljs": "^4.4.0",
     "express": "^4.18.2",
     "express-session": "^1.17.3",
@@ -28,13 +32,15 @@
     "electron-builder": "^24.13.3"
   },
   "build": {
-    "appId": "com.cmsteam.defterdar",
-    "productName": "Defterdar Muhasebe",
-    "copyright": "Copyright © 2024 CMS Team",
+    "appId": "com.cmsteam.defterdarmuhasebe",
+    "productName": "DefterdarMuhasebe",
+    "copyright": "Copyright © 2025 CMS Team. Tüm hakları saklıdır.",
     "forceCodeSigning": false,
     "npmRebuild": false,
     "buildDependenciesFromSource": false,
     "nodeGypRebuild": false,
+    "compression": "maximum",
+    "artifactName": "${productName}-Setup-${version}.${ext}",
     "win": {
       "target": [
         {
@@ -45,22 +51,44 @@
         }
       ],
       "icon": "assets/defterdar.ico",
-      "publisherName": "CMS Team"
+      "publisherName": "CMS Team",
+      "verifyUpdateCodeSignature": false,
+      "requestedExecutionLevel": "asInvoker",
+      "signAndEditExecutable": false,
+      "signDlls": false
     },
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
-      "perMachine": true,
+      "perMachine": false,
+      "allowElevation": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "Defterdar Muhasebe",
+      "shortcutName": "DefterdarMuhasebe",
       "installerIcon": "assets/defterdar.ico",
       "uninstallerIcon": "assets/defterdar.ico",
       "installerHeaderIcon": "assets/defterdar.ico",
       "deleteAppDataOnUninstall": false,
-      "uninstallDisplayName": "Defterdar Muhasebe",
+      "uninstallDisplayName": "DefterdarMuhasebe",
+      "displayLanguageSelector": false,
+      "installerLanguages": [
+        "tr_TR"
+      ],
+      "language": "1055",
+      "multiLanguageInstaller": false,
+      "packElevateHelper": false,
+      "preCompressedFileExtensions": [
+        ".br",
+        ".gz",
+        ".7z",
+        ".rar",
+        ".zip"
+      ],
+      "differentialPackage": false,
       "include": "build/installer.nsh",
-      "warningsAsErrors": false
+      "warningsAsErrors": false,
+      "artifactName": "${productName}-Setup-${version}.${ext}",
+      "guid": "12345678-1234-1234-1234-123456789012"
     },
     "files": [
       "**/*",

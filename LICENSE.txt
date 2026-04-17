@@ -1,0 +1,25 @@
+DefterdarMuhasebe - Yazılım Lisans Sözleşmesi
+==============================================
+
+Copyright (c) 2025 CMS Team. Tüm hakları saklıdır.
+
+Bu yazılım CMS Team tarafından geliştirilmiştir ve telif hakkı koruması altındadır.
+
+KULLANIM KOŞULLARI:
+------------------
+
+1. Bu yazılım yalnızca yasal amaçlar için kullanılabilir.
+2. Yazılımın kaynak kodunu tersine mühendislik yaparak incelemek yasaktır.
+3. Yazılımı izinsiz kopyalamak, dağıtmak veya satmak yasaktır.
+4. CMS Team, yazılımın kullanımından doğabilecek zararlardan sorumlu değildir.
+
+DESTEK VE İLETİŞİM:
+------------------
+
+Web: https://cmsteam.com
+E-posta: info@cmsteam.com
+
+Bu sözleşmeyi kabul ederek yazılımı kullanmayı onaylıyorsunuz.
+
+CMS Team
+2025

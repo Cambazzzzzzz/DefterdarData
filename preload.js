@@ -6,5 +6,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   downloadFile: (url, filename) => ipcRenderer.invoke('download-file', url, filename),
   backupAndQuit: (excelUrl) => ipcRenderer.invoke('backup-and-quit', excelUrl),
   forceQuit: () => ipcRenderer.invoke('force-quit'),
-  onBeforeClose: (cb) => ipcRenderer.on('before-close', cb)
+  onBeforeClose: (cb) => ipcRenderer.on('before-close', cb),
+  closeSplash: () => ipcRenderer.invoke('close-splash'),
+  getVersion: () => ipcRenderer.invoke('get-version')
 });
