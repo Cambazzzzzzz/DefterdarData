@@ -9,7 +9,7 @@ const path = require('path');
 function findWritablePath() {
   const candidates = [
     process.env.DB_PATH,           // Environment variable (en yüksek öncelik)
-    '/app/data/defterdar.db',      // Railway Volume mount
+    '/app/data/defterdar.db',      // Railway Volume mount (Dockerfile'da mkdir -p /app/data)
     '/data/defterdar.db',          // Alternatif mount
     '/tmp/defterdar.db',           // Fallback (deploy'da sıfırlanır!)
     './data/defterdar.db'          // Local geliştirme
@@ -18,17 +18,18 @@ function findWritablePath() {
   for (const p of candidates) {
     try {
       const dir = path.dirname(p);
-      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+      // Yazma izni testi
       const testFile = path.join(dir, '.write_test');
       fs.writeFileSync(testFile, 'test');
       fs.unlinkSync(testFile);
       console.log('✅ DB path secildi:', p);
-      console.log('📁 Directory exists:', fs.existsSync(dir));
-      console.log('💾 /app/data mount:', fs.existsSync('/app/data') ? 'MEVCUT ✅' : 'YOK ❌');
-      console.log('💾 /data mount:', fs.existsSync('/data') ? 'MEVCUT ✅' : 'YOK ❌');
       if (p === '/tmp/defterdar.db') {
         console.warn('⚠️  UYARI: /tmp kullanılıyor! Deploy sonrası veriler SİLİNECEK!');
-        console.warn('⚠️  Railway Volume kurulu değil veya mount path yanlış!');
+        console.warn('⚠️  Railway Volume mount path yanlış veya izin sorunu var!');
+        console.warn('⚠️  Railway dashboard > Variables > DB_PATH=/app/data/defterdar.db ekleyin');
       }
       return p;
     } catch(e) {

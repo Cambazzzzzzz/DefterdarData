@@ -1347,7 +1347,7 @@ function yazdirilabilirHTML(tip) {
     '</div>' +
     '</div>' +
     (icerik ? icerik.innerHTML : '') +
-    '<div class="footer"><span>Defterdar Muhasebe &mdash; CMS Team</span></div>' +
+    '<div class="footer"><span>Defterdar Muhasebe</span></div>' +
     '</body></html>';
 }
 
@@ -1386,13 +1386,12 @@ function kurbanYazdirHTML(kurbanNo, tur, hisseler, kurbanData) {
     .header-left { width: 140px; display: flex; align-items: center; }
     .header-center { flex: 1; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px; }
     .header-center img { height: 130px; max-width: 280px; object-fit: contain; }
-    .kurban-sayisi { font-size: 15px; color: #333; font-weight: 700; }
+    .kurban-no { font-size: 13px; color: #555; font-weight: 600; }
     .header-right { width: 140px; display: flex; align-items: center; justify-content: flex-end; }
     .header-right img { height: 93px; width: 140px; object-fit: contain; }
     table { width: 100%; border-collapse: collapse; margin-top: 8px; }
     th { border: 1.5px solid #000; padding: 10px 14px; text-align: left; font-size: 16px; font-weight: bold; background: #fff; }
     td { border: 1.5px solid #000; padding: 8px 14px; font-size: 16px; }
-    .footer { position: fixed; bottom: 12mm; left: 15mm; right: 15mm; text-align: center; font-size: 10px; color: #aaa; border-top: 1px solid #eee; padding-top: 6px; }
     @media print { body { margin: 0; } }
   `;
 
@@ -1406,20 +1405,20 @@ function kurbanYazdirHTML(kurbanNo, tur, hisseler, kurbanData) {
     '<div class="header-left">' + turkBayrakSVG + '</div>' +
     '<div class="header-center">' +
     '<img src="' + logoSrc + '" alt="Logo" onerror="this.style.visibility=\'hidden\'"/>' +
-    '<div class="kurban-sayisi">Kurban Say�s�: ' + kurbanNo + '</div>' +
+    '<div class="kurban-no">Kurban #' + kurbanNo + '</div>' +
     '</div>' +
     '<div class="header-right">' + bayrakImg + '</div>' +
     '</div>' +
     '<table>' +
     '<thead><tr>' +
     '<th style="width:60px;text-align:center">No</th>' +
-    '<th>�sim Soyisim</th>' +
-    '<th style="width:140px;text-align:center">Kurban T�r�</th>' +
+    '<th>Isim Soyisim</th>' +
+    '<th style="width:140px;text-align:center">Kurban Turu</th>' +
     '</tr></thead>' +
     '<tbody>' + rows + '</tbody>' +
     '</table>' +
-    '<div class="footer">Defterdar Muhasebe &mdash; defterdar.xyz</div>' +
     '</body></html>';
+
 }
 
 // ===========================================================================
@@ -1679,7 +1678,7 @@ function yazdirBagiscilar() {
     '</div>' +
     '<table><thead><tr><th>#</th><th>Ba����� Ad�</th><th>Telefon</th><th>Kimin Ad�na</th><th>Kurban No</th><th>Hisse</th><th>T�r</th><th>�deme</th><th>Video</th></tr></thead>' +
     '<tbody>' + rows + '</tbody></table>' +
-    '<div class="footer"><span>Defterdar Muhasebe &mdash; defterdar.xyz</span><span>' + new Date().toLocaleString('tr-TR') + '</span></div>' +
+    '<div class="footer"><span>Defterdar Muhasebe</span><span>' + new Date().toLocaleString('tr-TR') + '</span></div>' +
     '</body></html>';
 
   printHTML(html);
