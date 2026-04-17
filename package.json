@@ -85,7 +85,6 @@
         ".zip"
       ],
       "differentialPackage": false,
-      "include": "build/installer.nsh",
       "warningsAsErrors": false,
       "artifactName": "${productName}-Setup-${version}.${ext}",
       "guid": "12345678-1234-1234-1234-123456789012"
