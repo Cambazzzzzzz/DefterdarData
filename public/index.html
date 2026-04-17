@@ -16,10 +16,6 @@
   </div>
   <div class="topbar-right">
     <div class="topbar-badge"><i class="fa-solid fa-shield-halved" style="color:var(--accent);margin-right:5px"></i>CMS Team</div>
-    <div class="topbar-badge" id="pro-badge" style="display:none">
-      <i class="fa-solid fa-crown" style="color:var(--yellow);margin-right:5px"></i>
-      <span>PRO</span>
-    </div>
     <div class="topbar-badge" id="user-badge" style="display:none">
       <i class="fa-solid fa-user" style="color:var(--accent);margin-right:5px"></i>
       <span id="user-name"></span>
@@ -53,6 +49,9 @@
     <div class="sidebar-item" data-page="bagiscilar" onclick="showPage('bagiscilar')">
       <i class="fa-solid fa-users"></i> Bagiscilar
     </div>
+    <div class="sidebar-item" data-page="video-isteyenler" onclick="showPage('video-isteyenler')">
+      <i class="fa-solid fa-video"></i> Video İsteyenler
+    </div>
 
     <hr class="sidebar-divider"/>
     <div class="sidebar-section">Raporlar</div>
@@ -64,11 +63,11 @@
     <div class="sidebar-item" data-page="cop" onclick="showPage('cop')">
       <i class="fa-solid fa-trash-can"></i> Cop Kutusu
     </div>
+    <div class="sidebar-item" data-page="veri-yukle" onclick="showPage('veri-yukle')">
+      <i class="fa-solid fa-file-import"></i> Excel Veri Yukle
+    </div>
     <div class="sidebar-item" data-page="denetim" onclick="showPage('denetim')">
       <i class="fa-solid fa-shield-halved"></i> Denetim Masasi
-    </div>
-    <div class="sidebar-item" onclick="modalAyarlar()">
-      <i class="fa-solid fa-gear"></i> Yazdırma Ayarları
     </div>
     <hr class="sidebar-divider"/>
     <div class="sidebar-section">Medya</div>
@@ -76,9 +75,12 @@
       <i class="fa-solid fa-photo-film"></i> Medya Deposu
     </div>
     <hr class="sidebar-divider"/>
-    <div class="sidebar-section">PRO</div>
-    <div class="sidebar-item" data-page="pro" onclick="showPage('pro')">
-      <i class="fa-solid fa-crown"></i> Defterdar PRO
+    <div class="sidebar-section">Ayarlar & Yedek</div>
+    <div class="sidebar-item" data-page="ayarlar" onclick="showPage('ayarlar')">
+      <i class="fa-solid fa-gear"></i> Ayarlar & Yedek
+    </div>
+    <div class="sidebar-item" data-page="veri-geri-yukle" onclick="showPage('veri-geri-yukle')">
+      <i class="fa-solid fa-rotate-left"></i> Yedekten Geri Yükle
     </div>
   </nav>
 

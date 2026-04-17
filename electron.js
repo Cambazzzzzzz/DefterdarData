@@ -110,11 +110,14 @@ ipcMain.handle('download-file', async (event, url, filename) => {
       req.end();
     });
 
+    const isJson = filename.endsWith('.json');
     const { filePath, canceled } = await dialog.showSaveDialog(mainWindow, {
       defaultPath: filename,
-      filters: [{ name: 'Excel Dosyasi', extensions: ['xlsx'] }]
+      filters: isJson
+        ? [{ name: 'JSON Yedek', extensions: ['json'] }]
+        : [{ name: 'Excel Dosyasi', extensions: ['xlsx'] }]
     });
-    if (canceled || !filePath) return { ok: false };
+    if (canceled || !filePath) return { ok: false, canceled: true };
     fs.writeFileSync(filePath, buf);
     return { ok: true, path: filePath };
   } catch (e) {

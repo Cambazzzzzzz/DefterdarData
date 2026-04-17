@@ -1,5 +1,5 @@
-﻿// ─── AUTH KONTROL ────────────────────────────────────────────────────────────
-// Kullanıcı ayarları global
+﻿// ��� AUTH KONTROL ������������������������������������������������������������
+// Kullan�c� ayarlar� global
 let _kullaniciAyarlar = { logo_data: null, bayrak_data: null, kurulum_tamamlandi: 0 };
 let _kullaniciAdi = '';
 let _kullaniciSurum = 'normal';
@@ -21,10 +21,6 @@ let _kullaniciRol = 'kullanici';
       const name = document.getElementById('user-name');
       if (badge) badge.style.display = '';
       if (name) name.textContent = d.kullanici_adi;
-      if (_kullaniciSurum === 'pro' || _kullaniciRol === 'admin') {
-        const proBadge = document.getElementById('pro-badge');
-        if (proBadge) proBadge.style.display = '';
-      }
       await yukleKullaniciAyarlar();
       return;
     }
@@ -44,10 +40,6 @@ let _kullaniciRol = 'kullanici';
   const name = document.getElementById('user-name');
   if (badge) badge.style.display = '';
   if (name) name.textContent = d.kullanici_adi;
-  if (_kullaniciSurum === 'pro' || _kullaniciRol === 'admin') {
-    const proBadge = document.getElementById('pro-badge');
-    if (proBadge) proBadge.style.display = '';
-  }
   await yukleKullaniciAyarlar();
 })();
 
@@ -62,40 +54,39 @@ async function yukleKullaniciAyarlar() {
 }
 
 async function cikisYap() {
-  await fetch('/api/auth/cikis', { method: 'POST' });
-  localStorage.removeItem('defterdar-last-login');
-  window.location.href = '/giris.html';
+  // ��k�� �ncesi yedek uyar�s�
+  await modalCikisYedek();
 }
 
-// ─── KURULUM SİHİRBAZI ───────────────────────────────────────────────────────
+// ��� KURULUM S�H�RBAZI �������������������������������������������������������
 let _setupLogoData = null;
 let _setupBayrakData = null;
 
 function modalKurulumSihirbazi() {
   _setupLogoData = null;
   _setupBayrakData = null;
-  openModal('Hoş Geldiniz! Kurulum', `
+  openModal('Ho� Geldiniz! Kurulum', `
     <div style="text-align:center;margin-bottom:20px">
-      <div style="font-size:36px;margin-bottom:6px">🎉</div>
-      <div style="font-size:14px;color:var(--text2)">Yazdırma şablonunuz için görselleri yükleyin.</div>
+      <div style="font-size:36px;margin-bottom:6px">??</div>
+      <div style="font-size:14px;color:var(--text2)">Yazd�rma �ablonunuz i�in g�rselleri y�kleyin.</div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:12px">
       <div class="form-group">
-        <label><i class="fa-solid fa-image"></i> Logonuz <span style="color:var(--text3);font-weight:400">(Orta + Bağışçı sol üst)</span></label>
+        <label><i class="fa-solid fa-image"></i> Logonuz <span style="color:var(--text3);font-weight:400">(Orta + Ba����� sol �st)</span></label>
         <div class="upload-zone" style="padding:16px;text-align:center;cursor:pointer;min-height:90px;display:flex;align-items:center;justify-content:center" onclick="document.getElementById('setup-logo-input').click()">
           <div id="setup-logo-preview">
             <i class="fa-solid fa-cloud-arrow-up" style="font-size:22px;color:var(--text3)"></i>
-            <div style="color:var(--text3);font-size:12px;margin-top:4px">Logo yükle</div>
+            <div style="color:var(--text3);font-size:12px;margin-top:4px">Logo y�kle</div>
           </div>
         </div>
         <input type="file" id="setup-logo-input" accept="image/*" style="display:none" onchange="onSetupImageChange(this,'logo')"/>
       </div>
       <div class="form-group">
-        <label><i class="fa-solid fa-flag"></i> Sağ Üst Bayrak <span style="color:var(--text3);font-weight:400">(Kurban yazdır)</span></label>
+        <label><i class="fa-solid fa-flag"></i> Sa� �st Bayrak <span style="color:var(--text3);font-weight:400">(Kurban yazd�r)</span></label>
         <div class="upload-zone" style="padding:16px;text-align:center;cursor:pointer;min-height:90px;display:flex;align-items:center;justify-content:center" onclick="document.getElementById('setup-bayrak-input').click()">
           <div id="setup-bayrak-preview">
             <i class="fa-solid fa-cloud-arrow-up" style="font-size:22px;color:var(--text3)"></i>
-            <div style="color:var(--text3);font-size:12px;margin-top:4px">Bayrak yükle</div>
+            <div style="color:var(--text3);font-size:12px;margin-top:4px">Bayrak y�kle</div>
           </div>
         </div>
         <input type="file" id="setup-bayrak-input" accept="image/*" style="display:none" onchange="onSetupImageChange(this,'bayrak')"/>
@@ -103,13 +94,13 @@ function modalKurulumSihirbazi() {
     </div>
     <div style="background:var(--bg4);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--text3);line-height:1.7">
       <i class="fa-solid fa-info-circle" style="color:var(--accent)"></i>
-      <strong>Kurban yazdır:</strong> Sol üst = Türk Bayrağı (sabit) &nbsp;|&nbsp; Orta = Logonuz &nbsp;|&nbsp; Sağ üst = Yüklediğiniz bayrak<br>
+      <strong>Kurban yazd�r:</strong> Sol �st = T�rk Bayra�� (sabit) &nbsp;|&nbsp; Orta = Logonuz &nbsp;|&nbsp; Sa� �st = Y�kledi�iniz bayrak<br>
       <i class="fa-solid fa-info-circle" style="color:var(--accent)"></i>
-      <strong>Bağışçı listesi:</strong> Sol üst = Logonuz &nbsp;|&nbsp; Ayarlardan sonradan değiştirilebilir
+      <strong>Ba����� listesi:</strong> Sol �st = Logonuz &nbsp;|&nbsp; Ayarlardan sonradan de�i�tirilebilir
     </div>
     <div class="form-actions" style="margin-top:16px">
-      <button class="btn btn-secondary" onclick="kurulumAtla()">Şimdi Değil</button>
-      <button class="btn btn-primary" onclick="kurulumKaydet()"><i class="fa-solid fa-floppy-disk"></i> Kaydet ve Başla</button>
+      <button class="btn btn-secondary" onclick="kurulumAtla()">�imdi De�il</button>
+      <button class="btn btn-primary" onclick="kurulumKaydet()"><i class="fa-solid fa-floppy-disk"></i> Kaydet ve Ba�la</button>
     </div>
   `, true, 'gear');
 }
@@ -154,18 +145,121 @@ async function kurulumAtla() {
   closeModal();
 }
 
-// Ayarlar sayfasından da değiştirilebilir
+// ��� �IKI� YEDE�� MODALI ����������������������������������������������������
+async function modalCikisYedek() {
+  let orgOpts = '<option value="">-- Organizasyon se�in --</option>';
+  try {
+    const orgs = await api('GET', '/organizasyonlar');
+    orgOpts += orgs.map(o => '<option value="' + o.id + '"' + (o.id === S.orgId ? ' selected' : '') + '>' + esc(o.ad) + ' (' + o.yil + ')</option>').join('');
+  } catch(e) {}
+
+  openModal('?? ��kmadan �nce Yedek Al�n', `
+    <div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:10px;padding:16px;margin-bottom:20px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <i class="fa-solid fa-triangle-exclamation" style="font-size:24px;color:var(--red)"></i>
+        <div>
+          <div style="font-weight:700;font-size:15px;margin-bottom:4px">Verilerinizi kaybetmeyin!</div>
+          <div style="font-size:13px;color:var(--text2)">��kmadan �nce verilerinizi yedeklemenizi �iddetle tavsiye ederiz. Yedek dosyas� ile ba�ka bilgisayara da ta��yabilirsiniz.</div>
+        </div>
+      </div>
+    </div>
+    <div class="form-group" style="margin-bottom:16px">
+      <label><i class="fa-solid fa-layer-group"></i> Yedeklenecek Organizasyon</label>
+      <select id="cikis-org-select" style="width:100%">
+        <option value="tum�">?? T�m Organizasyonlar (Tam Yedek)</option>
+        ${orgOpts}
+      </select>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-danger" onclick="cikisYapsiz()"><i class="fa-solid fa-right-from-bracket"></i> Yedeksiz ��k</button>
+      <button class="btn btn-secondary" onclick="closeModal()"><i class="fa-solid fa-xmark"></i> �ptal</button>
+      <button class="btn btn-primary" onclick="yedekAlVeCik()"><i class="fa-solid fa-floppy-disk"></i> Yedekle ve ��k</button>
+    </div>
+    <div id="cikis-status" style="margin-top:10px;font-size:12px;min-height:18px;text-align:center"></div>
+  `, false, 'shield-halved');
+}
+
+async function yedekAlVeCik() {
+  const orgSec = document.getElementById('cikis-org-select').value;
+  const statusEl = document.getElementById('cikis-status');
+  statusEl.textContent = 'Yedek haz�rlan�yor...';
+  statusEl.style.color = 'var(--accent)';
+
+  try {
+    let url, filename;
+    const tarih = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+
+    if (orgSec === 'tum�' || !orgSec) {
+      url = '/api/tam-yedek';
+      filename = 'defterdar-tam-yedek-' + tarih + '.json';
+    } else {
+      url = '/api/organizasyonlar/' + orgSec + '/excel';
+      filename = 'defterdar-yedek-' + tarih + '.xlsx';
+    }
+
+    if (window.electronAPI && window.electronAPI.downloadFile) {
+      const fullUrl = 'http://127.0.0.1:4500' + url;
+      const result = await window.electronAPI.downloadFile(fullUrl, filename);
+      if (result && result.ok) {
+        statusEl.textContent = '? Yedek kaydedildi: ' + result.path;
+        statusEl.style.color = 'var(--green)';
+        setTimeout(async () => {
+          await fetch('/api/auth/cikis', { method: 'POST' });
+          localStorage.removeItem('defterdar-last-login');
+          window.location.href = '/giris.html';
+        }, 1500);
+      } else if (result && result.canceled) {
+        statusEl.textContent = 'Kaydetme iptal edildi.';
+        statusEl.style.color = 'var(--yellow)';
+      } else {
+        throw new Error(result && result.error || 'Bilinmeyen hata');
+      }
+    } else {
+      // Web fallback
+      const r = await fetch(url);
+      if (!r.ok) throw new Error('Sunucu hatas�');
+      const blob = await r.blob();
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(a.href);
+      statusEl.textContent = '? Yedek indirildi. ��k�l�yor...';
+      statusEl.style.color = 'var(--green)';
+      setTimeout(async () => {
+        await fetch('/api/auth/cikis', { method: 'POST' });
+        localStorage.removeItem('defterdar-last-login');
+        window.location.href = '/giris.html';
+      }, 1500);
+    }
+  } catch(e) {
+    statusEl.textContent = '? Hata: ' + e.message;
+    statusEl.style.color = 'var(--red)';
+  }
+}
+
+async function cikisYapsiz() {
+  if (!confirm('Yedek almadan ��kmak istedi�inizden emin misiniz?')) return;
+  closeModal();
+  await fetch('/api/auth/cikis', { method: 'POST' });
+  localStorage.removeItem('defterdar-last-login');
+  window.location.href = '/giris.html';
+}
+
+// Ayarlar sayfas�ndan da de�i�tirilebilir
 async function modalAyarlar() {
   _setupLogoData = null;
   _setupBayrakData = null;
   const logoOnizleme = _kullaniciAyarlar.logo_data
     ? '<img src="' + _kullaniciAyarlar.logo_data + '" style="max-height:70px;max-width:100%;border-radius:6px;object-fit:contain"/>'
-    : '<i class="fa-solid fa-image" style="font-size:22px;color:var(--text3)"></i><div style="color:var(--text3);font-size:12px;margin-top:4px">Yüklenmedi</div>';
+    : '<i class="fa-solid fa-image" style="font-size:22px;color:var(--text3)"></i><div style="color:var(--text3);font-size:12px;margin-top:4px">Y�klenmedi</div>';
   const bayrakOnizleme = _kullaniciAyarlar.bayrak_data
     ? '<img src="' + _kullaniciAyarlar.bayrak_data + '" style="max-height:70px;max-width:100%;border-radius:6px;object-fit:contain"/>'
-    : '<i class="fa-solid fa-flag" style="font-size:22px;color:var(--text3)"></i><div style="color:var(--text3);font-size:12px;margin-top:4px">Yüklenmedi</div>';
+    : '<i class="fa-solid fa-flag" style="font-size:22px;color:var(--text3)"></i><div style="color:var(--text3);font-size:12px;margin-top:4px">Y�klenmedi</div>';
 
-  openModal('Yazdırma Ayarları', `
+  openModal('Yazd�rma Ayarlar�', `
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:12px">
       <div class="form-group">
         <label><i class="fa-solid fa-image"></i> Logonuz</label>
@@ -175,7 +269,7 @@ async function modalAyarlar() {
         <input type="file" id="setup-logo-input" accept="image/*" style="display:none" onchange="onSetupImageChange(this,'logo')"/>
       </div>
       <div class="form-group">
-        <label><i class="fa-solid fa-flag"></i> Sağ Üst Bayrak</label>
+        <label><i class="fa-solid fa-flag"></i> Sa� �st Bayrak</label>
         <div class="upload-zone" style="padding:16px;text-align:center;cursor:pointer;min-height:90px;display:flex;align-items:center;justify-content:center" onclick="document.getElementById('setup-bayrak-input').click()">
           <div id="setup-bayrak-preview">${bayrakOnizleme}</div>
         </div>
@@ -183,13 +277,13 @@ async function modalAyarlar() {
       </div>
     </div>
     <div class="form-actions">
-      <button class="btn btn-secondary" onclick="closeModal()">İptal</button>
+      <button class="btn btn-secondary" onclick="closeModal()">�ptal</button>
       <button class="btn btn-primary" onclick="kurulumKaydet()"><i class="fa-solid fa-floppy-disk"></i> Kaydet</button>
     </div>
   `, true, 'gear');
 }
 
-// ─── STATE ───────────────────────────────────────────────────────────────────
+// ��� STATE �������������������������������������������������������������������
 const S = { page:'organizasyonlar', orgId:null, orgAd:'', orgYil:'' };
 
 const KURBAN_TURLERI = ['Udhiye','Adak','Akika','Vacip','Hedy','Sukur','Kiran','Temmettu','Ceza','Ihsar','Sadaka','Nafile','Olu','Kefaret','Sifa','Hacet','Fidye','Zekat','Nesike','Vesile','Atire'];
@@ -198,7 +292,7 @@ function kurbanTuruOptions(secili) {
   return KURBAN_TURLERI.map(t => '<option value="' + t + '"' + (secili===t?' selected':'') + '>' + t + '</option>').join('');
 }
 
-// ─── API ─────────────────────────────────────────────────────────────────────
+// ��� API ���������������������������������������������������������������������
 async function api(method, url, body) {
   const opts = { method, headers:{'Content-Type':'application/json'} };
   if (body) opts.body = JSON.stringify(body);
@@ -208,7 +302,7 @@ async function api(method, url, body) {
   return d;
 }
 
-// ─── TOAST ───────────────────────────────────────────────────────────────────
+// ��� TOAST �������������������������������������������������������������������
 function toast(msg, type='success') {
   const c = document.getElementById('toast-container');
   if (!c) {
@@ -222,7 +316,7 @@ function toast(msg, type='success') {
   setTimeout(() => t.remove(), 3200);
 }
 
-// ─── MODAL ───────────────────────────────────────────────────────────────────
+// ��� MODAL �������������������������������������������������������������������
 function openModal(title, html, large=false, icon='') {
   document.getElementById('modal-title').innerHTML = `${icon?`<i class="fa-solid fa-${icon}"></i>`:''}${title}`;
   document.getElementById('modal-body').innerHTML = html;
@@ -232,7 +326,7 @@ function openModal(title, html, large=false, icon='') {
 function closeModal() { document.getElementById('modal-overlay').classList.add('hidden'); }
 function closeModalOutside(e) { if (e.target===document.getElementById('modal-overlay')) closeModal(); }
 
-// ─── NAV ─────────────────────────────────────────────────────────────────────
+// ��� NAV ���������������������������������������������������������������������
 function showPage(page) {
   S.page = page;
   document.querySelectorAll('.sidebar-item').forEach(el =>
@@ -246,6 +340,10 @@ function showPage(page) {
   else if (page==='denetim')     renderDenetim();
   else if (page==='medya')       renderMedyaDeposu();
   else if (page==='pro')         renderProSayfasi();
+  else if (page==='veri-yukle')  renderVeriYukle();
+  else if (page==='video-isteyenler') renderVideoIsteyenler();
+  else if (page==='ayarlar')     renderAyarlarSayfasi();
+  else if (page==='veri-geri-yukle') renderVeriGeriYukle();
 }
 
 function setSidebarOrg(ad, yil) {
@@ -253,16 +351,16 @@ function setSidebarOrg(ad, yil) {
   document.getElementById('sidebar-org-sub').textContent  = yil ? `${yil} Yili` : 'Bir organizasyon secin';
 }
 
-// ─── YARDIMCI ────────────────────────────────────────────────────────────────
+// ��� YARDIMCI ����������������������������������������������������������������
 function esc(s) {
   if (!s) return '';
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 function para(v) { return v ? Number(v).toLocaleString('tr-TR') + ' TL' : '-'; }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// ORGANİZASYONLAR
-// ═══════════════════════════════════════════════════════════════════════════
+// ===========================================================================
+// ORGAN�ZASYONLAR
+// ===========================================================================
 async function renderOrganizasyonlar() {
   const m = document.getElementById('main-content');
   m.innerHTML = `
@@ -394,9 +492,9 @@ async function silOrg(id) {
   catch(e) { toast(e.message,'error'); }
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
+// ===========================================================================
 // KURBANLAR
-// ═══════════════════════════════════════════════════════════════════════════
+// ===========================================================================
 let _kurbanlar = [];
 
 async function renderKurbanlar() {
@@ -435,12 +533,12 @@ async function renderKurbanlar() {
         <table>
           <thead><tr>
             <th style="width:40px">#</th>
-            <th data-sort="kurban_no" onclick="sortKurbanlar('kurban_no')" style="cursor:pointer">No<span class="sort-icon"> ↑</span></th>
-            <th data-sort="tur" onclick="sortKurbanlar('tur')" style="cursor:pointer">Hayvan<span class="sort-icon"> ↕</span></th>
+            <th data-sort="kurban_no" onclick="sortKurbanlar('kurban_no')" style="cursor:pointer">No<span class="sort-icon"> ^</span></th>
+            <th data-sort="tur" onclick="sortKurbanlar('tur')" style="cursor:pointer">Hayvan<span class="sort-icon"> |</span></th>
             <th>Kurban Turu</th>
             <th>Kupe No</th>
-            <th data-sort="alis_fiyati" onclick="sortKurbanlar('alis_fiyati')" style="cursor:pointer">Alis Fiyati<span class="sort-icon"> ↕</span></th>
-            <th data-sort="dolu_hisse" onclick="sortKurbanlar('dolu_hisse')" style="cursor:pointer">Hisse Durumu<span class="sort-icon"> ↕</span></th>
+            <th data-sort="alis_fiyati" onclick="sortKurbanlar('alis_fiyati')" style="cursor:pointer">Alis Fiyati<span class="sort-icon"> |</span></th>
+            <th data-sort="dolu_hisse" onclick="sortKurbanlar('dolu_hisse')" style="cursor:pointer">Hisse Durumu<span class="sort-icon"> |</span></th>
             <th>Durum</th>
             <th>Kesim</th>
             <th>Islemler</th>
@@ -480,9 +578,9 @@ let _sortCol = 'kurban_no', _sortDir = 1;
 function sortKurbanlar(col) {
   if (_sortCol === col) _sortDir *= -1;
   else { _sortCol = col; _sortDir = 1; }
-  // Başlık oklarını güncelle
+  // Ba�l�k oklar�n� g�ncelle
   document.querySelectorAll('th[data-sort]').forEach(th => {
-    th.querySelector('.sort-icon').textContent = th.dataset.sort === _sortCol ? (_sortDir===1?' ↑':' ↓') : ' ↕';
+    th.querySelector('.sort-icon').textContent = th.dataset.sort === _sortCol ? (_sortDir===1?' ^':' v') : ' |';
   });
   filterKurbanlar();
 }
@@ -491,7 +589,7 @@ function filterKurbanlar() {
   const ara = (document.getElementById('k-ara')?.value||'').toLowerCase();
   let list = _kurbanlar.filter(k => !ara || String(k.kurban_no).includes(ara) || (k.kupe_no||'').toLowerCase().includes(ara));
 
-  // Sırala
+  // S�rala
   list = [...list].sort((a,b) => {
     let av = a[_sortCol], bv = b[_sortCol];
     if (typeof av === 'string') av = av.toLowerCase(), bv = (bv||'').toLowerCase();
@@ -649,9 +747,9 @@ async function silKurban(id) {
   catch(e) { toast(e.message,'error'); }
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// HİSSELER / BAĞIŞÇI EKLEME
-// ═══════════════════════════════════════════════════════════════════════════
+// ===========================================================================
+// H�SSELER / BA�I��I EKLEME
+// ===========================================================================
 async function modalHisseler(kurbanId, kurbanNo, tur) {
   const hisseler = await api('GET',`/kurbanlar/${kurbanId}/hisseler`);
   const dolu = hisseler.filter(h=>h.bagisci_adi).length;
@@ -666,7 +764,7 @@ async function modalHisseler(kurbanId, kurbanNo, tur) {
     <div class="hisse-grid">
       ${hisseler.map(h => hisseKart(h, kurbanId)).join('')}
     </div>`;
-  openModal(`Kurban #${kurbanNo} — Hisseler`, html, true, 'users');
+  openModal(`Kurban #${kurbanNo} � Hisseler`, html, true, 'users');
 }
 
 function hisseKart(h, kurbanId) {
@@ -688,7 +786,7 @@ function hisseKart(h, kurbanId) {
           </button>
         </div>
       ` : `
-        <div class="hisse-bos"><i class="fa-solid fa-user-plus"></i> Bos — Tikla ekle</div>
+        <div class="hisse-bos"><i class="fa-solid fa-user-plus"></i> Bos � Tikla ekle</div>
       `}    </div>`;
 }
 
@@ -726,10 +824,36 @@ async function modalBagisciDuzenle(hisseId, kurbanId) {
       </div>
       <div class="form-group">
         <label>Video Ister mi?</label>
-        <select id="fh-video">
+        <select id="fh-video" onchange="toggleVideoUpload()">
           <option value="0" ${!h.video_ister?'selected':''}>Hayir</option>
           <option value="1" ${h.video_ister?'selected':''}>Evet</option>
         </select>
+      </div>
+      <div class="form-group" style="grid-column:1/-1">
+        <label>Video Y�kleme <span style="color:var(--text3);font-weight:400">(Video isteyen ba�����lar i�in)</span></label>
+        <div id="video-upload-area" style="display:${h.video_ister ? 'block' : 'none'}">
+          ${h.video_url ? `
+            <div style="background:var(--bg4);border:1px solid var(--border2);border-radius:8px;padding:12px;margin-bottom:8px">
+              <div style="display:flex;align-items:center;gap:8px">
+                <i class="fa-solid fa-video" style="color:var(--green)"></i>
+                <span style="font-size:13px">Video y�klendi</span>
+                <a href="${h.video_url}" target="_blank" class="btn btn-secondary btn-sm" style="margin-left:auto">
+                  <i class="fa-solid fa-external-link"></i> G�r�nt�le
+                </a>
+                <button class="btn btn-danger btn-sm" onclick="videoSil(${hisseId})">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              </div>
+            </div>
+          ` : `
+            <div class="upload-zone" onclick="document.getElementById('hisse-video-input').click()"
+              style="padding:16px;text-align:center;cursor:pointer;min-height:80px;display:flex;align-items:center;justify-content:center;flex-direction:column">
+              <i class="fa-solid fa-video" style="font-size:20px;color:var(--text3);margin-bottom:6px"></i>
+              <div style="color:var(--text3);font-size:12px">Video y�kle (MP4, MOV, WEBM)</div>
+            </div>
+            <input type="file" id="hisse-video-input" accept="video/*" style="display:none" onchange="yukleHisseVideo(this.files[0], ${hisseId})"/>
+          `}
+        </div>
       </div>
       <div class="form-group" style="grid-column:1/-1">
         <label>Not</label>
@@ -741,7 +865,7 @@ async function modalBagisciDuzenle(hisseId, kurbanId) {
       <button class="btn btn-secondary" onclick="closeModal()">Iptal</button>
       <button class="btn btn-primary" onclick="kaydetBagisci(${hisseId},${kurbanId})"><i class="fa-solid fa-floppy-disk"></i> Kaydet</button>
     </div>`;
-  openModal(`Hisse ${h.hisse_no} — Bagisci Bilgileri`, html, false, 'user-pen');
+  openModal(`Hisse ${h.hisse_no} � Bagisci Bilgileri`, html, false, 'user-pen');
 }
 
 async function kaydetBagisci(hisseId, kurbanId) {
@@ -769,9 +893,84 @@ async function temizleHisse(hisseId, kurbanId) {
   } catch(e) { toast(e.message,'error'); }
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// BAĞIŞÇILAR
-// ═══════════════════════════════════════════════════════════════════════════
+function toggleVideoUpload() {
+  const videoIster = document.getElementById('fh-video').value === '1';
+  const uploadArea = document.getElementById('video-upload-area');
+  if (uploadArea) {
+    uploadArea.style.display = videoIster ? 'block' : 'none';
+  }
+}
+
+async function yukleHisseVideo(file, hisseId) {
+  if (!file) return;
+  
+  if (!file.type.startsWith('video/')) {
+    toast('Sadece video dosyalar� y�klenebilir', 'error');
+    return;
+  }
+  
+  const formData = new FormData();
+  formData.append('dosya', file);
+  formData.append('folder', `defterdar/hisse-${hisseId}`);
+  
+  try {
+    toast('Video y�kleniyor...');
+    const r = await fetch('/api/medya/upload', { method: 'POST', body: formData });
+    const data = await r.json();
+    
+    if (!r.ok) {
+      throw new Error(data.hata || 'Video y�klenemedi');
+    }
+    
+    // Hisse tablosuna video URL'ini kaydet
+    await api('PUT', `/hisseler/${hisseId}`, {
+      video_url: data.url,
+      video_public_id: data.public_id
+    });
+    
+    toast('Video y�klendi');
+  } catch(e) {
+    toast(e.message, 'error');
+  }
+}
+
+async function videoSil(hisseId) {
+  if (!confirm('Videoyu silmek istedi�inizden emin misiniz?')) return;
+  
+  try {
+    // �nce video URL'ini al
+    const hisseler = await api('GET', `/kurbanlar/${S.kurbanId}/hisseler`);
+    const h = hisseler.find(x => x.id === hisseId);
+    
+    if (h && h.video_public_id) {
+      // Cloudinary'den sil
+      await api('DELETE', '/medya/delete', {
+        public_id: h.video_public_id,
+        resource_type: 'video'
+      });
+    }
+    
+    // Hisse tablosundan video bilgilerini temizle
+    await api('PUT', `/hisseler/${hisseId}`, {
+      video_url: null,
+      video_public_id: null
+    });
+    
+    toast('Video silindi');
+    // Modal'� yenile
+    if (h) {
+      h.video_url = null;
+      h.video_public_id = null;
+      modalBagisci(hisseId, S.kurbanId, h);
+    }
+  } catch(e) {
+    toast(e.message, 'error');
+  }
+}
+
+// ===========================================================================
+// BA�I��ILAR
+// ===========================================================================
 async function renderBagiscilar() {
   const m = document.getElementById('main-content');
   const orgSmall = S.orgAd ? '<small>' + esc(S.orgAd) + '</small>' : '';
@@ -850,14 +1049,14 @@ function renderBagisciTablosu(list) {
 async function modalYeniBagisci() {
   if (!S.orgId) return toast('Once bir organizasyon secin', 'error');
 
-  // Mevcut kurban sayısını al → yeni kurban no = max + 1
+  // Mevcut kurban say�s�n� al � yeni kurban no = max + 1
   const kurbanlar = await api('GET', `/organizasyonlar/${S.orgId}/kurbanlar`);
   const org = (await api('GET', '/organizasyonlar')).find(o => o.id === S.orgId);
   const yeniNo = kurbanlar.length + 1;
 
   if (org && yeniNo > org.max_kurban) return toast('Maksimum kurban sayisina ulasildi', 'error');
 
-  openModal(`Bagisci Ekle — Kurban #${yeniNo}`, `
+  openModal(`Bagisci Ekle � Kurban #${yeniNo}`, `
     <div style="background:var(--bg4);border:1px solid var(--border2);border-radius:10px;padding:14px;margin-bottom:20px">
       <div style="font-size:12px;color:var(--text3);margin-bottom:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px">Kurban Bilgileri</div>
       <div class="form-grid" style="grid-template-columns:1fr 1fr 1fr;gap:10px">
@@ -897,7 +1096,7 @@ async function modalYeniBagisci() {
     </div>
   `, true, 'user-plus');
 
-  // Sayfa açılınca hemen büyükbaş için 7 hisse formunu göster
+  // Sayfa a��l�nca hemen b�y�kba� i�in 7 hisse formunu g�ster
   bagisciTurSecildi();
 }
 
@@ -982,16 +1181,16 @@ async function kaydetYeniBagisci() {
       tur, kurban_turu, kupe_no, alis_fiyati, kesen_kisi, hisseler
     });
     closeModal();
-    toast(`Kurban #${r.kurban_no} olusturuldu — ${doluSayi} bagisci kaydedildi`);
+    toast(`Kurban #${r.kurban_no} olusturuldu � ${doluSayi} bagisci kaydedildi`);
     await loadDashStats();
     await loadKurbanlar();
     tumBagiscilariGoster();
   } catch(e) { toast(e.message, 'error'); }
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
+// ===========================================================================
 // RAPORLAR
-// ═══════════════════════════════════════════════════════════════════════════
+// ===========================================================================
 async function renderRaporlar() {
   const m = document.getElementById('main-content');
   m.innerHTML = `
@@ -1021,7 +1220,7 @@ async function yukleRapor() {
 
   let html = '';
 
-  // Özet kartlar
+  // �zet kartlar
   html += '<div class="stats-grid" style="margin-bottom:20px">';
   html += '<div class="stat-card blue"><div class="stat-icon"><i class="fa-solid fa-cow"></i></div><div class="stat-value">' + ozet.toplam_kurban + '</div><div class="stat-label">Toplam Kurban</div></div>';
   html += '<div class="stat-card blue"><div class="stat-icon"><i class="fa-solid fa-cow"></i></div><div class="stat-value">' + ozet.buyukbas + '</div><div class="stat-label">Buyukbas</div></div>';
@@ -1061,7 +1260,7 @@ async function yukleRapor() {
   });
   html += '</tbody></table></div></div>';
 
-  // Bağışçı tablosu
+  // Ba����� tablosu
   html += '<div class="card">';
   html += '<div class="card-title"><i class="fa-solid fa-users"></i> Bagisci Listesi';
   html += '<button class="btn btn-secondary btn-sm" style="margin-left:auto" onclick="yazdir(\'bagiscilar\')"><i class="fa-solid fa-print"></i> Yazdir</button></div>';
@@ -1093,7 +1292,7 @@ function excelIndir() {
   downloadExcel('/api/organizasyonlar/' + S.orgId + '/excel', 'defterdar-rapor.xlsx');
 }
 
-// ─── YAZDIR FONKSİYONLARI ────────────────────────────────────────────────────
+// ��� YAZDIR FONKS�YONLARI ����������������������������������������������������
 
 function yazdir(tip) {
   if (!S.orgId) return toast('Once organizasyon secin', 'error');
@@ -1154,7 +1353,6 @@ function yazdirilabilirHTML(tip) {
 
 
 function kurbanYazdirHTML(kurbanNo, tur, hisseler, kurbanData) {
-  const isPro = _kullaniciSurum === 'pro' || _kullaniciRol === 'admin';
   const kurbanTuru = (kurbanData && kurbanData.kurban_turu) || 'Udhiye';
 
   const minSatir = tur === 'buyukbas' ? 7 : 1;
@@ -1168,7 +1366,7 @@ function kurbanYazdirHTML(kurbanNo, tur, hisseler, kurbanData) {
     rows += '</tr>';
   }
 
-  // Türk bayrağı SVG - her zaman sabit, dosyaya bağımlı değil
+  // T�rk bayra�� SVG - her zaman sabit, dosyaya ba��ml� de�il
   const turkBayrakSVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="140" height="93">
     <rect width="1200" height="800" fill="#E30A17"/>
     <circle cx="425" cy="400" r="200" fill="white"/>
@@ -1184,17 +1382,17 @@ function kurbanYazdirHTML(kurbanNo, tur, hisseler, kurbanData) {
     @page { margin: 12mm 15mm; size: A4; }
     * { box-sizing: border-box; }
     body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #fff; color: #000; }
-    .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
     .header-left { width: 140px; display: flex; align-items: center; }
-    .header-center { flex: 1; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px; }
-    .header-center img { height: 90px; max-width: 220px; object-fit: contain; }
-    .kurban-sayisi { font-size: 14px; color: #666; font-weight: 600; }
+    .header-center { flex: 1; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    .header-center img { height: 130px; max-width: 280px; object-fit: contain; }
+    .kurban-sayisi { font-size: 15px; color: #333; font-weight: 700; }
     .header-right { width: 140px; display: flex; align-items: center; justify-content: flex-end; }
     .header-right img { height: 93px; width: 140px; object-fit: contain; }
     table { width: 100%; border-collapse: collapse; margin-top: 8px; }
     th { border: 1.5px solid #000; padding: 10px 14px; text-align: left; font-size: 16px; font-weight: bold; background: #fff; }
     td { border: 1.5px solid #000; padding: 8px 14px; font-size: 16px; }
-    .footer { position: fixed; bottom: 12mm; left: 15mm; right: 15mm; text-align: center; font-size: ${isPro?'10px':'14px'}; color: ${isPro?'#888':'#333'}; border-top: 1px solid #ddd; padding-top: 6px; ${isPro?'':'font-weight: 600;'} }
+    .footer { position: fixed; bottom: 12mm; left: 15mm; right: 15mm; text-align: center; font-size: 10px; color: #aaa; border-top: 1px solid #eee; padding-top: 6px; }
     @media print { body { margin: 0; } }
   `;
 
@@ -1202,33 +1400,31 @@ function kurbanYazdirHTML(kurbanNo, tur, hisseler, kurbanData) {
     ? '<img src="' + bayrakSrc + '" alt="Bayrak" style="height:93px;width:140px;object-fit:contain" onerror="this.style.visibility=\'hidden\'"/>'
     : '';
 
-  const watermark = isPro ? 'Defterdar Muhasebe &mdash; defterdar.xyz' : 'defterdar.xyz - CMS Team';
-
   return '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Kurban #' + kurbanNo + '</title>' +
     '<style>' + printStyle + '</style></head><body>' +
     '<div class="header">' +
     '<div class="header-left">' + turkBayrakSVG + '</div>' +
     '<div class="header-center">' +
     '<img src="' + logoSrc + '" alt="Logo" onerror="this.style.visibility=\'hidden\'"/>' +
-    '<div class="kurban-sayisi">Kurban Sayısı: ' + kurbanNo + '</div>' +
+    '<div class="kurban-sayisi">Kurban Say�s�: ' + kurbanNo + '</div>' +
     '</div>' +
     '<div class="header-right">' + bayrakImg + '</div>' +
     '</div>' +
     '<table>' +
     '<thead><tr>' +
     '<th style="width:60px;text-align:center">No</th>' +
-    '<th>İsim Soyisim</th>' +
-    '<th style="width:140px;text-align:center">Kurban Türü</th>' +
+    '<th>�sim Soyisim</th>' +
+    '<th style="width:140px;text-align:center">Kurban T�r�</th>' +
     '</tr></thead>' +
     '<tbody>' + rows + '</tbody>' +
     '</table>' +
-    '<div class="footer">' + watermark + '</div>' +
+    '<div class="footer">Defterdar Muhasebe &mdash; defterdar.xyz</div>' +
     '</body></html>';
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// DENETİM MASASI
-// ═══════════════════════════════════════════════════════════════════════════
+// ===========================================================================
+// DENET�M MASASI
+// ===========================================================================
 async function renderDenetim() {
   // IP adresini sunucudan al
   let ipAdresleri = [];
@@ -1256,7 +1452,7 @@ async function renderDenetim() {
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px">
       <div class="card" style="grid-column:1/-1;border-color:rgba(16,185,129,0.3);background:rgba(16,185,129,0.05)">
-        <div class="card-title"><i class="fa-solid fa-wifi"></i> Ag Erisimi — WiFi'deki Cihazlar</div>
+        <div class="card-title"><i class="fa-solid fa-wifi"></i> Ag Erisimi � WiFi'deki Cihazlar</div>
         <table style="font-size:13px;width:100%">
           ${ipRows}
           <tr><td style="color:var(--text3);padding:7px 0;width:130px">Kullanim</td><td style="font-size:12px;color:var(--text2)">Ayni WiFi'deki telefon veya bilgisayardan tarayicida yukardaki adresi ac</td></tr>
@@ -1293,9 +1489,9 @@ async function renderDenetim() {
 }
 
 
-// ═══════════════════════════════════════════════════════════════════════════
-// ÇÖP KUTUSU
-// ═══════════════════════════════════════════════════════════════════════════
+// ===========================================================================
+// ��P KUTUSU
+// ===========================================================================
 async function renderCopKutusu() {
   const m = document.getElementById('main-content');
   m.innerHTML =
@@ -1374,7 +1570,7 @@ async function copBosalt() {
   } catch(e) { toast(e.message, 'error'); }
 }
 
-// ─── YAZDIR / EXCEL YARDIMCI ─────────────────────────────────────────────────
+// ��� YAZDIR / EXCEL YARDIMCI �������������������������������������������������
 async function printHTML(html) {
   if (window.electronAPI && window.electronAPI.printHTML) {
     await window.electronAPI.printHTML(html);
@@ -1404,7 +1600,7 @@ async function downloadExcel(url, filename) {
       else if (result && !result.ok && !result.error) toast('Iptal edildi');
       else toast('Hata: ' + (result && result.error || 'Bilinmeyen'), 'error');
     } else {
-      // Tarayıcı fallback
+      // Taray�c� fallback
       const r = await fetch(url);
       if (!r.ok) throw new Error('Sunucu hatasi');
       const blob = await r.blob();
@@ -1419,97 +1615,20 @@ async function downloadExcel(url, filename) {
   } catch(e) { toast('Excel indirilemedi: ' + e.message, 'error'); }
 }
 
-// ─── INIT ─────────────────────────────────────────────────────────────────────
+// ��� INIT ���������������������������������������������������������������������
 document.addEventListener('DOMContentLoaded', () => {
   showPage('organizasyonlar');
 
-  // Kapatma öncesi yedek
+  // Electron kapatma oncesi yedek uyarisi
   if (window.electronAPI && window.electronAPI.onBeforeClose) {
     window.electronAPI.onBeforeClose(() => {
-      modalKapatmaYedek();
+      modalCikisYedek();
     });
   }
 });
 
-async function modalKapatmaYedek() {
-  // Overlay oluştur
-  const overlay = document.createElement('div');
-  overlay.id = 'close-overlay';
-  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:99999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px)';
 
-  const box = document.createElement('div');
-  box.style.cssText = 'background:linear-gradient(135deg,#0d1220,#111827);border:1px solid #2a3347;border-radius:16px;padding:32px;max-width:460px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.6)';
-
-  const orgList = S.orgId ? [{ id: S.orgId, ad: S.orgAd }] : [];
-  let orgOpts = '<option value="">-- Organizasyon secin --</option>';
-  try {
-    const orgs = await api('GET', '/organizasyonlar');
-    orgOpts = orgs.map(o => '<option value="' + o.id + '"' + (o.id === S.orgId ? ' selected' : '') + '>' + esc(o.ad) + ' (' + o.yil + ')</option>').join('');
-  } catch(e) {}
-
-  box.innerHTML =
-    '<div style="font-size:40px;margin-bottom:12px">&#128190;</div>' +
-    '<div style="font-size:18px;font-weight:800;color:#e2e8f0;margin-bottom:8px">Kapatmadan Once Yedek Al</div>' +
-    '<div style="font-size:13px;color:#94a3b8;margin-bottom:20px;line-height:1.6">Uygulama kapatilmadan once verilerinizi yedeklemek ister misiniz?<br>Yedek Excel formatinda kaydedilecektir.</div>' +
-    '<div style="margin-bottom:16px">' +
-    '<select id="close-org-select" style="width:100%;background:#1a2235;border:1px solid #2a3347;border-radius:8px;padding:9px 12px;color:#e2e8f0;font-size:13px;outline:none">' +
-    orgOpts + '</select></div>' +
-    '<div style="display:flex;gap:10px;justify-content:center">' +
-    '<button id="btn-yedek-al" style="background:linear-gradient(135deg,#4f7ef8,#3d6ef0);color:#fff;border:none;border-radius:10px;padding:11px 24px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px"><i class="fa-solid fa-floppy-disk"></i> Yedekle ve Kapat</button>' +
-    '<button id="btn-yedeksiz-kapat" style="background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.3);border-radius:10px;padding:11px 24px;font-size:14px;font-weight:600;cursor:pointer">Yedeksiz Kapat</button>' +
-    '<button id="btn-iptal" style="background:#1a2235;color:#94a3b8;border:1px solid #2a3347;border-radius:10px;padding:11px 24px;font-size:14px;cursor:pointer">Iptal</button>' +
-    '</div>' +
-    '<div id="close-status" style="margin-top:12px;font-size:12px;color:#94a3b8;min-height:18px"></div>';
-
-  overlay.appendChild(box);
-  document.body.appendChild(overlay);
-
-  document.getElementById('btn-iptal').onclick = () => {
-    document.body.removeChild(overlay);
-  };
-
-  document.getElementById('btn-yedeksiz-kapat').onclick = async () => {
-    if (confirm('Yedek almadan kapatmak istediginizden emin misiniz?')) {
-      await window.electronAPI.forceQuit();
-    }
-  };
-
-  document.getElementById('btn-yedek-al').onclick = async () => {
-    const orgId = document.getElementById('close-org-select').value;
-    if (!orgId) {
-      document.getElementById('close-status').textContent = 'Lutfen bir organizasyon secin.';
-      document.getElementById('close-status').style.color = '#ef4444';
-      return;
-    }
-    const statusEl = document.getElementById('close-status');
-    statusEl.textContent = 'Yedek hazirlaniyor...';
-    statusEl.style.color = '#4f7ef8';
-    document.getElementById('btn-yedek-al').disabled = true;
-
-    const tarih = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
-    const filename = 'defterdar-yedek-' + tarih + '.xlsx';
-    const excelUrl = 'http://127.0.0.1:4500/api/organizasyonlar/' + orgId + '/excel';
-
-    const result = await window.electronAPI.backupAndQuit(excelUrl);
-    if (result && result.ok) {
-      statusEl.textContent = 'Yedek kaydedildi: ' + result.path;
-      statusEl.style.color = '#10b981';
-      setTimeout(async () => { await window.electronAPI.forceQuit(); }, 1200);
-    } else if (result && result.canceled) {
-      statusEl.textContent = 'Kaydetme iptal edildi. Tekrar deneyin.';
-      statusEl.style.color = '#f59e0b';
-      document.getElementById('btn-yedek-al').disabled = false;
-    } else {
-      statusEl.textContent = 'Hata: ' + (result && result.error || 'Bilinmeyen hata');
-      statusEl.style.color = '#ef4444';
-      document.getElementById('btn-yedek-al').disabled = false;
-    }
-  };
-}
-
-// ═══════════════════════════════════════════════════════════════════════════
-// BAĞIŞÇI YAZDIR / EXCEL
-// ═══════════════════════════════════════════════════════════════════════════
+// --- BAGISCI YAZDIR / EXCEL ---
 
 function yazdirBagiscilar() {
   if (!S.orgId) return toast('Once organizasyon secin', 'error');
@@ -1554,11 +1673,11 @@ function yazdirBagiscilar() {
     '<img src="' + logoSrc + '" alt="Logo" onerror="this.style.visibility=\'hidden\'"/>' +
     '<div class="header-info">' +
     '<div class="title">' + esc(_kullaniciAdi || 'Kullanici') + '</div>' +
-    '<div class="sub">Bağışçı Listesi &mdash; ' + new Date().toLocaleDateString('tr-TR') + '</div>' +
+    '<div class="sub">Ba����� Listesi &mdash; ' + new Date().toLocaleDateString('tr-TR') + '</div>' +
     '</div>' +
     '<div class="header-right">Organizasyon: <strong>' + esc(S.orgAd) + '</strong><br>' + S.orgYil + '</div>' +
     '</div>' +
-    '<table><thead><tr><th>#</th><th>Bağışçı Adı</th><th>Telefon</th><th>Kimin Adına</th><th>Kurban No</th><th>Hisse</th><th>Tür</th><th>Ödeme</th><th>Video</th></tr></thead>' +
+    '<table><thead><tr><th>#</th><th>Ba����� Ad�</th><th>Telefon</th><th>Kimin Ad�na</th><th>Kurban No</th><th>Hisse</th><th>T�r</th><th>�deme</th><th>Video</th></tr></thead>' +
     '<tbody>' + rows + '</tbody></table>' +
     '<div class="footer"><span>Defterdar Muhasebe &mdash; defterdar.xyz</span><span>' + new Date().toLocaleString('tr-TR') + '</span></div>' +
     '</body></html>';
@@ -1571,9 +1690,9 @@ async function excelBagiscilarIndir() {
   downloadExcel('/api/organizasyonlar/' + S.orgId + '/excel?sayfa=bagiscilar', 'bagiscilar.xlsx');
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// KURBAN SATIR BUTONLARI — Yazdır + Excel + Tümünü
-// ═══════════════════════════════════════════════════════════════════════════
+// ===========================================================================
+// KURBAN SATIR BUTONLARI � Yazd�r + Excel + T�m�n�
+// ===========================================================================
 
 async function yazdirKurbanSatir(kurbanId) {
   const k = _kurbanlar.find(x => x.id === kurbanId);
@@ -1589,7 +1708,7 @@ async function excelKurbanSatir(kurbanId) {
 async function tumKurbanlariYazdir() {
   if (!S.orgId) return toast('Once organizasyon secin', 'error');
   if (!_kurbanlar.length) return toast('Kurban bulunamadi', 'error');
-  toast('Hazirlanıyor...');
+  toast('Hazirlan�yor...');
   let allHtml = '<!DOCTYPE html><html><head><meta charset="UTF-8"><style>body{font-family:Arial,sans-serif;font-size:11px;margin:10px}@media print{.pb{page-break-after:always}}</style></head><body>';
   for (const k of _kurbanlar) {
     const hisseler = await api('GET', '/kurbanlar/' + k.id + '/hisseler');
@@ -1613,9 +1732,230 @@ async function tumKurbanlariExcel() {
 }
 
 
-// ═══════════════════════════════════════════════════════════════════════════
+// ===========================================================================
+// VER� Y�KLEME
+// ===========================================================================
+async function renderVeriYukle() {
+  const m = document.getElementById('main-content');
+  m.innerHTML = `
+    <div class="page-header">
+      <div class="page-title">
+        <div class="icon-wrap"><i class="fa-solid fa-file-import"></i></div>
+        Veri Y�kleme
+        <small>Excel Dosyas�ndan ��e Aktar</small>
+      </div>
+    </div>
+
+    <div class="card" style="background:rgba(16,185,129,0.05);border-color:rgba(16,185,129,0.3);margin-bottom:16px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <i class="fa-solid fa-info-circle" style="font-size:24px;color:var(--green)"></i>
+        <div style="flex:1">
+          <div style="font-weight:600;margin-bottom:4px">Excel dosyas�ndan organizasyon, kurban ve ba����� verilerini y�kleyebilirsiniz</div>
+          <div style="font-size:12px;color:var(--text3)">Mevcut veriler korunur, sadece yeni veriler eklenir. Ayn� organizasyon/kurban varsa atlan�r.</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div class="card">
+        <div class="card-title"><i class="fa-solid fa-upload"></i> Dosya Y�kle</div>
+        <div class="upload-zone" id="veri-upload-zone" onclick="document.getElementById('veri-file-input').click()"
+          ondragover="event.preventDefault();this.classList.add('drag-over')"
+          ondragleave="this.classList.remove('drag-over')"
+          ondrop="handleVeriDrop(event)">
+          <i class="fa-solid fa-file-excel"></i>
+          <p>Excel dosyas�n� buraya s�r�kle veya t�kla</p>
+          <small>Desteklenen format: .xlsx</small>
+          <div class="upload-progress" id="veri-upload-progress">
+            <div class="upload-progress-fill" id="veri-upload-progress-fill" style="width:0%"></div>
+          </div>
+        </div>
+        <input type="file" id="veri-file-input" style="display:none"
+          accept=".xlsx,.xls"
+          onchange="yukleVeriDosyasi(this.files[0])"/>
+        <div id="veri-upload-result" style="margin-top:12px"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><i class="fa-solid fa-table"></i> Excel Format�</div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.6">
+          <strong>Sayfa 1: Organizasyonlar</strong><br>
+          S�tunlar: Ad, Y�l, Max Kurban, B�y�kba� Fiyat, K���kba� Fiyat, A��klama<br><br>
+          
+          <strong>Sayfa 2: Kurbanlar</strong><br>
+          S�tunlar: Org Ad, Org Y�l, Kurban No, T�r, Kurban T�r�, K�pe No, Al�� Fiyat�, Kesen Ki�i<br><br>
+          
+          <strong>Sayfa 3: Ba�����lar</strong><br>
+          S�tunlar: Org Ad, Org Y�l, Kurban No, Hisse No, Ba����� Ad�, Telefon, Kimin Ad�na, �deme, Video
+        </div>
+        <div class="form-actions" style="margin-top:12px">
+          <button class="btn btn-secondary" onclick="indirOrnek()">
+            <i class="fa-solid fa-download"></i> �rnek Dosya �ndir
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" id="veri-sonuc" style="display:none">
+      <div class="card-title"><i class="fa-solid fa-check-circle"></i> Y�kleme Sonucu</div>
+      <div id="veri-sonuc-icerik"></div>
+    </div>`;
+}
+
+function handleVeriDrop(e) {
+  e.preventDefault();
+  document.getElementById('veri-upload-zone').classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if (file) yukleVeriDosyasi(file);
+}
+
+async function yukleVeriDosyasi(file) {
+  if (!file) return;
+  
+  if (!file.name.endsWith('.xlsx') && !file.name.endsWith('.xls')) {
+    toast('Sadece Excel dosyalar� (.xlsx, .xls) desteklenir', 'error');
+    return;
+  }
+  
+  const prog = document.getElementById('veri-upload-progress');
+  const fill = document.getElementById('veri-upload-progress-fill');
+  const result = document.getElementById('veri-upload-result');
+  const sonuc = document.getElementById('veri-sonuc');
+  
+  if (prog) { prog.style.display = 'block'; fill.style.width = '10%'; }
+
+  const formData = new FormData();
+  formData.append('dosya', file);
+
+  try {
+    if (fill) fill.style.width = '40%';
+    const r = await fetch('/api/veri-yukle', { method: 'POST', body: formData });
+    if (fill) fill.style.width = '90%';
+    const data = await r.json();
+    
+    if (!r.ok) {
+      throw new Error(data.hata || 'Y�kleme ba�ar�s�z');
+    }
+    
+    if (fill) fill.style.width = '100%';
+    
+    if (result) result.innerHTML = `
+      <div class="badge badge-green" style="font-size:12px;padding:8px 14px">
+        <i class="fa-solid fa-circle-check"></i> ${data.mesaj}
+      </div>`;
+    
+    // Sonu� detay�n� g�ster
+    if (sonuc) {
+      sonuc.style.display = 'block';
+      const detay = data.detay;
+      let html = `
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px">
+          <div class="stat-card green">
+            <div class="stat-icon"><i class="fa-solid fa-layer-group"></i></div>
+            <div class="stat-value">${detay.organizasyonlar}</div>
+            <div class="stat-label">Organizasyon</div>
+          </div>
+          <div class="stat-card blue">
+            <div class="stat-icon"><i class="fa-solid fa-cow"></i></div>
+            <div class="stat-value">${detay.kurbanlar}</div>
+            <div class="stat-label">Kurban</div>
+          </div>
+          <div class="stat-card purple">
+            <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
+            <div class="stat-value">${detay.hisseler}</div>
+            <div class="stat-label">Ba�����</div>
+          </div>
+        </div>`;
+      
+      if (detay.errors && detay.errors.length > 0) {
+        html += `<div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:8px;padding:12px">
+          <div style="font-weight:600;color:var(--red);margin-bottom:8px">
+            <i class="fa-solid fa-triangle-exclamation"></i> Hatalar (${detay.errors.length})
+          </div>
+          <div style="font-size:12px;color:var(--text2);max-height:120px;overflow-y:auto">
+            ${detay.errors.map(e => `<div>� ${esc(e)}</div>`).join('')}
+          </div>
+        </div>`;
+      }
+      
+      document.getElementById('veri-sonuc-icerik').innerHTML = html;
+    }
+    
+    toast('Veri y�kleme tamamland�');
+    setTimeout(() => { 
+      if (prog) prog.style.display = 'none';
+      renderOrganizasyonlar(); 
+    }, 2000);
+  } catch(e) {
+    if (result) result.innerHTML = `<div class="badge badge-red" style="font-size:12px;padding:8px 14px"><i class="fa-solid fa-circle-xmark"></i> ${e.message}</div>`;
+    toast(e.message, 'error');
+    if (prog) prog.style.display = 'none';
+  }
+}
+
+async function indirOrnek() {
+  // �rnek Excel dosyas� olu�tur
+  const ExcelJS = window.ExcelJS || await import('https://cdn.skypack.dev/exceljs');
+  const wb = new ExcelJS.Workbook();
+  
+  // Organizasyonlar sayfas�
+  const wsOrg = wb.addWorksheet('Organizasyonlar');
+  wsOrg.columns = [
+    { header: 'Ad', key: 'ad', width: 20 },
+    { header: 'Y�l', key: 'yil', width: 8 },
+    { header: 'Max Kurban', key: 'max_kurban', width: 12 },
+    { header: 'B�y�kba� Fiyat', key: 'buyukbas_fiyat', width: 15 },
+    { header: 'K���kba� Fiyat', key: 'kucukbas_fiyat', width: 15 },
+    { header: 'A��klama', key: 'aciklama', width: 25 }
+  ];
+  wsOrg.addRow({ ad: 'Kurban Organizasyonu 2025', yil: 2025, max_kurban: 50, buyukbas_fiyat: 3500, kucukbas_fiyat: 500, aciklama: '�rnek organizasyon' });
+  
+  // Kurbanlar sayfas�
+  const wsKurban = wb.addWorksheet('Kurbanlar');
+  wsKurban.columns = [
+    { header: 'Org Ad', key: 'org_ad', width: 20 },
+    { header: 'Org Y�l', key: 'org_yil', width: 8 },
+    { header: 'Kurban No', key: 'kurban_no', width: 10 },
+    { header: 'T�r', key: 'tur', width: 12 },
+    { header: 'Kurban T�r�', key: 'kurban_turu', width: 12 },
+    { header: 'K�pe No', key: 'kupe_no', width: 12 },
+    { header: 'Al�� Fiyat�', key: 'alis_fiyati', width: 12 },
+    { header: 'Kesen Ki�i', key: 'kesen_kisi', width: 20 }
+  ];
+  wsKurban.addRow({ org_ad: 'Kurban Organizasyonu 2025', org_yil: 2025, kurban_no: 1, tur: 'buyukbas', kurban_turu: 'Udhiye', kupe_no: 'K001', alis_fiyati: 15000, kesen_kisi: 'Ahmet Kasap' });
+  
+  // Ba�����lar sayfas�
+  const wsBagisci = wb.addWorksheet('Ba�����lar');
+  wsBagisci.columns = [
+    { header: 'Org Ad', key: 'org_ad', width: 20 },
+    { header: 'Org Y�l', key: 'org_yil', width: 8 },
+    { header: 'Kurban No', key: 'kurban_no', width: 10 },
+    { header: 'Hisse No', key: 'hisse_no', width: 8 },
+    { header: 'Ba����� Ad�', key: 'bagisci_adi', width: 20 },
+    { header: 'Telefon', key: 'telefon', width: 15 },
+    { header: 'Kimin Ad�na', key: 'kimin_adina', width: 20 },
+    { header: '�deme', key: 'odeme', width: 10 },
+    { header: 'Video', key: 'video', width: 8 }
+  ];
+  wsBagisci.addRow({ org_ad: 'Kurban Organizasyonu 2025', org_yil: 2025, kurban_no: 1, hisse_no: 1, bagisci_adi: 'Ali Veli', telefon: '0555 123 4567', kimin_adina: 'Fatma Veli', odeme: '�dendi', video: 'Evet' });
+  
+  // Dosyay� indir
+  const buffer = await wb.xlsx.writeBuffer();
+  const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'defterdar-ornek-veri.xlsx';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  toast('�rnek dosya indirildi');
+}
+
+// ===========================================================================
 // TEMA TOGGLE
-// ═══════════════════════════════════════════════════════════════════════════
+// ===========================================================================
 function toggleTheme() {
   const isLight = document.body.classList.toggle('light');
   const icon = document.getElementById('theme-icon');
@@ -1623,7 +1963,7 @@ function toggleTheme() {
   localStorage.setItem('defterdar-tema', isLight ? 'light' : 'dark');
 }
 
-// Sayfa yüklenince kayıtlı temayı uygula
+// Sayfa y�klenince kay�tl� temay� uygula
 (function initTheme() {
   const saved = localStorage.getItem('defterdar-tema');
   if (saved === 'light') {
@@ -1633,11 +1973,10 @@ function toggleTheme() {
   }
 })();
 
-// ═══════════════════════════════════════════════════════════════════════════
+// ===========================================================================
 // MEDYA DEPOSU (Cloudinary)
-// ═══════════════════════════════════════════════════════════════════════════
+// ===========================================================================
 async function renderMedyaDeposu() {
-  const isPro = _kullaniciSurum === 'pro' || _kullaniciRol === 'admin';
   const m = document.getElementById('main-content');
   m.innerHTML = `
     <div class="page-header">
@@ -1645,7 +1984,6 @@ async function renderMedyaDeposu() {
         <div class="icon-wrap"><i class="fa-solid fa-photo-film"></i></div>
         Medya Deposu
         <small>Cloudinary</small>
-        ${!isPro?'<span class="badge badge-yellow" style="margin-left:10px"><i class="fa-solid fa-lock"></i> Maks. 3 dosya</span>':'<span class="badge badge-green" style="margin-left:10px"><i class="fa-solid fa-infinity"></i> Sinirsiz</span>'}
       </div>
       <div style="display:flex;gap:8px">
         <select id="medya-folder" onchange="loadMedyaListesi()" style="background:var(--bg4);border:1px solid var(--border2);border-radius:8px;padding:8px 12px;color:var(--text);font-size:13px;outline:none">
@@ -1659,16 +1997,6 @@ async function renderMedyaDeposu() {
         </button>
       </div>
     </div>
-
-    ${!isPro?`<div class="card" style="background:rgba(245,158,11,0.1);border-color:rgba(245,158,11,0.3);margin-bottom:16px">
-      <div style="display:flex;align-items:center;gap:12px">
-        <i class="fa-solid fa-info-circle" style="font-size:24px;color:var(--yellow)"></i>
-        <div style="flex:1">
-          <div style="font-weight:600;margin-bottom:4px">Normal surumde maksimum 3 dosya yukleyebilirsiniz</div>
-          <div style="font-size:12px;color:var(--text3)">Sinirsiz medya deposu icin <a href="#" onclick="showPage('pro');return false" style="color:var(--accent)">Defterdar PRO</a>'ya gecin</div>
-        </div>
-      </div>
-    </div>`:''}
 
     <div class="card">
       <div class="card-title"><i class="fa-solid fa-cloud"></i> Yuklenen Dosyalar</div>
@@ -1773,18 +2101,6 @@ function handleMedyaDrop(e) {
 async function yukleSeciliDosya(file, folder) {
   if (!file) return;
   
-  // PRO kontrolü
-  const isPro = _kullaniciSurum === 'pro' || _kullaniciRol === 'admin';
-  if (!isPro) {
-    try {
-      const list = await api('GET', `/medya/list?folder=${encodeURIComponent(folder)}`);
-      if (list.length >= 3) {
-        toast('Normal surumde maksimum 3 dosya yukleyebilirsiniz. PRO surume gecin!', 'error');
-        return;
-      }
-    } catch(e) {}
-  }
-  
   const prog = document.getElementById('upload-progress');
   const fill = document.getElementById('upload-progress-fill');
   const result = document.getElementById('upload-result');
@@ -1800,11 +2116,6 @@ async function yukleSeciliDosya(file, folder) {
     if (fill) fill.style.width = '90%';
     const data = await r.json();
     if (!r.ok) {
-      if (data.proGerekli) {
-        toast('Bu ozellik icin PRO gerekli!', 'error');
-        setTimeout(() => showPage('pro'), 1000);
-        return;
-      }
       throw new Error(data.hata || 'Yuklenemedi');
     }
     if (fill) fill.style.width = '100%';
@@ -1820,10 +2131,10 @@ async function yukleSeciliDosya(file, folder) {
   }
 }
 
-// Hisse modalına medya yükleme butonu ekle (hisse kaydedilince çağrılabilir)
+// Hisse modal�na medya y�kleme butonu ekle (hisse kaydedilince �a�r�labilir)
 async function modalHisseMedya(hisseId, kurbanNo, hisseNo) {
   const folder = `defterdar/kurban-${kurbanNo}/hisse-${hisseNo}`;
-  openModal(`Kurban #${kurbanNo} Hisse ${hisseNo} — Medya`, `
+  openModal(`Kurban #${kurbanNo} Hisse ${hisseNo} � Medya`, `
     <div class="upload-zone" id="upload-zone" onclick="document.getElementById('hisse-file-input').click()"
       ondragover="event.preventDefault();this.classList.add('drag-over')"
       ondragleave="this.classList.remove('drag-over')"
@@ -1844,6 +2155,119 @@ async function modalHisseMedya(hisseId, kurbanNo, hisseNo) {
     </div>`, false, 'video');
 }
 
+// ��� MEDYA DEPOSU � V�DEO Y�KLEME (Ba����� Se�imli) �������������������������
+async function modalVideoYukle() {
+  if (!S.orgId) return toast('�nce bir organizasyon se�in', 'error');
+
+  // Video isteyen ba�����lar� getir
+  let bagiscilar = [];
+  try {
+    bagiscilar = await api('GET', `/organizasyonlar/${S.orgId}/video-isteyenler`);
+  } catch(e) {}
+
+  const bagisciOpts = bagiscilar.length
+    ? bagiscilar.map(h =>
+        `<option value="${h.id}" data-kurban="${h.kurban_no}" data-hisse="${h.hisse_no}">
+          Kurban #${h.kurban_no} Hisse ${h.hisse_no} � ${esc(h.bagisci_adi)} ${h.bagisci_telefon ? '(' + esc(h.bagisci_telefon) + ')' : ''} ${h.video_url ? '?' : ''}
+        </option>`
+      ).join('')
+    : '<option value="">Video isteyen ba����� bulunamad�</option>';
+
+  openModal('Video Y�kle � Ba����� Se�', `
+    <div class="form-group" style="margin-bottom:16px">
+      <label><i class="fa-solid fa-users"></i> Hangi Ba�����ya Y�klenecek?</label>
+      <select id="video-bagisci-select" style="width:100%" onchange="videoHisseSecildi()">
+        <option value="">-- Ba����� se�in --</option>
+        ${bagisciOpts}
+      </select>
+      <div style="font-size:11px;color:var(--text3);margin-top:4px">Sadece "Video �stiyor" olarak i�aretlenen ba�����lar listelenir</div>
+    </div>
+    <div id="video-bagisci-bilgi" style="display:none;background:var(--bg4);border:1px solid var(--border2);border-radius:8px;padding:12px;margin-bottom:16px;font-size:13px"></div>
+    <div class="upload-zone" id="video-upload-zone" onclick="document.getElementById('video-yukle-input').click()"
+      ondragover="event.preventDefault();this.classList.add('drag-over')"
+      ondragleave="this.classList.remove('drag-over')"
+      ondrop="handleVideoDrop(event)">
+      <i class="fa-solid fa-video" style="font-size:28px;color:var(--text3);margin-bottom:8px"></i>
+      <p style="margin:0;color:var(--text3)">Video dosyas�n� buraya s�r�kle veya t�kla</p>
+      <small style="color:var(--text3)">MP4, MOV, WEBM (maks. 100MB)</small>
+      <div class="upload-progress" id="video-upload-progress" style="display:none;margin-top:10px">
+        <div class="upload-progress-fill" id="video-upload-progress-fill" style="width:0%"></div>
+      </div>
+    </div>
+    <input type="file" id="video-yukle-input" style="display:none" accept="video/*" onchange="yukleVideoIcinBagisci(this.files[0])"/>
+    <div id="video-upload-result" style="margin-top:12px"></div>
+    <div class="form-actions">
+      <button class="btn btn-secondary" onclick="closeModal()">Kapat</button>
+    </div>
+  `, false, 'video');
+}
+
+function videoHisseSecildi() {
+  const sel = document.getElementById('video-bagisci-select');
+  const opt = sel.options[sel.selectedIndex];
+  const bilgi = document.getElementById('video-bagisci-bilgi');
+  if (!sel.value) { bilgi.style.display = 'none'; return; }
+  const kurbanNo = opt.dataset.kurban;
+  const hisseNo = opt.dataset.hisse;
+  bilgi.style.display = 'block';
+  bilgi.innerHTML = `<i class="fa-solid fa-info-circle" style="color:var(--accent)"></i> Kurban <strong>#${kurbanNo}</strong> � Hisse <strong>${hisseNo}</strong> i�in video y�klenecek`;
+}
+
+function handleVideoDrop(e) {
+  e.preventDefault();
+  document.getElementById('video-upload-zone').classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if (file) yukleVideoIcinBagisci(file);
+}
+
+async function yukleVideoIcinBagisci(file) {
+  if (!file) return;
+  const hisseId = document.getElementById('video-bagisci-select').value;
+  if (!hisseId) {
+    toast('�nce bir ba����� se�in', 'error');
+    return;
+  }
+  if (!file.type.startsWith('video/')) {
+    toast('Sadece video dosyalar� y�klenebilir', 'error');
+    return;
+  }
+
+  const prog = document.getElementById('video-upload-progress');
+  const fill = document.getElementById('video-upload-progress-fill');
+  const result = document.getElementById('video-upload-result');
+  if (prog) { prog.style.display = 'block'; fill.style.width = '10%'; }
+
+  const formData = new FormData();
+  formData.append('dosya', file);
+  formData.append('folder', `defterdar/hisse-${hisseId}`);
+
+  try {
+    if (fill) fill.style.width = '40%';
+    const r = await fetch('/api/medya/upload', { method: 'POST', body: formData });
+    if (fill) fill.style.width = '90%';
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.hata || 'Y�klenemedi');
+    if (fill) fill.style.width = '100%';
+
+    // Hisse tablosuna video URL'ini kaydet
+    await api('PUT', `/hisseler/${hisseId}`, {
+      video_url: data.url,
+      video_public_id: data.public_id
+    });
+
+    if (result) result.innerHTML = `
+      <div class="badge badge-green" style="font-size:12px;padding:8px 14px">
+        <i class="fa-solid fa-circle-check"></i> Video y�klendi ve ba�����ya atand�!
+      </div>`;
+    toast('Video y�klendi');
+    setTimeout(() => closeModal(), 1500);
+  } catch(e) {
+    if (result) result.innerHTML = `<div class="badge badge-red" style="font-size:12px;padding:8px 14px"><i class="fa-solid fa-circle-xmark"></i> ${e.message}</div>`;
+    toast(e.message, 'error');
+    if (prog) prog.style.display = 'none';
+  }
+}
+
 function handleHisseDrop(e, folder) {
   e.preventDefault();
   document.getElementById('upload-zone').classList.remove('drag-over');
@@ -1852,139 +2276,460 @@ function handleHisseDrop(e, folder) {
 }
 
 
-// ═══════════════════════════════════════════════════════════════════════════
-// DEFTERDAR PRO
-// ═══════════════════════════════════════════════════════════════════════════
+// ===========================================================================
+// DEFTERDAR PRO � Dosyalar duruyor, ileride kullan�lacak
+// ===========================================================================
 async function renderProSayfasi() {
-  const isPro = _kullaniciSurum === 'pro' || _kullaniciRol === 'admin';
   const m = document.getElementById('main-content');
-  
   m.innerHTML = `
     <div class="page-header">
       <div class="page-title">
         <div class="icon-wrap" style="background:linear-gradient(135deg,#f59e0b,#d97706)"><i class="fa-solid fa-crown"></i></div>
         Defterdar PRO
-        ${isPro?'<span class="badge badge-green" style="margin-left:10px"><i class="fa-solid fa-check"></i> Aktif</span>':''}
+        <span class="badge badge-green" style="margin-left:10px"><i class="fa-solid fa-infinity"></i> S�n�rs�z</span>
       </div>
     </div>
-
-    ${isPro ? `
-      <div class="card" style="background:linear-gradient(135deg,rgba(245,158,11,0.1),rgba(217,118,6,0.05));border-color:rgba(245,158,11,0.3)">
-        <div style="text-align:center;padding:20px">
-          <div style="font-size:48px;margin-bottom:12px">🎉</div>
-          <div style="font-size:20px;font-weight:800;color:var(--yellow);margin-bottom:8px">Defterdar PRO Aktif!</div>
-          <div style="font-size:14px;color:var(--text2)">Tum PRO ozelliklere erisim sagliyorsunuz</div>
-        </div>
+    <div class="card" style="background:linear-gradient(135deg,rgba(16,185,129,0.1),rgba(16,185,129,0.05));border-color:rgba(16,185,129,0.3)">
+      <div style="text-align:center;padding:20px">
+        <div style="font-size:48px;margin-bottom:12px">??</div>
+        <div style="font-size:20px;font-weight:800;color:var(--green);margin-bottom:8px">T�m �zellikler Aktif!</div>
+        <div style="font-size:14px;color:var(--text2)">S�n�rs�z ba�����, s�n�rs�z medya, t�m �zellikler a��k.</div>
       </div>
-    ` : ''}
-
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px">
-      <div class="card">
-        <div class="card-title"><i class="fa-solid fa-star" style="color:var(--yellow)"></i> Normal Surum Ozellikleri</div>
-        <ul style="list-style:none;padding:0;margin:0">
-          <li style="padding:8px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px">
-            <i class="fa-solid fa-check" style="color:var(--green)"></i> Organizasyon yonetimi
-          </li>
-          <li style="padding:8px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px">
-            <i class="fa-solid fa-check" style="color:var(--green)"></i> Kurban ve hisse takibi
-          </li>
-          <li style="padding:8px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px">
-            <i class="fa-solid fa-check" style="color:var(--green)"></i> Bagisci yonetimi (maks. 100)
-          </li>
-          <li style="padding:8px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px">
-            <i class="fa-solid fa-check" style="color:var(--green)"></i> Raporlar ve Excel
-          </li>
-          <li style="padding:8px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px">
-            <i class="fa-solid fa-check" style="color:var(--green)"></i> Yazdirma (watermark ile)
-          </li>
-          <li style="padding:8px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px">
-            <i class="fa-solid fa-check" style="color:var(--green)"></i> Medya deposu (maks. 3 dosya)
-          </li>
-          <li style="padding:8px 0;display:flex;align-items:center;gap:8px">
-            <i class="fa-solid fa-check" style="color:var(--green)"></i> Cop kutusu ve denetim
-          </li>
-        </ul>
-      </div>
-
-      <div class="card" style="border-color:rgba(245,158,11,0.4);background:linear-gradient(135deg,rgba(245,158,11,0.05),transparent)">
-        <div class="card-title"><i class="fa-solid fa-crown" style="color:var(--yellow)"></i> PRO Surum Ozellikleri</div>
-        <ul style="list-style:none;padding:0;margin:0">
-          <li style="padding:8px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px">
-            <i class="fa-solid fa-star" style="color:var(--yellow)"></i> <strong>Sinirsiz bagisci</strong>
-          </li>
-          <li style="padding:8px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px">
-            <i class="fa-solid fa-star" style="color:var(--yellow)"></i> <strong>Sinirsiz medya deposu</strong>
-          </li>
-          <li style="padding:8px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px">
-            <i class="fa-solid fa-star" style="color:var(--yellow)"></i> <strong>Watermark olmadan yazdirma</strong>
-          </li>
-          <li style="padding:8px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px">
-            <i class="fa-solid fa-star" style="color:var(--yellow)"></i> <strong>Yatay/Dikey yazdirma secenegi</strong>
-          </li>
-          <li style="padding:8px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px">
-            <i class="fa-solid fa-star" style="color:var(--yellow)"></i> <strong>Gelismis raporlama</strong>
-          </li>
-          <li style="padding:8px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px">
-            <i class="fa-solid fa-star" style="color:var(--yellow)"></i> <strong>Oncelikli destek</strong>
-          </li>
-          <li style="padding:8px 0;display:flex;align-items:center;gap:8px">
-            <i class="fa-solid fa-star" style="color:var(--yellow)"></i> <strong>Gelecek tum ozellikler</strong>
-          </li>
-        </ul>
-      </div>
-    </div>
-
-    ${!isPro ? `
-      <div class="card">
-        <div class="card-title"><i class="fa-solid fa-rocket"></i> PRO Surume Gecis</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
-          <div>
-            <div style="font-size:14px;font-weight:600;margin-bottom:8px">PRO Key ile Aktiflestime</div>
-            <div style="font-size:12px;color:var(--text3);margin-bottom:12px">Elinizde DDM- ile baslayan bir PRO key varsa buradan aktiflestirebilirsiniz</div>
-            <div class="form-group">
-              <input id="pro-key-input" placeholder="DDM-XXXXXX-XXXXXX" style="text-transform:uppercase"/>
-            </div>
-            <button class="btn btn-primary" onclick="proKeyKullan()">
-              <i class="fa-solid fa-key"></i> Key ile Aktiflestir
-            </button>
-          </div>
-          <div>
-            <div style="font-size:14px;font-weight:600;margin-bottom:8px">Satin Alma Talebi Gonder</div>
-            <div style="font-size:12px;color:var(--text3);margin-bottom:12px">PRO surume gecmek icin talebinizi gonderin, en kisa surede donecegiz</div>
-            <div class="form-group">
-              <textarea id="pro-talep-mesaj" placeholder="Mesajiniz (opsiyonel)..." style="min-height:60px"></textarea>
-            </div>
-            <button class="btn btn-success" onclick="proTalepGonder()">
-              <i class="fa-solid fa-paper-plane"></i> Talep Gonder
-            </button>
-          </div>
-        </div>
-      </div>
-    ` : ''}
-  `;
+    </div>`;
 }
 
-async function proKeyKullan() {
-  const key = document.getElementById('pro-key-input').value.trim().toUpperCase();
-  if (!key) return toast('Key giriniz', 'error');
-  if (!key.startsWith('DDM-')) return toast('Gecersiz key formati', 'error');
-  
+// ===========================================================================
+// V�DEO �STEYENLER
+// ===========================================================================
+async function renderVideoIsteyenler() {
+  if (!S.orgId) { showPage('organizasyonlar'); return; }
+  const m = document.getElementById('main-content');
+  m.innerHTML = `
+    <div class="page-header">
+      <div class="page-title">
+        <div class="icon-wrap"><i class="fa-solid fa-video"></i></div>
+        Video �steyenler
+        ${S.orgAd ? '<small>' + esc(S.orgAd) + '</small>' : ''}
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-primary" onclick="modalVideoYukle()"><i class="fa-solid fa-upload"></i> Video Y�kle</button>
+      </div>
+    </div>
+    <div class="card" id="video-isteyenler-icerik">
+      <div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i><p>Y�kleniyor...</p></div>
+    </div>`;
+  await yukleVideoIsteyenler();
+}
+
+async function yukleVideoIsteyenler() {
+  const el = document.getElementById('video-isteyenler-icerik');
   try {
-    await api('POST', '/auth/pro-key', { key });
-    toast('PRO aktivasyonu basarili! Sayfa yenileniyor...');
-    setTimeout(() => window.location.reload(), 1500);
+    const list = await api('GET', `/organizasyonlar/${S.orgId}/video-isteyenler`);
+    if (!list.length) {
+      el.innerHTML = '<div class="empty-state"><i class="fa-solid fa-video-slash"></i><p>Video isteyen ba����� bulunamad�.</p></div>';
+      return;
+    }
+
+    let html = `
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <span style="font-size:13px;color:var(--text2)">${list.length} ba����� video istiyor</span>
+        <span style="font-size:12px;color:var(--text3)">${list.filter(h=>h.video_url).length} video y�klendi</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>#</th><th>Kurban</th><th>Hisse</th><th>Ba�����</th><th>Telefon</th><th>Video Durumu</th><th>��lem</th>
+          </tr></thead>
+          <tbody>`;
+
+    list.forEach((h, i) => {
+      const videoVar = !!h.video_url;
+      html += `<tr>
+        <td style="color:var(--text3);font-size:12px">${i+1}</td>
+        <td><span class="kurban-no-badge">${h.kurban_no}</span></td>
+        <td><span class="badge badge-blue">${h.hisse_no}</span></td>
+        <td><strong>${esc(h.bagisci_adi)}</strong></td>
+        <td>${h.bagisci_telefon ? esc(h.bagisci_telefon) : '<span style="color:var(--text3)">-</span>'}</td>
+        <td>${videoVar
+          ? '<span class="badge badge-green"><i class="fa-solid fa-circle-check"></i> Y�klendi</span>'
+          : '<span class="badge badge-yellow"><i class="fa-solid fa-clock"></i> Bekleniyor</span>'
+        }</td>
+        <td>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            ${videoVar
+              ? `<a href="${h.video_url}" target="_blank" class="btn btn-secondary btn-sm"><i class="fa-solid fa-eye"></i> �zle</a>
+                 <button class="btn btn-success btn-sm" onclick="whatsappGonder(${h.id},'${esc(h.bagisci_adi)}','${h.bagisci_telefon||''}','${h.video_url}')">
+                   <i class="fa-brands fa-whatsapp"></i> WhatsApp
+                 </button>`
+              : `<button class="btn btn-primary btn-sm" onclick="modalVideoYukleHisse(${h.id},'${esc(h.bagisci_adi)}',${h.kurban_no},${h.hisse_no})">
+                   <i class="fa-solid fa-upload"></i> Video Y�kle
+                 </button>`
+            }
+          </div>
+        </td>
+      </tr>`;
+    });
+
+    html += '</tbody></table></div>';
+    el.innerHTML = html;
   } catch(e) {
-    toast(e.message, 'error');
+    el.innerHTML = `<div class="empty-state"><i class="fa-solid fa-triangle-exclamation"></i><p>${e.message}</p></div>`;
   }
 }
 
-async function proTalepGonder() {
-  const mesaj = document.getElementById('pro-talep-mesaj').value.trim();
+function whatsappGonder(hisseId, bagisciAdi, telefon, videoUrl) {
+  if (!telefon) {
+    // Telefon yoksa sadece linki kopyala
+    openModal('WhatsApp G�nder', `
+      <div style="margin-bottom:16px">
+        <div style="font-weight:600;margin-bottom:8px"><i class="fa-brands fa-whatsapp" style="color:#25D366"></i> ${esc(bagisciAdi)}</div>
+        <div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:8px;padding:10px;font-size:13px;color:var(--red);margin-bottom:12px">
+          <i class="fa-solid fa-triangle-exclamation"></i> Bu ba�����n�n telefon numaras� kay�tl� de�il.
+        </div>
+        <div style="font-size:13px;color:var(--text2);margin-bottom:8px">Video linkini kopyalay�p manuel olarak g�nderebilirsiniz:</div>
+        <div style="background:var(--bg4);border:1px solid var(--border2);border-radius:8px;padding:10px;font-size:12px;word-break:break-all">${videoUrl}</div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-secondary" onclick="closeModal()">Kapat</button>
+        <button class="btn btn-primary" onclick="navigator.clipboard.writeText('${videoUrl}').then(()=>toast('Link kopyaland�'))">
+          <i class="fa-solid fa-copy"></i> Linki Kopyala
+        </button>
+      </div>
+    `, false, 'whatsapp');
+    return;
+  }
+
+  // Telefon numaras�n� temizle
+  const temizTel = telefon.replace(/\D/g, '');
+  const uluslararasiTel = temizTel.startsWith('0') ? '90' + temizTel.slice(1) : temizTel.startsWith('90') ? temizTel : '90' + temizTel;
+
+  const mesaj = encodeURIComponent(`Say�n ${bagisciAdi}, kurban kesim videonuz haz�r:\n${videoUrl}`);
+  const waUrl = `https://wa.me/${uluslararasiTel}?text=${mesaj}`;
+
+  openModal('WhatsApp G�nder', `
+    <div style="margin-bottom:16px">
+      <div style="font-weight:600;margin-bottom:12px"><i class="fa-brands fa-whatsapp" style="color:#25D366;font-size:20px"></i> ${esc(bagisciAdi)}</div>
+      <div style="background:var(--bg4);border:1px solid var(--border2);border-radius:8px;padding:12px;margin-bottom:12px">
+        <div style="font-size:12px;color:var(--text3);margin-bottom:4px">G�nderilecek mesaj:</div>
+        <div style="font-size:13px">Say�n <strong>${esc(bagisciAdi)}</strong>, kurban kesim videonuz haz�r:<br>
+        <span style="color:var(--accent);font-size:11px;word-break:break-all">${videoUrl}</span></div>
+      </div>
+      <div style="font-size:13px;color:var(--text2)">Telefon: <strong>${esc(telefon)}</strong></div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-secondary" onclick="closeModal()">�ptal</button>
+      <button class="btn btn-success" onclick="window.open('${waUrl}','_blank');closeModal()">
+        <i class="fa-brands fa-whatsapp"></i> WhatsApp'ta A�
+      </button>
+    </div>
+  `, false, 'whatsapp');
+}
+
+async function modalVideoYukleHisse(hisseId, bagisciAdi, kurbanNo, hisseNo) {
+  openModal(`Video Y�kle � ${esc(bagisciAdi)}`, `
+    <div style="background:var(--bg4);border:1px solid var(--border2);border-radius:8px;padding:10px;margin-bottom:16px;font-size:13px">
+      <i class="fa-solid fa-info-circle" style="color:var(--accent)"></i>
+      Kurban <strong>#${kurbanNo}</strong> � Hisse <strong>${hisseNo}</strong> � <strong>${esc(bagisciAdi)}</strong>
+    </div>
+    <div class="upload-zone" id="upload-zone" onclick="document.getElementById('hisse-video-yukle-input').click()"
+      ondragover="event.preventDefault();this.classList.add('drag-over')"
+      ondragleave="this.classList.remove('drag-over')"
+      ondrop="event.preventDefault();this.classList.remove('drag-over');yukleVideoHisseDogrudan(event.dataTransfer.files[0],${hisseId})">
+      <i class="fa-solid fa-video" style="font-size:28px;color:var(--text3);margin-bottom:8px"></i>
+      <p style="margin:0;color:var(--text3)">Video dosyas�n� buraya s�r�kle veya t�kla</p>
+      <small style="color:var(--text3)">MP4, MOV, WEBM (maks. 100MB)</small>
+      <div class="upload-progress" id="upload-progress" style="display:none;margin-top:10px">
+        <div class="upload-progress-fill" id="upload-progress-fill" style="width:0%"></div>
+      </div>
+    </div>
+    <input type="file" id="hisse-video-yukle-input" style="display:none" accept="video/*"
+      onchange="yukleVideoHisseDogrudan(this.files[0],${hisseId})"/>
+    <div id="upload-result" style="margin-top:12px"></div>
+    <div class="form-actions">
+      <button class="btn btn-secondary" onclick="closeModal()">Kapat</button>
+    </div>
+  `, false, 'video');
+}
+
+async function yukleVideoHisseDogrudan(file, hisseId) {
+  if (!file) return;
+  if (!file.type.startsWith('video/')) { toast('Sadece video dosyalar� y�klenebilir', 'error'); return; }
+
+  const prog = document.getElementById('upload-progress');
+  const fill = document.getElementById('upload-progress-fill');
+  const result = document.getElementById('upload-result');
+  if (prog) { prog.style.display = 'block'; fill.style.width = '10%'; }
+
+  const formData = new FormData();
+  formData.append('dosya', file);
+  formData.append('folder', `defterdar/hisse-${hisseId}`);
+
   try {
-    await api('POST', '/auth/pro-talep', { mesaj });
-    toast('Talebiniz gonderildi! En kisa surede donecegiz.');
-    document.getElementById('pro-talep-mesaj').value = '';
+    if (fill) fill.style.width = '40%';
+    const r = await fetch('/api/medya/upload', { method: 'POST', body: formData });
+    if (fill) fill.style.width = '90%';
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.hata || 'Y�klenemedi');
+    if (fill) fill.style.width = '100%';
+
+    await api('PUT', `/hisseler/${hisseId}`, { video_url: data.url, video_public_id: data.public_id });
+
+    if (result) result.innerHTML = `<div class="badge badge-green" style="font-size:12px;padding:8px 14px"><i class="fa-solid fa-circle-check"></i> Video y�klendi!</div>`;
+    toast('Video y�klendi');
+    setTimeout(async () => { closeModal(); await yukleVideoIsteyenler(); }, 1200);
   } catch(e) {
+    if (result) result.innerHTML = `<div class="badge badge-red" style="font-size:12px;padding:8px 14px"><i class="fa-solid fa-circle-xmark"></i> ${e.message}</div>`;
     toast(e.message, 'error');
+    if (prog) prog.style.display = 'none';
+  }
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════
+// AYARLAR SAYFASI (Yazdırma + Veri Yönetimi)
+// ═══════════════════════════════════════════════════════════════════════════
+async function renderAyarlarSayfasi() {
+  const m = document.getElementById('main-content');
+  const logoOnizleme = _kullaniciAyarlar.logo_data
+    ? '<img src="' + _kullaniciAyarlar.logo_data + '" style="max-height:70px;max-width:100%;border-radius:6px;object-fit:contain"/>'
+    : '<i class="fa-solid fa-image" style="font-size:22px;color:var(--text3)"></i><div style="color:var(--text3);font-size:12px;margin-top:4px">Yüklenmedi</div>';
+  const bayrakOnizleme = _kullaniciAyarlar.bayrak_data
+    ? '<img src="' + _kullaniciAyarlar.bayrak_data + '" style="max-height:70px;max-width:100%;border-radius:6px;object-fit:contain"/>'
+    : '<i class="fa-solid fa-flag" style="font-size:22px;color:var(--text3)"></i><div style="color:var(--text3);font-size:12px;margin-top:4px">Yüklenmedi</div>';
+
+  m.innerHTML = `
+    <div class="page-header">
+      <div class="page-title">
+        <div class="icon-wrap"><i class="fa-solid fa-gear"></i></div>
+        Ayarlar
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div class="card">
+        <div class="card-title"><i class="fa-solid fa-print"></i> Yazdırma Görselleri</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+          <div class="form-group">
+            <label><i class="fa-solid fa-image"></i> Logonuz (Orta)</label>
+            <div class="upload-zone" style="padding:16px;text-align:center;cursor:pointer;min-height:90px;display:flex;align-items:center;justify-content:center" onclick="document.getElementById('ayar-logo-input').click()">
+              <div id="ayar-logo-preview">${logoOnizleme}</div>
+            </div>
+            <input type="file" id="ayar-logo-input" accept="image/*" style="display:none" onchange="onAyarImageChange(this,'logo')"/>
+          </div>
+          <div class="form-group">
+            <label><i class="fa-solid fa-flag"></i> Sağ Üst Bayrak</label>
+            <div class="upload-zone" style="padding:16px;text-align:center;cursor:pointer;min-height:90px;display:flex;align-items:center;justify-content:center" onclick="document.getElementById('ayar-bayrak-input').click()">
+              <div id="ayar-bayrak-preview">${bayrakOnizleme}</div>
+            </div>
+            <input type="file" id="ayar-bayrak-input" accept="image/*" style="display:none" onchange="onAyarImageChange(this,'bayrak')"/>
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="kaydetAyarlar()"><i class="fa-solid fa-floppy-disk"></i> Görselleri Kaydet</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><i class="fa-solid fa-database"></i> Veri Yönetimi</div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div>
+            <div style="font-weight:600;font-size:13px;margin-bottom:6px"><i class="fa-solid fa-floppy-disk" style="color:var(--green)"></i> Tam Yedek Al</div>
+            <div style="font-size:12px;color:var(--text3);margin-bottom:8px">Tüm organizasyonlar, kurbanlar, bağışçılar ve ayarlar JSON formatında yedeklenir. Başka bilgisayara taşımak için kullanın.</div>
+            <button class="btn btn-success" onclick="tamYedekAl()"><i class="fa-solid fa-download"></i> Tam Yedek İndir (.json)</button>
+          </div>
+          <hr style="border:none;border-top:1px solid var(--border);margin:4px 0"/>
+          <div>
+            <div style="font-weight:600;font-size:13px;margin-bottom:6px"><i class="fa-solid fa-upload" style="color:var(--accent)"></i> Veri Geri Yükle</div>
+            <div style="font-size:12px;color:var(--text3);margin-bottom:8px">Daha önce aldığınız .json yedek dosyasını yükleyin. Tüm veriler (organizasyonlar, kurbanlar, bağışçılar, fotoğraflar) geri gelir.</div>
+            <button class="btn btn-primary" onclick="showPage('veri-geri-yukle')"><i class="fa-solid fa-file-import"></i> Yedekten Geri Yükle</button>
+          </div>
+          <hr style="border:none;border-top:1px solid var(--border);margin:4px 0"/>
+          <div>
+            <div style="font-weight:600;font-size:13px;margin-bottom:6px"><i class="fa-solid fa-file-excel" style="color:var(--green)"></i> Excel Yedek</div>
+            <div style="font-size:12px;color:var(--text3);margin-bottom:8px">Seçili organizasyonu Excel formatında dışa aktar.</div>
+            <button class="btn btn-success" onclick="excelYedekAl()"><i class="fa-solid fa-file-excel"></i> Excel İndir</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+
+  // Geçici değişkenler
+  window._ayarLogoData = null;
+  window._ayarBayrakData = null;
+}
+
+function onAyarImageChange(input, tip) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const data = e.target.result;
+    if (tip === 'logo') {
+      window._ayarLogoData = data;
+      document.getElementById('ayar-logo-preview').innerHTML =
+        '<img src="' + data + '" style="max-height:70px;max-width:100%;border-radius:6px;object-fit:contain"/>';
+    } else {
+      window._ayarBayrakData = data;
+      document.getElementById('ayar-bayrak-preview').innerHTML =
+        '<img src="' + data + '" style="max-height:70px;max-width:100%;border-radius:6px;object-fit:contain"/>';
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+async function kaydetAyarlar() {
+  try {
+    const logo = window._ayarLogoData || _kullaniciAyarlar.logo_data;
+    const bayrak = window._ayarBayrakData || _kullaniciAyarlar.bayrak_data;
+    await api('POST', '/ayarlar', { logo_data: logo, bayrak_data: bayrak, kurulum_tamamlandi: 1 });
+    _kullaniciAyarlar.logo_data = logo;
+    _kullaniciAyarlar.bayrak_data = bayrak;
+    _kullaniciAyarlar.kurulum_tamamlandi = 1;
+    toast('Ayarlar kaydedildi');
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+async function tamYedekAl() {
+  try {
+    toast('Yedek hazırlanıyor...');
+    const tarih = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+    const filename = 'defterdar-tam-yedek-' + tarih + '.json';
+    if (window.electronAPI && window.electronAPI.downloadFile) {
+      const result = await window.electronAPI.downloadFile('http://127.0.0.1:4500/api/tam-yedek', filename);
+      if (result && result.ok) toast('Yedek kaydedildi: ' + result.path);
+      else if (result && result.canceled) toast('İptal edildi');
+      else toast('Hata: ' + (result && result.error || 'Bilinmeyen'), 'error');
+    } else {
+      const r = await fetch('/api/tam-yedek');
+      if (!r.ok) throw new Error('Sunucu hatası');
+      const blob = await r.blob();
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(a.href);
+      toast('Yedek indirildi');
+    }
+  } catch(e) { toast('Yedek alınamadı: ' + e.message, 'error'); }
+}
+
+async function excelYedekAl() {
+  if (!S.orgId) return toast('Önce bir organizasyon seçin', 'error');
+  downloadExcel('/api/organizasyonlar/' + S.orgId + '/excel', 'defterdar-yedek.xlsx');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// VERİ GERİ YÜKLEME (JSON Yedek)
+// ═══════════════════════════════════════════════════════════════════════════
+async function renderVeriGeriYukle() {
+  const m = document.getElementById('main-content');
+  m.innerHTML = `
+    <div class="page-header">
+      <div class="page-title">
+        <div class="icon-wrap"><i class="fa-solid fa-file-import"></i></div>
+        Yedekten Geri Yükle
+        <small>JSON Yedek Dosyası</small>
+      </div>
+      <button class="btn btn-secondary" onclick="showPage('ayarlar')"><i class="fa-solid fa-arrow-left"></i> Geri</button>
+    </div>
+
+    <div class="card" style="background:rgba(79,126,248,0.05);border-color:rgba(79,126,248,0.3);margin-bottom:16px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <i class="fa-solid fa-info-circle" style="font-size:24px;color:var(--accent)"></i>
+        <div>
+          <div style="font-weight:600;margin-bottom:4px">Tam yedek dosyasından geri yükleme</div>
+          <div style="font-size:12px;color:var(--text3)">
+            Daha önce "Tam Yedek Al" ile indirdiğiniz <strong>.json</strong> dosyasını yükleyin.<br>
+            Tüm organizasyonlar, kurbanlar, bağışçılar ve logo/bayrak ayarları geri gelir.<br>
+            Mevcut veriler korunur, yeni veriler eklenir. Aynı organizasyon varsa güncellenir.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><i class="fa-solid fa-upload"></i> Yedek Dosyası Seç</div>
+      <div class="upload-zone" id="geri-yukle-zone"
+        onclick="document.getElementById('geri-yukle-input').click()"
+        ondragover="event.preventDefault();this.classList.add('drag-over')"
+        ondragleave="this.classList.remove('drag-over')"
+        ondrop="event.preventDefault();this.classList.remove('drag-over');geriYukleDosyasi(event.dataTransfer.files[0])">
+        <i class="fa-solid fa-file-code" style="font-size:32px;color:var(--text3);margin-bottom:10px"></i>
+        <p style="margin:0;color:var(--text3)">JSON yedek dosyasını buraya sürükle veya tıkla</p>
+        <small style="color:var(--text3)">defterdar-tam-yedek-*.json</small>
+        <div class="upload-progress" id="geri-yukle-progress" style="display:none;margin-top:12px">
+          <div class="upload-progress-fill" id="geri-yukle-progress-fill" style="width:0%"></div>
+        </div>
+      </div>
+      <input type="file" id="geri-yukle-input" style="display:none" accept=".json"
+        onchange="geriYukleDosyasi(this.files[0])"/>
+      <div id="geri-yukle-result" style="margin-top:16px"></div>
+    </div>`;
+}
+
+async function geriYukleDosyasi(file) {
+  if (!file) return;
+  if (!file.name.endsWith('.json')) {
+    toast('Sadece .json yedek dosyaları desteklenir', 'error');
+    return;
+  }
+
+  const prog = document.getElementById('geri-yukle-progress');
+  const fill = document.getElementById('geri-yukle-progress-fill');
+  const result = document.getElementById('geri-yukle-result');
+
+  if (prog) { prog.style.display = 'block'; fill.style.width = '20%'; }
+
+  const formData = new FormData();
+  formData.append('dosya', file);
+
+  try {
+    if (fill) fill.style.width = '50%';
+    const r = await fetch('/api/tam-geri-yukle', { method: 'POST', body: formData });
+    if (fill) fill.style.width = '90%';
+    const data = await r.json();
+
+    if (!r.ok) throw new Error(data.hata || 'Geri yükleme başarısız');
+    if (fill) fill.style.width = '100%';
+
+    if (result) result.innerHTML = `
+      <div style="background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);border-radius:10px;padding:16px">
+        <div style="font-weight:700;color:var(--green);margin-bottom:10px;font-size:15px">
+          <i class="fa-solid fa-circle-check"></i> Geri yükleme tamamlandı!
+        </div>
+        <div style="font-size:13px;color:var(--text2);margin-bottom:12px">${esc(data.mesaj)}</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+          <div class="stat-card green" style="padding:10px">
+            <div class="stat-value" style="font-size:22px">${data.detay.organizasyonlar}</div>
+            <div class="stat-label">Yeni Org.</div>
+          </div>
+          <div class="stat-card blue" style="padding:10px">
+            <div class="stat-value" style="font-size:22px">${data.detay.kurbanlar}</div>
+            <div class="stat-label">Yeni Kurban</div>
+          </div>
+          <div class="stat-card purple" style="padding:10px">
+            <div class="stat-value" style="font-size:22px">${data.detay.hisseler}</div>
+            <div class="stat-label">Yeni Bağışçı</div>
+          </div>
+        </div>
+        <button class="btn btn-primary" style="margin-top:14px" onclick="showPage('organizasyonlar')">
+          <i class="fa-solid fa-layer-group"></i> Organizasyonlara Git
+        </button>
+      </div>`;
+
+    toast('Veriler geri yüklendi!');
+    // Ayarları yenile (logo/bayrak geri geldiyse)
+    try {
+      const ayar = await api('GET', '/ayarlar');
+      _kullaniciAyarlar = ayar;
+    } catch(e) {}
+  } catch(e) {
+    if (result) result.innerHTML = `
+      <div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:10px;padding:16px">
+        <div style="font-weight:700;color:var(--red);margin-bottom:6px"><i class="fa-solid fa-circle-xmark"></i> Hata</div>
+        <div style="font-size:13px">${esc(e.message)}</div>
+      </div>`;
+    toast(e.message, 'error');
+    if (prog) prog.style.display = 'none';
   }
 }
