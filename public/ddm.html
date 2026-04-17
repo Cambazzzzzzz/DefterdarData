@@ -21,6 +21,9 @@
     #giris-kutu input{
       width:100%;padding:12px 14px;background:#0d0d0d;border:1px solid #333;
       border-radius:8px;color:#e0e0e0;font-size:15px;outline:none;
+      margin-bottom:10px;
+    }
+    #giris-kutu input[type="password"]{
       letter-spacing:2px;
     }
     #giris-kutu input:focus{border-color:#555}
@@ -130,6 +133,7 @@
 <!-- GİRİŞ EKRANI -->
 <div id="giris-ekrani">
   <div id="giris-kutu">
+    <input type="text" id="kullanici-input" placeholder="Kullanıcı Adı" autocomplete="off"/>
     <input type="password" id="sifre-input" placeholder="••••••••••••••••" autocomplete="off"
       onkeydown="if(event.key==='Enter')girisYap()"/>
     <button onclick="girisYap()"><i class="fa-solid fa-arrow-right"></i></button>
@@ -249,13 +253,18 @@
 <script>
 // ── GİRİŞ ──────────────────────────────────────────────────────────────────
 async function girisYap() {
+  const kullanici = document.getElementById('kullanici-input').value.trim();
   const sifre = document.getElementById('sifre-input').value;
   const hata = document.getElementById('giris-hata');
   hata.textContent = '';
+  if (!kullanici || !sifre) {
+    hata.textContent = 'Kullanıcı adı ve şifre gerekli';
+    return;
+  }
   try {
     const r = await fetch('/api/ddm/giris', {
       method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ sifre })
+      body: JSON.stringify({ kullanici, sifre })
     });
     const d = await r.json();
     if (d.ok) {
@@ -263,10 +272,11 @@ async function girisYap() {
       document.getElementById('panel').style.display = 'block';
       initPanel();
     } else {
-      hata.textContent = '✗';
+      hata.textContent = d.hata || 'Giriş başarısız';
+      document.getElementById('kullanici-input').value = '';
       document.getElementById('sifre-input').value = '';
     }
-  } catch(e) { hata.textContent = 'Hata'; }
+  } catch(e) { hata.textContent = 'Bağlantı hatası'; }
 }
 
 async function cikisYap() {
