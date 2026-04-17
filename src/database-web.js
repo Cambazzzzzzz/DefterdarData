@@ -9,8 +9,8 @@ const path = require('path');
 function findWritablePath() {
   const candidates = [
     process.env.DB_PATH,           // Environment variable (en yüksek öncelik)
-    '/app/data/defterdar.db',      // Railway Volume mount (Dockerfile'da mkdir -p /app/data)
-    '/data/defterdar.db',          // Alternatif mount
+    '/data/defterdar.db',          // Railway Volume mount (birinci öncelik)
+    '/app/data/defterdar.db',      // Dockerfile klasörü (ikinci öncelik)
     '/tmp/defterdar.db',           // Fallback (deploy'da sıfırlanır!)
     './data/defterdar.db'          // Local geliştirme
   ].filter(Boolean);
