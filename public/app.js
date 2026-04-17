@@ -2,8 +2,8 @@
 // Kullan�c� ayarlar� global
 let _kullaniciAyarlar = { logo_data: null, bayrak_data: null, kurulum_tamamlandi: 0 };
 let _kullaniciAdi = '';
-let _kullaniciSurum = 'normal';
-let _kullaniciRol = 'kullanici';
+// Pro sistemi kaldirildi - herkes sinirsizdir
+
 
 (async function checkAuth() {
   const lastLogin = localStorage.getItem('defterdar-last-login');
@@ -15,8 +15,8 @@ let _kullaniciRol = 'kullanici';
     const d = await r.json();
     if (d.girisYapildi) {
       _kullaniciAdi = d.kullanici_adi;
-      _kullaniciSurum = d.surum || 'normal';
-      _kullaniciRol = d.rol || 'kullanici';
+
+
       const badge = document.getElementById('user-badge');
       const name = document.getElementById('user-name');
       if (badge) badge.style.display = '';
@@ -34,8 +34,8 @@ let _kullaniciRol = 'kullanici';
     return;
   }
   _kullaniciAdi = d.kullanici_adi;
-  _kullaniciSurum = d.surum || 'normal';
-  _kullaniciRol = d.rol || 'kullanici';
+
+
   const badge = document.getElementById('user-badge');
   const name = document.getElementById('user-name');
   if (badge) badge.style.display = '';
@@ -2276,30 +2276,30 @@ function handleHisseDrop(e, folder) {
 
 
 // ===========================================================================
-// DEFTERDAR PRO � Dosyalar duruyor, ileride kullan�lacak
-// ===========================================================================
+// ═══════════════════════════════════════════════════════════════════════════
+// DEFTERDAR PRO - Dosyalar duruyor, ileride kullanilacak
+// ═══════════════════════════════════════════════════════════════════════════
 async function renderProSayfasi() {
   const m = document.getElementById('main-content');
   m.innerHTML = `
     <div class="page-header">
       <div class="page-title">
-        <div class="icon-wrap" style="background:linear-gradient(135deg,#f59e0b,#d97706)"><i class="fa-solid fa-crown"></i></div>
-        Defterdar PRO
-        <span class="badge badge-green" style="margin-left:10px"><i class="fa-solid fa-infinity"></i> S�n�rs�z</span>
+        <div class="icon-wrap" style="background:linear-gradient(135deg,#10b981,#059669)"><i class="fa-solid fa-infinity"></i></div>
+        Sinirsizsiz Erisim
       </div>
     </div>
     <div class="card" style="background:linear-gradient(135deg,rgba(16,185,129,0.1),rgba(16,185,129,0.05));border-color:rgba(16,185,129,0.3)">
-      <div style="text-align:center;padding:20px">
-        <div style="font-size:48px;margin-bottom:12px">??</div>
-        <div style="font-size:20px;font-weight:800;color:var(--green);margin-bottom:8px">T�m �zellikler Aktif!</div>
-        <div style="font-size:14px;color:var(--text2)">S�n�rs�z ba�����, s�n�rs�z medya, t�m �zellikler a��k.</div>
+      <div style="text-align:center;padding:30px">
+        <div style="font-size:52px;margin-bottom:14px">&#127881;</div>
+        <div style="font-size:22px;font-weight:800;color:var(--green);margin-bottom:10px">Tum Ozellikler Aktif!</div>
+        <div style="font-size:14px;color:var(--text2)">Sinirsiz bagisci, sinirsiz medya, tum ozellikler acik.</div>
       </div>
     </div>`;
 }
 
-// ===========================================================================
-// V�DEO �STEYENLER
-// ===========================================================================
+// ═══════════════════════════════════════════════════════════════════════════
+// VIDEO ISTEYENLER
+// ═══════════════════════════════════════════════════════════════════════════
 async function renderVideoIsteyenler() {
   if (!S.orgId) { showPage('organizasyonlar'); return; }
   const m = document.getElementById('main-content');
@@ -2307,37 +2307,50 @@ async function renderVideoIsteyenler() {
     <div class="page-header">
       <div class="page-title">
         <div class="icon-wrap"><i class="fa-solid fa-video"></i></div>
-        Video �steyenler
+        Video Isteyenler
         ${S.orgAd ? '<small>' + esc(S.orgAd) + '</small>' : ''}
       </div>
       <div style="display:flex;gap:8px">
-        <button class="btn btn-primary" onclick="modalVideoYukle()"><i class="fa-solid fa-upload"></i> Video Y�kle</button>
+        <button class="btn btn-primary" onclick="modalVideoYukle()">
+          <i class="fa-solid fa-upload"></i> Video Yukle
+        </button>
       </div>
     </div>
     <div class="card" id="video-isteyenler-icerik">
-      <div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i><p>Y�kleniyor...</p></div>
+      <div class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i><p>Yukleniyor...</p></div>
     </div>`;
   await yukleVideoIsteyenler();
 }
 
 async function yukleVideoIsteyenler() {
   const el = document.getElementById('video-isteyenler-icerik');
+  if (!el) return;
   try {
     const list = await api('GET', `/organizasyonlar/${S.orgId}/video-isteyenler`);
     if (!list.length) {
-      el.innerHTML = '<div class="empty-state"><i class="fa-solid fa-video-slash"></i><p>Video isteyen ba����� bulunamad�.</p></div>';
+      el.innerHTML = '<div class="empty-state"><i class="fa-solid fa-video-slash"></i><p>Video isteyen bagisci bulunamadi.</p></div>';
       return;
     }
 
+    const yuklendi = list.filter(h => h.video_url).length;
+    const bekliyor = list.length - yuklendi;
+
     let html = `
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
-        <span style="font-size:13px;color:var(--text2)">${list.length} ba����� video istiyor</span>
-        <span style="font-size:12px;color:var(--text3)">${list.filter(h=>h.video_url).length} video y�klendi</span>
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px;flex-wrap:wrap">
+        <span style="font-size:13px;color:var(--text2)"><strong>${list.length}</strong> bagisci video istiyor</span>
+        <span class="badge badge-green"><i class="fa-solid fa-circle-check"></i> ${yuklendi} video yuklendi</span>
+        <span class="badge badge-yellow"><i class="fa-solid fa-clock"></i> ${bekliyor} bekliyor</span>
       </div>
       <div class="table-wrap">
         <table>
           <thead><tr>
-            <th>#</th><th>Kurban</th><th>Hisse</th><th>Ba�����</th><th>Telefon</th><th>Video Durumu</th><th>��lem</th>
+            <th>#</th>
+            <th>Kurban</th>
+            <th>Hisse</th>
+            <th>Bagisci Adi</th>
+            <th>Telefon</th>
+            <th>Video Durumu</th>
+            <th>Islem</th>
           </tr></thead>
           <tbody>`;
 
@@ -2347,21 +2360,26 @@ async function yukleVideoIsteyenler() {
         <td style="color:var(--text3);font-size:12px">${i+1}</td>
         <td><span class="kurban-no-badge">${h.kurban_no}</span></td>
         <td><span class="badge badge-blue">${h.hisse_no}</span></td>
-        <td><strong>${esc(h.bagisci_adi)}</strong></td>
+        <td>
+          <strong>${esc(h.bagisci_adi)}</strong>
+          ${h.kimin_adina ? '<div style="font-size:11px;color:var(--text3)"><i class="fa-solid fa-heart"></i> ' + esc(h.kimin_adina) + '</div>' : ''}
+        </td>
         <td>${h.bagisci_telefon ? esc(h.bagisci_telefon) : '<span style="color:var(--text3)">-</span>'}</td>
         <td>${videoVar
-          ? '<span class="badge badge-green"><i class="fa-solid fa-circle-check"></i> Y�klendi</span>'
+          ? '<span class="badge badge-green"><i class="fa-solid fa-circle-check"></i> Yuklendi</span>'
           : '<span class="badge badge-yellow"><i class="fa-solid fa-clock"></i> Bekleniyor</span>'
         }</td>
         <td>
           <div style="display:flex;gap:6px;flex-wrap:wrap">
             ${videoVar
-              ? `<a href="${h.video_url}" target="_blank" class="btn btn-secondary btn-sm"><i class="fa-solid fa-eye"></i> �zle</a>
-                 <button class="btn btn-success btn-sm" onclick="whatsappGonder(${h.id},'${esc(h.bagisci_adi)}','${h.bagisci_telefon||''}','${h.video_url}')">
+              ? `<a href="${h.video_url}" target="_blank" class="btn btn-secondary btn-sm">
+                   <i class="fa-solid fa-eye"></i> Izle
+                 </a>
+                 <button class="btn btn-success btn-sm" onclick="whatsappGonder('${h.id}','${esc(h.bagisci_adi).replace(/'/g,"\\'")}','${(h.bagisci_telefon||'').replace(/'/g,"\\'")}','${h.video_url}')">
                    <i class="fa-brands fa-whatsapp"></i> WhatsApp
                  </button>`
-              : `<button class="btn btn-primary btn-sm" onclick="modalVideoYukleHisse(${h.id},'${esc(h.bagisci_adi)}',${h.kurban_no},${h.hisse_no})">
-                   <i class="fa-solid fa-upload"></i> Video Y�kle
+              : `<button class="btn btn-primary btn-sm" onclick="modalVideoYukleHisse(${h.id},'${esc(h.bagisci_adi).replace(/'/g,"\\'")}',${h.kurban_no},${h.hisse_no})">
+                   <i class="fa-solid fa-upload"></i> Video Yukle
                  </button>`
             }
           </div>
@@ -2377,20 +2395,23 @@ async function yukleVideoIsteyenler() {
 }
 
 function whatsappGonder(hisseId, bagisciAdi, telefon, videoUrl) {
-  if (!telefon) {
-    // Telefon yoksa sadece linki kopyala
-    openModal('WhatsApp G�nder', `
+  if (!telefon || telefon.trim() === '') {
+    openModal('WhatsApp Gonder', `
       <div style="margin-bottom:16px">
-        <div style="font-weight:600;margin-bottom:8px"><i class="fa-brands fa-whatsapp" style="color:#25D366"></i> ${esc(bagisciAdi)}</div>
-        <div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:8px;padding:10px;font-size:13px;color:var(--red);margin-bottom:12px">
-          <i class="fa-solid fa-triangle-exclamation"></i> Bu ba�����n�n telefon numaras� kay�tl� de�il.
+        <div style="font-weight:600;margin-bottom:10px;font-size:15px">
+          <i class="fa-brands fa-whatsapp" style="color:#25D366;font-size:20px"></i>
+          ${esc(bagisciAdi)}
         </div>
-        <div style="font-size:13px;color:var(--text2);margin-bottom:8px">Video linkini kopyalay�p manuel olarak g�nderebilirsiniz:</div>
-        <div style="background:var(--bg4);border:1px solid var(--border2);border-radius:8px;padding:10px;font-size:12px;word-break:break-all">${videoUrl}</div>
+        <div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:8px;padding:12px;font-size:13px;color:var(--red);margin-bottom:14px">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          Bu bagiscinin telefon numarasi kayitli degil.
+        </div>
+        <div style="font-size:13px;color:var(--text2);margin-bottom:8px">Video linkini kopyalayip manuel olarak gonderebilirsiniz:</div>
+        <div style="background:var(--bg4);border:1px solid var(--border2);border-radius:8px;padding:10px;font-size:12px;word-break:break-all;user-select:all">${videoUrl}</div>
       </div>
       <div class="form-actions">
         <button class="btn btn-secondary" onclick="closeModal()">Kapat</button>
-        <button class="btn btn-primary" onclick="navigator.clipboard.writeText('${videoUrl}').then(()=>toast('Link kopyaland�'))">
+        <button class="btn btn-primary" onclick="navigator.clipboard.writeText('${videoUrl}').then(()=>toast('Link kopyalandi'))">
           <i class="fa-solid fa-copy"></i> Linki Kopyala
         </button>
       </div>
@@ -2398,44 +2419,169 @@ function whatsappGonder(hisseId, bagisciAdi, telefon, videoUrl) {
     return;
   }
 
-  // Telefon numaras�n� temizle
+  // Telefon numarasini uluslararasi formata cevir
   const temizTel = telefon.replace(/\D/g, '');
-  const uluslararasiTel = temizTel.startsWith('0') ? '90' + temizTel.slice(1) : temizTel.startsWith('90') ? temizTel : '90' + temizTel;
+  let uluslararasiTel;
+  if (temizTel.startsWith('90') && temizTel.length === 12) {
+    uluslararasiTel = temizTel;
+  } else if (temizTel.startsWith('0') && temizTel.length === 11) {
+    uluslararasiTel = '90' + temizTel.slice(1);
+  } else if (temizTel.length === 10) {
+    uluslararasiTel = '90' + temizTel;
+  } else {
+    uluslararasiTel = '90' + temizTel;
+  }
 
-  const mesaj = encodeURIComponent(`Say�n ${bagisciAdi}, kurban kesim videonuz haz�r:\n${videoUrl}`);
-  const waUrl = `https://wa.me/${uluslararasiTel}?text=${mesaj}`;
+  const mesajMetni = 'Sayin ' + bagisciAdi + ', kurban kesim videonuz hazir. Asagidaki linkten izleyebilirsiniz:\n' + videoUrl;
+  const waUrl = 'https://wa.me/' + uluslararasiTel + '?text=' + encodeURIComponent(mesajMetni);
 
-  openModal('WhatsApp G�nder', `
+  openModal('WhatsApp Gonder', `
     <div style="margin-bottom:16px">
-      <div style="font-weight:600;margin-bottom:12px"><i class="fa-brands fa-whatsapp" style="color:#25D366;font-size:20px"></i> ${esc(bagisciAdi)}</div>
-      <div style="background:var(--bg4);border:1px solid var(--border2);border-radius:8px;padding:12px;margin-bottom:12px">
-        <div style="font-size:12px;color:var(--text3);margin-bottom:4px">G�nderilecek mesaj:</div>
-        <div style="font-size:13px">Say�n <strong>${esc(bagisciAdi)}</strong>, kurban kesim videonuz haz�r:<br>
-        <span style="color:var(--accent);font-size:11px;word-break:break-all">${videoUrl}</span></div>
+      <div style="font-weight:600;margin-bottom:14px;font-size:15px;display:flex;align-items:center;gap:8px">
+        <i class="fa-brands fa-whatsapp" style="color:#25D366;font-size:22px"></i>
+        ${esc(bagisciAdi)}
       </div>
-      <div style="font-size:13px;color:var(--text2)">Telefon: <strong>${esc(telefon)}</strong></div>
+      <div style="background:var(--bg4);border:1px solid var(--border2);border-radius:10px;padding:14px;margin-bottom:14px">
+        <div style="font-size:11px;color:var(--text3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Gonderilecek mesaj:</div>
+        <div style="font-size:13px;line-height:1.6">
+          Sayin <strong>${esc(bagisciAdi)}</strong>, kurban kesim videonuz hazir. Asagidaki linkten izleyebilirsiniz:<br>
+          <a href="${videoUrl}" target="_blank" style="color:var(--accent);font-size:11px;word-break:break-all">${videoUrl}</a>
+        </div>
+      </div>
+      <div style="font-size:13px;color:var(--text2);display:flex;align-items:center;gap:8px">
+        <i class="fa-solid fa-phone" style="color:var(--green)"></i>
+        Telefon: <strong>${esc(telefon)}</strong>
+        <span style="font-size:11px;color:var(--text3)">(+${uluslararasiTel})</span>
+      </div>
     </div>
     <div class="form-actions">
-      <button class="btn btn-secondary" onclick="closeModal()">�ptal</button>
+      <button class="btn btn-secondary" onclick="closeModal()">Iptal</button>
+      <button class="btn btn-secondary" onclick="navigator.clipboard.writeText('${videoUrl}').then(()=>toast('Link kopyalandi'))">
+        <i class="fa-solid fa-copy"></i> Linki Kopyala
+      </button>
       <button class="btn btn-success" onclick="window.open('${waUrl}','_blank');closeModal()">
-        <i class="fa-brands fa-whatsapp"></i> WhatsApp'ta A�
+        <i class="fa-brands fa-whatsapp"></i> WhatsApp'ta Ac
       </button>
     </div>
   `, false, 'whatsapp');
 }
 
+async function modalVideoYukle() {
+  if (!S.orgId) return toast('Once bir organizasyon secin', 'error');
+
+  let bagiscilar = [];
+  try {
+    bagiscilar = await api('GET', `/organizasyonlar/${S.orgId}/video-isteyenler`);
+  } catch(e) {}
+
+  const bagisciOpts = bagiscilar.length
+    ? bagiscilar.map(h => {
+        const videoVar = h.video_url ? ' [VIDEO VAR]' : '';
+        return `<option value="${h.id}" data-kurban="${h.kurban_no}" data-hisse="${h.hisse_no}" data-ad="${esc(h.bagisci_adi)}">${videoVar ? '✅' : '⏳'} Kurban #${h.kurban_no} Hisse ${h.hisse_no} — ${esc(h.bagisci_adi)}${h.bagisci_telefon ? ' (' + esc(h.bagisci_telefon) + ')' : ''}${videoVar}</option>`;
+      }).join('')
+    : '<option value="">Video isteyen bagisci bulunamadi</option>';
+
+  openModal('Video Yukle — Bagisci Sec', `
+    <div class="form-group" style="margin-bottom:16px">
+      <label><i class="fa-solid fa-users"></i> Hangi Bagisciya Yuklenecek?</label>
+      <select id="video-bagisci-select" style="width:100%" onchange="videoHisseSecildi()">
+        <option value="">-- Bagisci secin --</option>
+        ${bagisciOpts}
+      </select>
+      <div style="font-size:11px;color:var(--text3);margin-top:4px">
+        Sadece "Video Istiyor" olarak isaretlenen bagiscilar listelenir
+      </div>
+    </div>
+    <div id="video-bagisci-bilgi" style="display:none;background:var(--bg4);border:1px solid var(--border2);border-radius:8px;padding:12px;margin-bottom:16px;font-size:13px"></div>
+    <div class="upload-zone" id="video-upload-zone" onclick="document.getElementById('video-yukle-input').click()"
+      ondragover="event.preventDefault();this.classList.add('drag-over')"
+      ondragleave="this.classList.remove('drag-over')"
+      ondrop="event.preventDefault();this.classList.remove('drag-over');handleVideoDrop(event)">
+      <i class="fa-solid fa-video" style="font-size:28px;color:var(--text3);margin-bottom:8px"></i>
+      <p style="margin:0;color:var(--text3)">Video dosyasini buraya surukle veya tikla</p>
+      <small style="color:var(--text3)">MP4, MOV, WEBM (maks. 100MB)</small>
+      <div class="upload-progress" id="video-upload-progress" style="display:none;margin-top:10px">
+        <div class="upload-progress-fill" id="video-upload-progress-fill" style="width:0%"></div>
+      </div>
+    </div>
+    <input type="file" id="video-yukle-input" style="display:none" accept="video/*"
+      onchange="yukleVideoIcinBagisci(this.files[0])"/>
+    <div id="video-upload-result" style="margin-top:12px"></div>
+    <div class="form-actions">
+      <button class="btn btn-secondary" onclick="closeModal()">Kapat</button>
+    </div>
+  `, false, 'video');
+}
+
+function videoHisseSecildi() {
+  const sel = document.getElementById('video-bagisci-select');
+  const opt = sel.options[sel.selectedIndex];
+  const bilgi = document.getElementById('video-bagisci-bilgi');
+  if (!sel.value) { bilgi.style.display = 'none'; return; }
+  const kurbanNo = opt.dataset.kurban;
+  const hisseNo = opt.dataset.hisse;
+  const ad = opt.dataset.ad;
+  bilgi.style.display = 'block';
+  bilgi.innerHTML = `<i class="fa-solid fa-info-circle" style="color:var(--accent)"></i>
+    Kurban <strong>#${kurbanNo}</strong> — Hisse <strong>${hisseNo}</strong> — <strong>${ad}</strong> icin video yuklenecek`;
+}
+
+function handleVideoDrop(e) {
+  const file = e.dataTransfer.files[0];
+  if (file) yukleVideoIcinBagisci(file);
+}
+
+async function yukleVideoIcinBagisci(file) {
+  if (!file) return;
+  const hisseId = document.getElementById('video-bagisci-select').value;
+  if (!hisseId) { toast('Once bir bagisci secin', 'error'); return; }
+  if (!file.type.startsWith('video/')) { toast('Sadece video dosyalari yuklenebilir', 'error'); return; }
+
+  const prog = document.getElementById('video-upload-progress');
+  const fill = document.getElementById('video-upload-progress-fill');
+  const result = document.getElementById('video-upload-result');
+  if (prog) { prog.style.display = 'block'; fill.style.width = '10%'; }
+
+  const formData = new FormData();
+  formData.append('dosya', file);
+  formData.append('folder', `defterdar/hisse-${hisseId}`);
+
+  try {
+    if (fill) fill.style.width = '40%';
+    const r = await fetch('/api/medya/upload', { method: 'POST', body: formData });
+    if (fill) fill.style.width = '90%';
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.hata || 'Yuklenemedi');
+    if (fill) fill.style.width = '100%';
+
+    await api('PUT', `/hisseler/${hisseId}`, { video_url: data.url, video_public_id: data.public_id });
+
+    if (result) result.innerHTML = `
+      <div class="badge badge-green" style="font-size:12px;padding:8px 14px">
+        <i class="fa-solid fa-circle-check"></i> Video yuklendi ve bagisciya atandi!
+      </div>`;
+    toast('Video yuklendi');
+    setTimeout(() => closeModal(), 1500);
+  } catch(e) {
+    if (result) result.innerHTML = `<div class="badge badge-red" style="font-size:12px;padding:8px 14px"><i class="fa-solid fa-circle-xmark"></i> ${e.message}</div>`;
+    toast(e.message, 'error');
+    if (prog) prog.style.display = 'none';
+  }
+}
+
 async function modalVideoYukleHisse(hisseId, bagisciAdi, kurbanNo, hisseNo) {
-  openModal(`Video Y�kle � ${esc(bagisciAdi)}`, `
+  openModal('Video Yukle — ' + esc(bagisciAdi), `
     <div style="background:var(--bg4);border:1px solid var(--border2);border-radius:8px;padding:10px;margin-bottom:16px;font-size:13px">
       <i class="fa-solid fa-info-circle" style="color:var(--accent)"></i>
-      Kurban <strong>#${kurbanNo}</strong> � Hisse <strong>${hisseNo}</strong> � <strong>${esc(bagisciAdi)}</strong>
+      Kurban <strong>#${kurbanNo}</strong> — Hisse <strong>${hisseNo}</strong> — <strong>${esc(bagisciAdi)}</strong>
     </div>
-    <div class="upload-zone" id="upload-zone" onclick="document.getElementById('hisse-video-yukle-input').click()"
+    <div class="upload-zone" id="upload-zone"
+      onclick="document.getElementById('hisse-video-yukle-input').click()"
       ondragover="event.preventDefault();this.classList.add('drag-over')"
       ondragleave="this.classList.remove('drag-over')"
       ondrop="event.preventDefault();this.classList.remove('drag-over');yukleVideoHisseDogrudan(event.dataTransfer.files[0],${hisseId})">
       <i class="fa-solid fa-video" style="font-size:28px;color:var(--text3);margin-bottom:8px"></i>
-      <p style="margin:0;color:var(--text3)">Video dosyas�n� buraya s�r�kle veya t�kla</p>
+      <p style="margin:0;color:var(--text3)">Video dosyasini buraya surukle veya tikla</p>
       <small style="color:var(--text3)">MP4, MOV, WEBM (maks. 100MB)</small>
       <div class="upload-progress" id="upload-progress" style="display:none;margin-top:10px">
         <div class="upload-progress-fill" id="upload-progress-fill" style="width:0%"></div>
@@ -2452,7 +2598,7 @@ async function modalVideoYukleHisse(hisseId, bagisciAdi, kurbanNo, hisseNo) {
 
 async function yukleVideoHisseDogrudan(file, hisseId) {
   if (!file) return;
-  if (!file.type.startsWith('video/')) { toast('Sadece video dosyalar� y�klenebilir', 'error'); return; }
+  if (!file.type.startsWith('video/')) { toast('Sadece video dosyalari yuklenebilir', 'error'); return; }
 
   const prog = document.getElementById('upload-progress');
   const fill = document.getElementById('upload-progress-fill');
@@ -2468,13 +2614,13 @@ async function yukleVideoHisseDogrudan(file, hisseId) {
     const r = await fetch('/api/medya/upload', { method: 'POST', body: formData });
     if (fill) fill.style.width = '90%';
     const data = await r.json();
-    if (!r.ok) throw new Error(data.hata || 'Y�klenemedi');
+    if (!r.ok) throw new Error(data.hata || 'Yuklenemedi');
     if (fill) fill.style.width = '100%';
 
     await api('PUT', `/hisseler/${hisseId}`, { video_url: data.url, video_public_id: data.public_id });
 
-    if (result) result.innerHTML = `<div class="badge badge-green" style="font-size:12px;padding:8px 14px"><i class="fa-solid fa-circle-check"></i> Video y�klendi!</div>`;
-    toast('Video y�klendi');
+    if (result) result.innerHTML = `<div class="badge badge-green" style="font-size:12px;padding:8px 14px"><i class="fa-solid fa-circle-check"></i> Video yuklendi!</div>`;
+    toast('Video yuklendi');
     setTimeout(async () => { closeModal(); await yukleVideoIsteyenler(); }, 1200);
   } catch(e) {
     if (result) result.innerHTML = `<div class="badge badge-red" style="font-size:12px;padding:8px 14px"><i class="fa-solid fa-circle-xmark"></i> ${e.message}</div>`;
