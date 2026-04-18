@@ -936,7 +936,26 @@ async function yukleHisseVideo(file, hisseId) {
       video_public_id: data.public_id
     });
     
-    toast('Video y�klendi');
+    toast('Video gönderildi - Bağışçı bilgileri korundu');
+    
+    // Modal'ı kapatmayın, sadece upload alanını güncelle
+    const uploadArea = document.getElementById('video-upload-area');
+    if (uploadArea) {
+      uploadArea.innerHTML = `
+        <div style="background:var(--bg4);border:1px solid var(--border2);border-radius:8px;padding:12px;margin-bottom:8px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <i class="fa-solid fa-video" style="color:var(--green)"></i>
+            <span style="font-size:13px">Video gönderildi</span>
+            <a href="${data.url}" target="_blank" class="btn btn-secondary btn-sm" style="margin-left:auto">
+              <i class="fa-solid fa-external-link"></i> Görüntüle
+            </a>
+            <button class="btn btn-danger btn-sm" onclick="videoSil(${hisseId})">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </div>
+        </div>
+      `;
+    }
   } catch(e) {
     toast(e.message, 'error');
   }
@@ -2570,10 +2589,12 @@ async function yukleVideoIcinBagisci(file) {
       </div>`;
     toast('Video gönderildi - Bağışçı bilgileri korundu');
     
-    // Modal'ı kapatma, sadece başarı mesajı göster
+    // Modal'ı kapatmayın, sadece başarı mesajı gösterin
     setTimeout(() => {
       if (result) result.innerHTML = '';
       if (prog) prog.style.display = 'none';
+      // Video listesini yenileyin
+      yukleVideoIsteyenler();
     }, 3000);
   } catch(e) {
     if (result) result.innerHTML = `<div class="badge badge-red" style="font-size:12px;padding:8px 14px"><i class="fa-solid fa-circle-xmark"></i> ${e.message}</div>`;
