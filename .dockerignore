@@ -1,0 +1,43 @@
+# DefterdarMuhasebe - Docker ignore
+
+# Node modules
+node_modules/
+npm-debug.log*
+
+# Build outputs
+dist/
+build/
+
+# Development files
+.env
+.env.local
+.env.example
+
+# Git
+.git/
+.gitignore
+
+# Documentation
+*.md
+!README.md
+
+# Test files
+test/
+tests/
+*.test.js
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Electron specific
+electron.js
+preload.js
+assets/
+
+# Local data (will be mounted as volume)
+data/defterdar.db*

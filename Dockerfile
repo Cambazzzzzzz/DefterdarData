@@ -1,22 +1,38 @@
-# Defterdar Muhasebe - Docker Image
+# DefterdarMuhasebe - Railway Deployment
+# Node.js + better-sqlite3 için optimize edilmiş Dockerfile
+
 FROM node:18-alpine
 
-LABEL maintainer="CMS Team"
-LABEL description="Defterdar Muhasebe - STK Muhasebe Sistemi"
+# Python ve build araçlarını yükle (better-sqlite3 için gerekli)
+RUN apk add --no-cache \
+    python3 \
+    make \
+    g++ \
+    sqlite \
+    sqlite-dev
 
+# Çalışma dizini
 WORKDIR /app
 
+# Package dosyalarını kopyala
 COPY package*.json ./
-RUN npm ci --only=production && npm cache clean --force
 
+# Dependencies'i yükle
+RUN npm ci --only=production --no-audit --no-fund
+
+# Uygulama dosyalarını kopyala
 COPY . .
 
-# data klasörünü oluştur ve izinleri aç
-RUN mkdir -p /app/data && chmod 777 /app/data
+# Veri klasörü oluştur
+RUN mkdir -p /app/data
 
+# Port
 EXPOSE 4500
 
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD wget -qO- http://localhost:4500/health || exit 1
+# Environment variables
+ENV NODE_ENV=production
+ENV PORT=4500
+ENV DB_PATH=/app/data/defterdar.db
 
+# Uygulama başlat
 CMD ["node", "server.js"]
