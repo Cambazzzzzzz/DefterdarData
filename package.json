@@ -1,6 +1,6 @@
 {
   "name": "defterdar-muhasebe",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "DefterdarMuhasebe - Profesyonel STK Muhasebe Sistemi",
   "main": "electron.js",
   "author": "CMS Team <info@cmsteam.com>",
@@ -41,6 +41,9 @@
     "nodeGypRebuild": false,
     "compression": "maximum",
     "artifactName": "${productName}-Setup-${version}.${ext}",
+    "directories": {
+      "output": "dist"
+    },
     "win": {
       "target": [
         {
@@ -50,12 +53,13 @@
           ]
         }
       ],
-      "icon": "assets/defterdar.ico",
+      "icon": "build/icon.ico",
       "publisherName": "CMS Team",
       "verifyUpdateCodeSignature": false,
       "requestedExecutionLevel": "asInvoker",
       "signAndEditExecutable": false,
-      "signDlls": false
+      "signDlls": false,
+      "legalTrademarks": "CMS Team"
     },
     "nsis": {
       "oneClick": false,
@@ -65,9 +69,9 @@
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
       "shortcutName": "DefterdarMuhasebe",
-      "installerIcon": "assets/defterdar.ico",
-      "uninstallerIcon": "assets/defterdar.ico",
-      "installerHeaderIcon": "assets/defterdar.ico",
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "installerHeaderIcon": "build/icon.ico",
       "deleteAppDataOnUninstall": false,
       "uninstallDisplayName": "DefterdarMuhasebe",
       "displayLanguageSelector": false,
