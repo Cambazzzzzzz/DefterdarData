@@ -4,6 +4,14 @@ let _kullaniciAyarlar = { logo_data: null, bayrak_data: null, kurulum_tamamlandi
 let _kullaniciAdi = '';
 // Pro sistemi kaldirildi - herkes sinirsizdir
 
+// Yedek alma uyarısı
+window.addEventListener('beforeunload', function(e) {
+  const message = 'Sayfayı kapatmadan önce verilerinizi yedeklemek ister misiniz?';
+  e.preventDefault();
+  e.returnValue = message;
+  return message;
+});
+
 
 (async function checkAuth() {
   const lastLogin = localStorage.getItem('defterdar-last-login');
@@ -2558,10 +2566,15 @@ async function yukleVideoIcinBagisci(file) {
 
     if (result) result.innerHTML = `
       <div class="badge badge-green" style="font-size:12px;padding:8px 14px">
-        <i class="fa-solid fa-circle-check"></i> Video yuklendi ve bagisciya atandi!
+        <i class="fa-solid fa-circle-check"></i> Video gönderildi! Bağışçı bilgileri korundu.
       </div>`;
-    toast('Video yuklendi');
-    setTimeout(() => closeModal(), 1500);
+    toast('Video gönderildi - Bağışçı bilgileri korundu');
+    
+    // Modal'ı kapatma, sadece başarı mesajı göster
+    setTimeout(() => {
+      if (result) result.innerHTML = '';
+      if (prog) prog.style.display = 'none';
+    }, 3000);
   } catch(e) {
     if (result) result.innerHTML = `<div class="badge badge-red" style="font-size:12px;padding:8px 14px"><i class="fa-solid fa-circle-xmark"></i> ${e.message}</div>`;
     toast(e.message, 'error');

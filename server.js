@@ -12,6 +12,7 @@ if (process.env.RAILWAY_ENVIRONMENT) {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
+    res.header('Content-Type', 'text/html; charset=UTF-8');
     if (req.method === 'OPTIONS') {
       res.sendStatus(200);
     } else {
@@ -19,6 +20,12 @@ if (process.env.RAILWAY_ENVIRONMENT) {
     }
   });
 }
+
+// UTF-8 encoding için middleware
+app.use((req, res, next) => {
+  res.charset = 'utf-8';
+  next();
+});
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
