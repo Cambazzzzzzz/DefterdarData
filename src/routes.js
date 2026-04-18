@@ -1,7 +1,5 @@
 const router = require('express').Router();
-const { getDb } = process.env.RAILWAY_ENVIRONMENT || process.env.PORT
-  ? require('./database-web')
-  : require('./database');
+const { getDb } = require('./database-web'); // Web deployment için database-web kullan
 
 // ─── AUTH MIDDLEWARE ────────────────────────────────────────────────────────
 function requireAuth(req, res, next) {
