@@ -31,10 +31,9 @@ app.use((req, res, next) => {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Static files middleware with proper headers and debugging
+// Static files middleware with proper headers
 app.use(express.static(path.join(__dirname, 'public'), {
   setHeaders: (res, path, stat) => {
-    console.log('Serving static file:', path);
     if (path.endsWith('.css')) {
       res.setHeader('Content-Type', 'text/css; charset=UTF-8');
     } else if (path.endsWith('.js')) {
@@ -92,33 +91,6 @@ app.get('/api/debug', (req, res) => {
   });
   
   res.json(debug);
-});
-
-app.get('/test', (req, res) => {
-  res.send(`
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="UTF-8">
-      <title>Server Test</title>
-      <style>
-        body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
-        .status { padding: 10px; margin: 10px 0; border-radius: 5px; }
-        .success { background: #d4edda; color: #155724; }
-        .info { background: #d1ecf1; color: #0c5460; }
-      </style>
-    </head>
-    <body>
-      <h1>Defterdar Server Test</h1>
-      <div class="status success">✓ Server is running</div>
-      <div class="status info">Port: ${PORT}</div>
-      <div class="status info">Environment: ${process.env.NODE_ENV || 'development'}</div>
-      <div class="status info">Railway: ${process.env.RAILWAY_ENVIRONMENT ? 'Yes' : 'No'}</div>
-      <div class="status info">Time: ${new Date().toISOString()}</div>
-      <p><a href="/test.html">Test Page</a> | <a href="/">Main App</a></p>
-    </body>
-    </html>
-  `);
 });
 
 app.get('/health', (req, res) => {

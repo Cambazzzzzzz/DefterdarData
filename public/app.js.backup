@@ -1346,7 +1346,7 @@ async function yazdirKurban(kurbanId, kurbanNo, tur) {
 
 function yazdirilabilirHTML(tip) {
   const icerik = document.getElementById('rapor-icerik');
-  const baslik = tip === 'kurbanlar' ? 'Kurban Listesi' : tip === 'bagiscilar' ? 'Bağışçı Listesi' : 'Tam Rapor';
+  const baslik = tip === 'kurbanlar' ? 'Kurban Listesi' : tip === 'bagiscilar' ? 'Bagisci Listesi' : 'Tam Rapor';
   const printStyle = 'body{font-family:Arial,sans-serif;font-size:12px;color:#000;margin:20px}' +
     '.header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;border-bottom:2px solid #1a2a50;padding-bottom:10px}' +
     '.header-left{font-size:18px;font-weight:bold;color:#1a2a50}' +
@@ -1366,7 +1366,7 @@ function yazdirilabilirHTML(tip) {
     '<div class="header">' +
     '<div style="display:flex;align-items:center;gap:10px">' +
     '<img src="http://127.0.0.1:4500/icder.png" style="height:48px;object-fit:contain" onerror="this.style.display=\'none\'" />' +
-    '<div class="header-left">DEFTERDAR MUHASEBE<small>' + baslik + ' — ' + new Date().toLocaleDateString('tr-TR') + '</small></div>' +
+    '<div class="header-left">DEFTERDAR MUHASEBE<small>' + baslik + ' &mdash; ' + new Date().toLocaleDateString('tr-TR') + '</small></div>' +
     '</div>' +
     '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">' +
     '<img src="http://127.0.0.1:4500/cad.png" style="height:48px;object-fit:contain" onerror="this.style.display=\'none\'" />' +
@@ -1393,7 +1393,7 @@ function kurbanYazdirHTML(kurbanNo, tur, hisseler, kurbanData) {
     rows += '</tr>';
   }
 
-  // Türk bayrağı SVG - her zaman sabit, dosyaya bağımlı değil
+  // T�rk bayra�� SVG - her zaman sabit, dosyaya ba��ml� de�il
   const turkBayrakSVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="140" height="93">
     <rect width="1200" height="800" fill="#E30A17"/>
     <circle cx="425" cy="400" r="200" fill="white"/>
@@ -1439,12 +1439,13 @@ function kurbanYazdirHTML(kurbanNo, tur, hisseler, kurbanData) {
     '<table>' +
     '<thead><tr>' +
     '<th style="width:60px;text-align:center">No</th>' +
-    '<th>İsim Soyisim</th>' +
-    '<th style="width:140px;text-align:center">Kurban Türü</th>' +
+    '<th>Isim Soyisim</th>' +
+    '<th style="width:140px;text-align:center">Kurban Turu</th>' +
     '</tr></thead>' +
     '<tbody>' + rows + '</tbody>' +
     '</table>' +
     '</body></html>';
+
 }
 
 // ===========================================================================
@@ -1656,9 +1657,9 @@ document.addEventListener('DOMContentLoaded', () => {
 // --- BAGISCI YAZDIR / EXCEL ---
 
 function yazdirBagiscilar() {
-  if (!S.orgId) return toast('Önce organizasyon seçin', 'error');
+  if (!S.orgId) return toast('Once organizasyon secin', 'error');
   const tbody = document.getElementById('bagisci-tbody');
-  if (!tbody) return toast('Bağışçı listesi yüklü değil', 'error');
+  if (!tbody) return toast('Bagisci listesi yuklu degil', 'error');
 
   const rows = Array.from(tbody.querySelectorAll('tr')).map(tr => {
     const cells = tr.querySelectorAll('td');
@@ -1692,17 +1693,17 @@ function yazdirBagiscilar() {
     @media print { body { margin: 0; } }
   `;
 
-  const html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Bağışçı Listesi</title>' +
+  const html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Bagisci Listesi</title>' +
     '<style>' + printStyle + '</style></head><body>' +
     '<div class="header">' +
     '<img src="' + logoSrc + '" alt="Logo" onerror="this.style.visibility=\'hidden\'"/>' +
     '<div class="header-info">' +
-    '<div class="title">' + esc(_kullaniciAdi || 'Kullanıcı') + '</div>' +
-    '<div class="sub">Bağışçı Listesi — ' + new Date().toLocaleDateString('tr-TR') + '</div>' +
+    '<div class="title">' + esc(_kullaniciAdi || 'Kullanici') + '</div>' +
+    '<div class="sub">Ba����� Listesi &mdash; ' + new Date().toLocaleDateString('tr-TR') + '</div>' +
     '</div>' +
     '<div class="header-right">Organizasyon: <strong>' + esc(S.orgAd) + '</strong><br>' + S.orgYil + '</div>' +
     '</div>' +
-    '<table><thead><tr><th>#</th><th>Bağışçı Adı</th><th>Telefon</th><th>Kimin Adına</th><th>Kurban No</th><th>Hisse</th><th>Tür</th><th>Ödeme</th><th>Video</th></tr></thead>' +
+    '<table><thead><tr><th>#</th><th>Ba����� Ad�</th><th>Telefon</th><th>Kimin Ad�na</th><th>Kurban No</th><th>Hisse</th><th>T�r</th><th>�deme</th><th>Video</th></tr></thead>' +
     '<tbody>' + rows + '</tbody></table>' +
     '<div class="footer"><span>Defterdar Muhasebe</span><span>' + new Date().toLocaleString('tr-TR') + '</span></div>' +
     '</body></html>';
