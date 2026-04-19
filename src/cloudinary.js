@@ -23,24 +23,6 @@ const upload = multer({
 router.post('/upload', upload.single('dosya'), async (req, res) => {
   if (!req.file) return res.status(400).json({ hata: 'Dosya bulunamadi' });
   try {
-    // PRO kontrolü - normal üye max 3 medya
-    const surum = req.session?.surum || 'normal';
-    const rol = req.session?.rol || 'kullanici';
-    if (surum !== 'pro' && rol !== 'admin') {
-      // Mevcut medya sayısını kontrol et
-      const folder = req.body.folder || 'defterdar';
-      const userFolder = `defterdar/user-${req.session?.userId || 'unknown'}`;
-      try {
-        const existing = await cloudinary.search
-          .expression(`folder:${userFolder}`)
-          .max_results(10)
-          .execute();
-        if (existing.total_count >= 3) {
-          return res.status(403).json({ hata: 'Normal uyelerde maksimum 3 medya yuklenebilir. PRO surume gecin!', proGerekli: true });
-        }
-      } catch(e) {}
-    }
-
     const isVideo = req.file.mimetype.startsWith('video/');
     const folder = req.body.folder || `defterdar/user-${req.session?.userId || 'unknown'}`;
     const result = await new Promise((resolve, reject) => {
@@ -65,7 +47,6 @@ router.post('/upload', upload.single('dosya'), async (req, res) => {
       duration: result.duration || null,
     });
   } catch (e) {
-    if (e.proGerekli) return res.status(403).json(e);
     res.status(500).json({ hata: e.message });
   }
 });

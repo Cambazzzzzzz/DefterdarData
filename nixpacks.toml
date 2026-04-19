@@ -1,14 +1,15 @@
 [phases.setup]
-nixPkgs = ['nodejs_20', 'python3', 'gnumake', 'gcc']
+nixPkgs = ['nodejs-18_x', 'npm-9_x']
 
 [phases.install]
-cmds = ['npm ci']
+cmds = ['npm ci --only=production']
 
 [phases.build]
 cmds = ['echo "Build completed"']
 
 [start]
-cmd = 'npm start'
+cmd = 'node server.js'
 
 [variables]
 NODE_ENV = 'production'
+PORT = '4500'

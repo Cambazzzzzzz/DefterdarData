@@ -1,42 +1,38 @@
-# Defterdar Muhasebe - Docker Image
+# DefterdarMuhasebe - Railway Deployment
+# Node.js + better-sqlite3 için optimize edilmiş Dockerfile
+
 FROM node:18-alpine
 
-# Metadata
-LABEL maintainer="CMS Team"
-LABEL description="Defterdar Muhasebe - STK Muhasebe Sistemi"
-LABEL version="1.1.0"
+# Python ve build araçlarını yükle (better-sqlite3 için gerekli)
+RUN apk add --no-cache \
+    python3 \
+    make \
+    g++ \
+    sqlite \
+    sqlite-dev
 
-# Working directory
+# Çalışma dizini
 WORKDIR /app
 
-# Copy package files
+# Package dosyalarını kopyala
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci --only=production && npm cache clean --force
+# Dependencies'i yükle
+RUN npm ci --only=production --no-audit --no-fund
 
-# Copy application files
+# Uygulama dosyalarını kopyala
 COPY . .
 
-# Create data directory
-RUN mkdir -p data && chmod 755 data
+# Veri klasörü oluştur
+RUN mkdir -p /app/data
 
-# Create non-root user
-RUN addgroup -g 1001 -S defterdar && \
-    adduser -S defterdar -u 1001 -G defterdar
-
-# Change ownership
-RUN chown -R defterdar:defterdar /app
-
-# Switch to non-root user
-USER defterdar
-
-# Expose port
+# Port
 EXPOSE 4500
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost:4500/api/auth/durum || exit 1
+# Environment variables
+ENV NODE_ENV=production
+ENV PORT=4500
+ENV DB_PATH=/app/data/defterdar.db
 
-# Start command
-CMD ["npm", "start"]
+# Uygulama başlat
+CMD ["node", "server.js"]

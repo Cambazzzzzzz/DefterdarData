@@ -9,9 +9,14 @@ let server;
 const PORT = 4500;
 
 function waitForServer(cb, tries = 0) {
-  http.get(`http://127.0.0.1:${PORT}/api/organizasyonlar`, () => cb())
+  http.get(`http://127.0.0.1:${PORT}/health`, () => cb())
     .on('error', () => {
       if (tries < 40) setTimeout(() => waitForServer(cb, tries + 1), 300);
+      else {
+        // 12 saniye sonra hala server yoksa direkt aç
+        console.log('Server timeout, opening anyway...');
+        cb();
+      }
     });
 }
 
@@ -31,26 +36,19 @@ function createMain() {
   mainWindow = new BrowserWindow({
     width: 1360, height: 860,
     minWidth: 1024, minHeight: 680,
-    show: false,
+    show: true, // DIREKT GÖSTER
     icon: path.join(__dirname, 'assets', 'defterdar.ico'),
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
       preload: path.join(__dirname, 'preload.js')
     },
-    title: 'Defterdar Muhasebe'
+    title: 'DefterdarMuhasebe'
   });
 
   mainWindow.loadURL(`http://127.0.0.1:${PORT}`);
   mainWindow.setMenuBarVisibility(false);
-
-  mainWindow.once('ready-to-show', () => {
-    setTimeout(() => {
-      if (splashWindow && !splashWindow.isDestroyed()) splashWindow.close();
-      mainWindow.show();
-      mainWindow.focus();
-    }, 2000);
-  });
+  mainWindow.focus(); // ODAKLAN
 
   // Kapatma öncesi yedek sor
   let isQuitting = false;
@@ -110,11 +108,14 @@ ipcMain.handle('download-file', async (event, url, filename) => {
       req.end();
     });
 
+    const isJson = filename.endsWith('.json');
     const { filePath, canceled } = await dialog.showSaveDialog(mainWindow, {
       defaultPath: filename,
-      filters: [{ name: 'Excel Dosyasi', extensions: ['xlsx'] }]
+      filters: isJson
+        ? [{ name: 'JSON Yedek', extensions: ['json'] }]
+        : [{ name: 'Excel Dosyasi', extensions: ['xlsx'] }]
     });
-    if (canceled || !filePath) return { ok: false };
+    if (canceled || !filePath) return { ok: false, canceled: true };
     fs.writeFileSync(filePath, buf);
     return { ok: true, path: filePath };
   } catch (e) {
@@ -166,6 +167,22 @@ ipcMain.handle('force-quit', () => {
   app.quit();
 });
 
+// ── IPC: Splash kapat
+ipcMain.handle('close-splash', () => {
+  if (splashWindow && !splashWindow.isDestroyed()) {
+    splashWindow.close();
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      mainWindow.show();
+      mainWindow.focus();
+    }
+  }
+});
+
+// ── IPC: Versiyon al
+ipcMain.handle('get-version', () => {
+  return app.getVersion();
+});
+
 app.whenReady().then(() => {
   // Windows güvenlik duvarı kuralı ekle (sessizce)
   try {
@@ -173,13 +190,22 @@ app.whenReady().then(() => {
     execSync('netsh advfirewall firewall add rule name="Defterdar Muhasebe 4500" dir=in action=allow protocol=TCP localport=4500', { stdio: 'ignore' });
   } catch(e) {}
 
-  createSplash();
+  // SPLASH BYPASS - DIREKT ANA UYGULAMA AÇ
   const expressApp = require('./server');
   server = http.createServer(expressApp);
+  
   server.on('error', (err) => {
-    if (err.code === 'EADDRINUSE') waitForServer(() => createMain());
+    if (err.code === 'EADDRINUSE') {
+      // Port kullanımda, direkt ana uygulamayı aç
+      createMain();
+    }
   });
-  server.on('listening', () => waitForServer(() => createMain()));
+  
+  server.on('listening', () => {
+    // Server hazır, ana uygulamayı aç
+    createMain();
+  });
+  
   server.listen(PORT, '0.0.0.0');
 });
 

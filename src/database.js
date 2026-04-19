@@ -152,6 +152,8 @@ const SCHEMA = `
     kimin_adina_telefon TEXT,
     odeme_durumu TEXT DEFAULT 'bekliyor',
     video_ister INTEGER DEFAULT 0,
+    video_url TEXT,
+    video_public_id TEXT,
     aciklama TEXT,
     olusturma DATETIME DEFAULT CURRENT_TIMESTAMP
   );
@@ -181,6 +183,8 @@ async function getDb() {
   try { sqlDb.run("ALTER TABLE kurbanlar ADD COLUMN kesen_kisi TEXT"); } catch(e) {}
   try { sqlDb.run("ALTER TABLE kurbanlar ADD COLUMN kucukbas_sayi INTEGER DEFAULT 1"); } catch(e) {}
   try { sqlDb.run("ALTER TABLE organizasyonlar ADD COLUMN kullanici_id INTEGER DEFAULT 1"); } catch(e) {}
+  try { sqlDb.run("ALTER TABLE hisseler ADD COLUMN video_url TEXT"); } catch(e) {}
+  try { sqlDb.run("ALTER TABLE hisseler ADD COLUMN video_public_id TEXT"); } catch(e) {}
   try { sqlDb.run("CREATE TABLE IF NOT EXISTS cop_kutusu (id INTEGER PRIMARY KEY AUTOINCREMENT, tur TEXT NOT NULL, veri TEXT NOT NULL, silme_tarihi DATETIME DEFAULT CURRENT_TIMESTAMP)"); } catch(e) {}
   try { sqlDb.run("CREATE TABLE IF NOT EXISTS kullanicilar (id INTEGER PRIMARY KEY AUTOINCREMENT, kullanici_adi TEXT UNIQUE NOT NULL, email TEXT UNIQUE NOT NULL, sifre_hash TEXT NOT NULL, surum TEXT DEFAULT 'normal', rol TEXT DEFAULT 'kullanici', durum TEXT DEFAULT 'aktif', kayit_ip TEXT, son_ip TEXT, kayit_tarihi DATETIME DEFAULT CURRENT_TIMESTAMP)"); } catch(e) {}
   try { sqlDb.run("CREATE TABLE IF NOT EXISTS pro_keyler (id INTEGER PRIMARY KEY AUTOINCREMENT, key_kodu TEXT UNIQUE NOT NULL, kullanildi INTEGER DEFAULT 0, kullanan_kullanici_id INTEGER, kullanan_adi TEXT, olusturma_tarihi DATETIME DEFAULT CURRENT_TIMESTAMP, kullanilma_tarihi DATETIME)"); } catch(e) {}
