@@ -1742,9 +1742,21 @@ async function renderYedekGeriYukle() {
         </div>
         <input type="file" id="yedek-dosya-input" accept=".json" style="display:none" onchange="yedekDosyaSecildi(this)"/>
         <button class="btn btn-primary" onclick="document.getElementById('yedek-dosya-input').click()">
-          <i class="fa-solid fa-upload"></i> Yedek Dosyası Seç
+          <i class="fa-solid fa-upload"></i> Yedek Dosyası Seç (JSON)
         </button>
       </div>
+    </div>
+
+    <div class="card" style="border-color:rgba(245,158,11,0.3);background:rgba(245,158,11,0.05)">
+      <div class="card-title"><i class="fa-solid fa-file-excel"></i> Excel Yedekten Ayarları Geri Yükle</div>
+      <div style="margin-bottom:16px;font-size:13px;color:var(--text2);line-height:1.7">
+        Excel yedek dosyanızdan yazdırma ayarlarınızı (logo ve bayrak) geri yükleyin.
+        Bu özellik sadece yazdırma ayarlarını geri yükler, organizasyon verilerini değil.
+      </div>
+      <input type="file" id="excel-yedek-input" accept=".xlsx" style="display:none" onchange="excelYedekSecildi(this)"/>
+      <button class="btn btn-purple" onclick="document.getElementById('excel-yedek-input').click()">
+        <i class="fa-solid fa-file-excel"></i> Excel Yedek Seç (.xlsx)
+      </button>
     </div>
 
     <div class="card">
@@ -1757,6 +1769,12 @@ async function renderYedekGeriYukle() {
           <li>JSON formatında, okunabilir ve taşınabilir</li>
           <li>Geri yükleme sırasında mevcut veriler korunur</li>
           <li>Aynı organizasyon varsa güncellenir, yoksa yeni eklenir</li>
+        </ul>
+        <p style="margin-top:12px"><strong style="color:var(--text)">Excel Yedek Sistemi:</strong></p>
+        <ul style="margin:8px 0;padding-left:20px">
+          <li>Organizasyon Excel yedeklerinde yazdırma ayarları (logo ve bayrak) da saklanır</li>
+          <li>Excel yedekten sadece yazdırma ayarlarını geri yükleyebilirsiniz</li>
+          <li>Mevcut ayarlarınız varsa üzerine yazılmaz, sadece boş olanlar doldurulur</li>
         </ul>
         <p style="margin-top:12px"><strong style="color:var(--text)">Öneriler:</strong></p>
         <ul style="margin:8px 0;padding-left:20px">
@@ -1860,6 +1878,81 @@ async function yedekDosyaSecildi(input) {
     
   } catch(e) {
     toast('Yedek yüklenemedi: ' + e.message, 'error');
+    input.value = '';
+  }
+}
+
+async function excelYedekSecildi(input) {
+  const file = input.files[0];
+  if (!file) return;
+  
+  if (!file.name.endsWith('.xlsx')) {
+    toast('Lütfen geçerli bir Excel dosyası seçin (.xlsx)', 'error');
+    input.value = '';
+    return;
+  }
+  
+  if (!confirm(`"${file.name}" Excel dosyasından yazdırma ayarları (logo ve bayrak) geri yüklenecek. Devam etmek istiyor musunuz?`)) {
+    input.value = '';
+    return;
+  }
+  
+  try {
+    toast('Excel yedek yükleniyor...');
+    
+    const formData = new FormData();
+    formData.append('dosya', file);
+    
+    const r = await fetch('/api/excel-geri-yukle', {
+      method: 'POST',
+      body: formData
+    });
+    
+    const d = await r.json();
+    
+    if (!r.ok) {
+      throw new Error(d.hata || 'Excel yedek yüklenemedi');
+    }
+    
+    toast('Excel yedek başarıyla geri yüklendi!');
+    
+    // Ayarları yeniden yükle
+    await yukleKullaniciAyarlar();
+    
+    // Detaylı bilgi göster
+    openModal('Excel Yedek Geri Yüklendi', `
+      <div style="text-align:center;margin-bottom:20px">
+        <div style="font-size:48px;margin-bottom:12px">✅</div>
+        <div style="font-size:16px;font-weight:600;color:var(--green);margin-bottom:8px">Excel Yedek Başarıyla Geri Yüklendi</div>
+        <div style="font-size:13px;color:var(--text2)">${d.mesaj || 'Yazdırma ayarlarınız geri yüklendi'}</div>
+      </div>
+      
+      ${d.detay && d.detay.ayarlar ? `
+        <div style="background:var(--bg4);border-radius:8px;padding:14px;margin-bottom:16px;text-align:center">
+          <i class="fa-solid fa-check-circle" style="font-size:32px;color:var(--green);margin-bottom:8px"></i>
+          <div style="font-size:13px;color:var(--text2)">Logo ve bayrak görselleri başarıyla geri yüklendi</div>
+        </div>
+      ` : `
+        <div style="background:var(--bg5);border-radius:8px;padding:14px;margin-bottom:16px;text-align:center">
+          <i class="fa-solid fa-info-circle" style="font-size:32px;color:var(--text3);margin-bottom:8px"></i>
+          <div style="font-size:13px;color:var(--text3)">Excel dosyasında yazdırma ayarları bulunamadı</div>
+        </div>
+      `}
+      
+      <div class="form-actions">
+        <button class="btn btn-primary" onclick="closeModal();showPage('ayarlar')">
+          <i class="fa-solid fa-gear"></i> Ayarlara Git
+        </button>
+        <button class="btn btn-secondary" onclick="closeModal()">
+          <i class="fa-solid fa-check"></i> Tamam
+        </button>
+      </div>
+    `, false, 'file-excel');
+    
+    input.value = '';
+    
+  } catch(e) {
+    toast('Excel yedek yüklenemedi: ' + e.message, 'error');
     input.value = '';
   }
 }

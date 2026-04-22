@@ -349,6 +349,25 @@ router.get('/organizasyonlar/:orgId/excel', async (req, res) => {
     });
   });
 
+  // ── Sayfa 3: Yazdırma Ayarları (Logo ve Bayrak)
+  const ayarlar = db.prepare('SELECT logo_data, bayrak_data FROM ayarlar WHERE kullanici_id=?').get(req.session.userId);
+  if (ayarlar && (ayarlar.logo_data || ayarlar.bayrak_data)) {
+    const wsA = wb.addWorksheet('Yazdirma Ayarlari');
+    wsA.columns = [
+      { header: 'Ayar', key: 'ayar', width: 20 },
+      { header: 'Veri', key: 'veri', width: 100 },
+    ];
+    wsA.getRow(1).font = { bold: true, color: { argb: 'FFFFFFFF' } };
+    wsA.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF1a2a50' } };
+    
+    if (ayarlar.logo_data) {
+      wsA.addRow({ ayar: 'Logo', veri: ayarlar.logo_data });
+    }
+    if (ayarlar.bayrak_data) {
+      wsA.addRow({ ayar: 'Bayrak', veri: ayarlar.bayrak_data });
+    }
+  }
+
   res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
   res.setHeader('Content-Disposition', 'attachment; filename="defterdar-rapor.xlsx"');
   await wb.xlsx.write(res);
@@ -690,6 +709,63 @@ router.post('/yedek-geri-yukle', upload.single('dosya'), async (req, res) => {
     });
   } catch(e) {
     res.status(500).json({ hata: 'Yedek dosyası işlenemedi: ' + e.message });
+  }
+});
+
+// ─── EXCEL'DEN GERİ YÜKLEME ────────────────────────────────────────────────
+
+router.post('/excel-geri-yukle', upload.single('dosya'), async (req, res) => {
+  if (!req.file) return res.status(400).json({ hata: 'Dosya bulunamadı' });
+  
+  try {
+    const db = await getDb();
+    const ExcelJS = require('exceljs');
+    const wb = new ExcelJS.Workbook();
+    await wb.xlsx.load(req.file.buffer);
+
+    let istatistik = { 
+      organizasyonlar: 0, 
+      kurbanlar: 0, 
+      hisseler: 0,
+      ayarlar: 0
+    };
+
+    // Yazdırma Ayarları sayfasını kontrol et
+    const wsAyarlar = wb.getWorksheet('Yazdirma Ayarlari');
+    if (wsAyarlar) {
+      let logoData = null;
+      let bayrakData = null;
+
+      wsAyarlar.eachRow((row, rowNumber) => {
+        if (rowNumber === 1) return; // Header atla
+        const ayar = row.getCell(1).value;
+        const veri = row.getCell(2).value;
+        
+        if (ayar === 'Logo' && veri) logoData = veri;
+        if (ayar === 'Bayrak' && veri) bayrakData = veri;
+      });
+
+      // Ayarları kaydet
+      if (logoData || bayrakData) {
+        const mevcutAyar = db.prepare('SELECT id FROM ayarlar WHERE kullanici_id=?').get(req.session.userId);
+        if (mevcutAyar) {
+          db.prepare('UPDATE ayarlar SET logo_data=COALESCE(?, logo_data), bayrak_data=COALESCE(?, bayrak_data) WHERE kullanici_id=?')
+            .run(logoData || null, bayrakData || null, req.session.userId);
+        } else {
+          db.prepare('INSERT INTO ayarlar (kullanici_id, logo_data, bayrak_data, kurulum_tamamlandi) VALUES (?,?,?,1)')
+            .run(req.session.userId, logoData || null, bayrakData || null);
+        }
+        istatistik.ayarlar = 1;
+      }
+    }
+
+    res.json({
+      ok: true,
+      mesaj: `Excel yedek dosyası başarıyla geri yüklendi. ${istatistik.ayarlar ? 'Yazdırma ayarları (logo ve bayrak) geri yüklendi.' : ''}`,
+      detay: istatistik
+    });
+  } catch(e) {
+    res.status(500).json({ hata: 'Excel dosyası işlenemedi: ' + e.message });
   }
 });
 
