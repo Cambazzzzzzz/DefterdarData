@@ -499,7 +499,11 @@ function filterKurbanlar() {
             <div id="row-print-menu-${k.id}" class="dropdown-menu" style="display:none;position:absolute;top:100%;right:0;margin-top:4px;background:var(--card-bg);border:1px solid var(--border);border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15);min-width:180px;z-index:1000;white-space:nowrap">
               <div onclick="yazdirKurbanSatir(${k.id})" style="padding:10px 14px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:background 0.2s" onmouseover="this.style.background='var(--hover-bg)'" onmouseout="this.style.background='transparent'">
                 <i class="fa-solid fa-print" style="width:20px;color:var(--accent)"></i>
-                <span>Yazdır</span>
+                <span>Yazdır (Yatay)</span>
+              </div>
+              <div onclick="excelIndirKurbanSatir(${k.id})" style="padding:10px 14px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:background 0.2s" onmouseover="this.style.background='var(--hover-bg)'" onmouseout="this.style.background='transparent'">
+                <i class="fa-solid fa-file-excel" style="width:20px;color:var(--green)"></i>
+                <span>Excel İndir</span>
               </div>
               <div onclick="excelKurbanSatir(${k.id})" style="padding:10px 14px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:background 0.2s" onmouseover="this.style.background='var(--hover-bg)'" onmouseout="this.style.background='transparent'">
                 <i class="fa-solid fa-file-excel" style="width:20px;color:var(--green)"></i>
@@ -1062,7 +1066,8 @@ async function yukleRapor() {
     html += '<td>' + durum + '</td>';
     html += '<td>' + (k.kesim_tarihi||'-') + '</td>';
     html += '<td><div style="display:flex;gap:4px">';
-    html += '<button class="btn btn-purple btn-sm" onclick="yazdirKurban(' + k.id + ',' + k.kurban_no + ',\'' + k.tur + '\')"><i class="fa-solid fa-print"></i> ' + (k.tur==='buyukbas'?'7li':'Tekli') + '</button>';
+    html += '<button class="btn btn-purple btn-sm" onclick="yazdirKurban(' + k.id + ',' + k.kurban_no + ',\'' + k.tur + '\')"><i class="fa-solid fa-print"></i> Yazdır</button>';
+    html += '<button class="btn btn-success btn-sm" onclick="excelIndirKurban(' + k.id + ')"><i class="fa-solid fa-file-excel"></i> Excel</button>';
     html += '</div></td>';
     html += '</tr>';
   });
@@ -1119,46 +1124,15 @@ function yazdir(tip) {
 }
 
 async function yazdirKurban(kurbanId, kurbanNo, tur) {
-  // Yazdırma yönlendirme seçimi modal
-  const modalHtml = `
-    <div style="text-align:center;padding:20px">
-      <div style="font-size:18px;font-weight:600;margin-bottom:20px;color:var(--text1)">
-        <i class="fa-solid fa-print" style="color:var(--accent);margin-right:8px"></i>
-        Yazdırma Yönü Seçin
-      </div>
-      <div style="display:flex;gap:16px;justify-content:center;margin-bottom:20px">
-        <div onclick="yazdirKurbanWithOrientation(${kurbanId}, ${kurbanNo}, '${tur}', 'portrait')" 
-             style="cursor:pointer;padding:24px;border:2px solid var(--border);border-radius:12px;background:var(--card-bg);transition:all 0.2s;width:140px"
-             onmouseover="this.style.borderColor='var(--accent)';this.style.background='rgba(79,126,248,0.1)'"
-             onmouseout="this.style.borderColor='var(--border)';this.style.background='var(--card-bg)'">
-          <i class="fa-solid fa-file-lines" style="font-size:48px;color:var(--accent);margin-bottom:12px"></i>
-          <div style="font-weight:600;font-size:15px;color:var(--text1)">Dikey</div>
-          <div style="font-size:12px;color:var(--text3);margin-top:4px">Portrait</div>
-        </div>
-        <div onclick="yazdirKurbanWithOrientation(${kurbanId}, ${kurbanNo}, '${tur}', 'landscape')" 
-             style="cursor:pointer;padding:24px;border:2px solid var(--border);border-radius:12px;background:var(--card-bg);transition:all 0.2s;width:140px"
-             onmouseover="this.style.borderColor='var(--accent)';this.style.background='rgba(79,126,248,0.1)'"
-             onmouseout="this.style.borderColor='var(--border)';this.style.background='var(--card-bg)'">
-          <i class="fa-solid fa-file" style="font-size:48px;color:var(--green);margin-bottom:12px;transform:rotate(90deg)"></i>
-          <div style="font-weight:600;font-size:15px;color:var(--text1)">Yatay</div>
-          <div style="font-size:12px;color:var(--text3);margin-top:4px">Landscape</div>
-        </div>
-      </div>
-      <button class="btn btn-secondary" onclick="closeModal()">
-        <i class="fa-solid fa-xmark"></i> İptal
-      </button>
-    </div>
-  `;
-  
-  openModal('Yazdırma Ayarları', modalHtml);
-}
-
-async function yazdirKurbanWithOrientation(kurbanId, kurbanNo, tur, orientation) {
-  closeModal();
+  // Direkt yatay (landscape) yazdır
   const hisseler = await api('GET', '/kurbanlar/' + kurbanId + '/hisseler');
   const kurbanData = _kurbanlar.find(k => k.id === kurbanId) || {};
-  const html = kurbanYazdirHTML(kurbanNo, tur, hisseler, kurbanData, orientation);
+  const html = kurbanYazdirHTML(kurbanNo, tur, hisseler, kurbanData, 'landscape');
   printHTML(html);
+}
+
+async function excelIndirKurban(kurbanId) {
+  await downloadExcel('/kurbanlar/' + kurbanId + '/excel', 'kurban-' + kurbanId + '.xlsx');
 }
 
 function yazdirilabilirHTML(tip) {
@@ -1698,6 +1672,10 @@ async function yazdirKurbanSatir(kurbanId) {
   const k = _kurbanlar.find(x => x.id === kurbanId);
   if (!k) return;
   await yazdirKurban(kurbanId, k.kurban_no, k.tur);
+}
+
+async function excelIndirKurbanSatir(kurbanId) {
+  await excelIndirKurban(kurbanId);
 }
 
 async function excelKurbanSatir(kurbanId) {
