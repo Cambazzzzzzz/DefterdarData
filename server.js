@@ -19,24 +19,48 @@ app.use(session({
 app.use('/api/auth', require('./src/auth'));
 app.use('/api', require('./src/routes'));
 app.use('/api/medya', require('./src/cloudinary'));
+app.use('/api/destek', require('./src/destek-routes'));
+app.use('/api/admin', require('./src/admin-routes'));
 
 app.get('/giris', (req, res) => res.sendFile(path.join(__dirname, 'public', 'giris.html')));
 app.get('/kayit', (req, res) => res.sendFile(path.join(__dirname, 'public', 'giris.html')));
 app.get('/icder-giris', (req, res) => res.sendFile(path.join(__dirname, 'public', 'icder-giris.html')));
+app.get('/admin-giris', (req, res) => res.sendFile(path.join(__dirname, 'public', 'admin-giris.html')));
+app.get('/admin', (req, res) => {
+  // Admin girişi kontrolü
+  if (!req.session.adminGiris) {
+    return res.redirect('/admin-giris');
+  }
+  res.sendFile(path.join(__dirname, 'public', 'admin.html'));
+});
 
 // İçder giriş kontrolü middleware
-function icderGirisKontrol(req, res, next) {
-  // API istekleri için kontrol yapma
-  if (req.path.startsWith('/api') || req.path.startsWith('/fa') || req.path.startsWith('/icder-giris') || req.path.includes('.')) {
+async function icderGirisKontrol(req, res, next) {
+  // API istekleri, statik dosyalar ve giriş sayfası için kontrol yapma
+  if (req.path.startsWith('/api') || 
+      req.path.startsWith('/fa') || 
+      req.path === '/icder-giris' || 
+      req.path === '/icder-giris.html' ||
+      req.path === '/admin' ||
+      req.path === '/admin-giris' ||
+      req.path === '/admin-giris.html' ||
+      req.path.includes('.css') ||
+      req.path.includes('.js') ||
+      req.path.includes('.png') ||
+      req.path.includes('.jpg') ||
+      req.path.includes('.ico')) {
     return next();
   }
   
   // İçder giriş kontrolü
   if (req.session.icderGiris) {
     const gecenSure = Date.now() - req.session.icderGiris;
-    const birGun = 24 * 60 * 60 * 1000; // 24 saat
-    if (gecenSure < birGun) {
+    const yirmidortSaat = 24 * 60 * 60 * 1000; // 24 saat
+    if (gecenSure < yirmidortSaat) {
       return next(); // Giriş yapılmış ve 24 saat geçmemiş
+    } else {
+      // Oturum süresi dolmuş, session'ı temizle
+      delete req.session.icderGiris;
     }
   }
   

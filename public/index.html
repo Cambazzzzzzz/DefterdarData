@@ -21,6 +21,9 @@
     <div class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="Tema Değiştir">
       <i class="fa-solid fa-palette" id="theme-icon"></i>
     </div>
+    <button class="btn btn-danger btn-sm" onclick="cikisYap()" title="Çıkış Yap" style="margin-left:8px">
+      <i class="fa-solid fa-right-from-bracket"></i> Çıkış
+    </button>
     <div class="topbar-dot" title="Sistem aktif"></div>
   </div>
 </div>
@@ -62,12 +65,17 @@
       <i class="fa-solid fa-shield-halved"></i> Denetim Masası
     </div>
     <div class="sidebar-item" onclick="modalAyarlar()">
-      <i class="fa-solid fa-gear"></i> Yazdırma Ayarları
+      <i class="fa-solid fa-gear"></i> Ayarlar
     </div>
     <hr class="sidebar-divider"/>
     <div class="sidebar-section">Medya</div>
     <div class="sidebar-item" data-page="medya" onclick="showPage('medya')">
       <i class="fa-solid fa-photo-film"></i> Medya Deposu
+    </div>
+    <hr class="sidebar-divider"/>
+    <div class="sidebar-section">Destek</div>
+    <div class="sidebar-item" data-page="destek" onclick="showPage('destek')">
+      <i class="fa-solid fa-headset"></i> Destek Hattı
     </div>
   </nav>
 

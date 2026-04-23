@@ -74,17 +74,20 @@ router.post('/icder-sifre-kontrol', async (req, res) => {
 
 // ─── İÇDER ŞİFRE DEĞİŞTİRME ────────────────────────────────────────────────
 router.post('/icder-sifre-degistir', async (req, res) => {
-  const { yeni_sifre, yonetici_sifre } = req.body;
-  if (!yeni_sifre || !yonetici_sifre) {
-    return res.status(400).json({ hata: 'Tüm alanlar gerekli' });
-  }
-
-  // Yönetici şifresini kontrol et
-  if (yonetici_sifre !== 'İcderYetkili_00571') {
-    return res.status(401).json({ hata: 'Yönetici şifresi yanlış' });
+  const { mevcut_sifre, yeni_sifre } = req.body;
+  if (!mevcut_sifre || !yeni_sifre) {
+    return res.status(400).json({ hata: 'Mevcut şifre ve yeni şifre gerekli' });
   }
 
   const db = await getDb();
+  // Mevcut şifreyi kontrol et
+  const ayar = db.prepare('SELECT icder_sifre FROM ayarlar WHERE kullanici_id=1').get();
+  const mevcutSifre = ayar?.icder_sifre || '571571'; // Varsayılan şifre
+
+  if (mevcut_sifre !== mevcutSifre) {
+    return res.status(401).json({ hata: 'Mevcut şifre yanlış' });
+  }
+
   // Ayarlar tablosunda şifreyi güncelle
   const mevcut = db.prepare('SELECT id FROM ayarlar WHERE kullanici_id=1').get();
   if (mevcut) {
