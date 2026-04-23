@@ -492,29 +492,8 @@ function filterKurbanlar() {
       <td>
         <div style="display:flex;gap:4px;flex-wrap:wrap">
           <button class="btn btn-purple btn-sm" onclick="modalHisseler(${k.id},${k.kurban_no},'${k.tur}')"><i class="fa-solid fa-users"></i> Hisseler</button>
-          <div style="position:relative">
-            <button class="btn btn-secondary btn-sm btn-icon" title="Yazdırma Seçenekleri" onclick="toggleRowPrintMenu(event, ${k.id})">
-              <i class="fa-solid fa-print"></i>
-            </button>
-            <div id="row-print-menu-${k.id}" class="dropdown-menu" style="display:none;position:absolute;top:100%;right:0;margin-top:4px;background:var(--card-bg);border:1px solid var(--border);border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15);min-width:180px;z-index:1000;white-space:nowrap">
-              <div onclick="yazdirKurbanSatir(${k.id})" style="padding:10px 14px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:background 0.2s" onmouseover="this.style.background='var(--hover-bg)'" onmouseout="this.style.background='transparent'">
-                <i class="fa-solid fa-print" style="width:20px;color:var(--accent)"></i>
-                <span>Yazdır (Yatay)</span>
-              </div>
-              <div onclick="yazdirKurbanDikey(${k.id}, ${k.kurban_no}, '${k.tur}')" style="padding:10px 14px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:background 0.2s" onmouseover="this.style.background='var(--hover-bg)'" onmouseout="this.style.background='transparent'">
-                <i class="fa-solid fa-print" style="width:20px;color:var(--green)"></i>
-                <span>Yazdır (Dikey)</span>
-              </div>
-              <div onclick="excelIndirKurbanSatir(${k.id})" style="padding:10px 14px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:background 0.2s" onmouseover="this.style.background='var(--hover-bg)'" onmouseout="this.style.background='transparent'">
-                <i class="fa-solid fa-file-excel" style="width:20px;color:var(--green)"></i>
-                <span>Excel İndir</span>
-              </div>
-              <div onclick="excelKurbanSatir(${k.id})" style="padding:10px 14px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:background 0.2s" onmouseover="this.style.background='var(--hover-bg)'" onmouseout="this.style.background='transparent'">
-                <i class="fa-solid fa-file-excel" style="width:20px;color:var(--green)"></i>
-                <span>Excel İndir</span>
-              </div>
-            </div>
-          </div>
+          <button class="btn btn-secondary btn-sm btn-icon" title="Yazdır" onclick="modalYazdirSecim(${k.id}, ${k.kurban_no}, '${k.tur}')"><i class="fa-solid fa-print"></i></button>
+          <button class="btn btn-green btn-sm btn-icon" title="Excel İndir" onclick="excelIndirKurbanSatir(${k.id})"><i class="fa-solid fa-file-excel"></i></button>
           <button class="btn btn-secondary btn-sm btn-icon" title="Duzenle" onclick="modalDuzenleKurban(${k.id})"><i class="fa-solid fa-pen"></i></button>
           <button class="btn btn-danger btn-sm btn-icon" title="Sil" onclick="silKurban(${k.id})"><i class="fa-solid fa-trash"></i></button>
         </div>
@@ -1136,6 +1115,23 @@ async function yazdirKurban(kurbanId, kurbanNo, tur) {
   printHTML(html);
 }
 
+// ─── YAZDIR SEÇİM MODALI ────────────────────────────────────────────────────
+function modalYazdirSecim(kurbanId, kurbanNo, tur) {
+  openModal('Yazdırma Yönü Seçin', `
+    <div style="text-align:center;padding:20px 0">
+      <p style="color:var(--text2);margin-bottom:30px;font-size:15px">Kurban ${kurbanNo} için yazdırma yönünü seçin:</p>
+      <div style="display:flex;gap:20px;justify-content:center;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="yazdirKurbanSatir(${kurbanId});closeModal()" style="min-width:160px;padding:16px 24px;font-size:16px">
+          <i class="fa-solid fa-print"></i> Yatay Yazdır
+        </button>
+        <button class="btn btn-green" onclick="yazdirKurbanDikey(${kurbanId}, ${kurbanNo}, '${tur}');closeModal()" style="min-width:160px;padding:16px 24px;font-size:16px">
+          <i class="fa-solid fa-print"></i> Dikey Yazdır
+        </button>
+      </div>
+    </div>
+  `, false, 'print');
+}
+
 async function yazdirKurbanDikey(kurbanId, kurbanNo, tur) {
   toast('Yazdırma hazırlanıyor...');
   const hisseler = await api('GET', '/kurbanlar/' + kurbanId + '/hisseler');
@@ -1151,6 +1147,7 @@ async function excelIndirKurban(kurbanId) {
 function yazdirilabilirHTML(tip) {
   const icerik = document.getElementById('rapor-icerik');
   const baslik = tip === 'kurbanlar' ? 'Kurban Listesi' : tip === 'bagiscilar' ? 'Bagisci Listesi' : 'Tam Rapor';
+  const baseUrl = window.location.origin;
   const printStyle = 'body{font-family:Arial,sans-serif;font-size:12px;color:#000;margin:20px}' +
     '.header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;border-bottom:2px solid #1a2a50;padding-bottom:10px}' +
     '.header-left{font-size:18px;font-weight:bold;color:#1a2a50}' +
@@ -1171,11 +1168,11 @@ function yazdirilabilirHTML(tip) {
     '<style>' + printStyle + '</style></head><body>' +
     '<div class="header">' +
     '<div style="display:flex;align-items:center;gap:10px">' +
-    '<img src="http://127.0.0.1:4500/icder.png" style="height:48px;object-fit:contain" onerror="this.style.display=\'none\'" />' +
+    '<img src="' + baseUrl + '/icder.png" style="height:48px;object-fit:contain" onerror="this.style.display=\'none\'" />' +
     '<div class="header-left"><strong>İÇDER</strong><small>' + baslik + ' &mdash; ' + new Date().toLocaleDateString('tr-TR') + '</small></div>' +
     '</div>' +
     '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">' +
-    '<img src="http://127.0.0.1:4500/cad.png" style="height:48px;object-fit:contain" onerror="this.style.display=\'none\'" />' +
+    '<img src="' + baseUrl + '/cad.png" style="height:48px;object-fit:contain" onerror="this.style.display=\'none\'" />' +
     '<div style="font-size:12px;color:#555;text-align:right">Organizasyon: <strong>' + esc(S.orgAd) + '</strong><br>' + S.orgYil + '</div>' +
     '</div>' +
     '</div>' +
@@ -1221,16 +1218,15 @@ function kurbanYazdirHTML(kurbanNo, tur, hisseler, kurbanData, orientation = 'po
     .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
     .header-left { width: 140px; display: flex; align-items: center; }
     .header-center { flex: 1; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 12px; }
-    .header-center img { height: 180px; max-width: 400px; object-fit: contain; }
+    .header-center img { height: 120px; max-width: 250px; object-fit: contain; }
     .kurban-id { font-size: 32px; font-weight: bold; color: #1a2a50; text-align: center; margin: 0; }
     .header-right { width: 140px; display: flex; align-items: center; justify-content: flex-end; }
     .header-right img { height: 93px; width: 140px; object-fit: contain; }
     table { width: 100%; border-collapse: collapse; margin-top: 8px; }
     th { border: 1.5px solid #000; padding: 10px 14px; text-align: left; font-size: 16px; font-weight: bold; background: #fff; }
     td { border: 1.5px solid #000; padding: 8px 14px; font-size: 16px; }
-    .footer { position: fixed; bottom: 12mm; left: 15mm; right: 15mm; display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #333; border-top: 1px solid #ddd; padding-top: 6px; }
+    .footer { position: fixed; bottom: 12mm; left: 15mm; right: 15mm; display: flex; justify-content: center; align-items: center; font-size: 12px; color: #333; border-top: 1px solid #ddd; padding-top: 6px; }
     .footer-left { font-weight: bold; font-size: 14px; }
-    .footer-right { font-size: 11px; color: #666; }
     @media print { body { margin: 0; } }
   `;
 
@@ -1258,7 +1254,6 @@ function kurbanYazdirHTML(kurbanNo, tur, hisseler, kurbanData, orientation = 'po
     '</table>' +
     '<div class="footer">' +
     '<div class="footer-left">İÇDER</div>' +
-    '<div class="footer-right">Created by İsmail Demircan</div>' +
     '</div>' +
     '</body></html>';
 }
