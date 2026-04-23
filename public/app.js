@@ -1215,13 +1215,13 @@ function kurbanYazdirHTML(kurbanNo, tur, hisseler, kurbanData, orientation = 'po
     @page { margin: 12mm 15mm; size: A4 ${orientation}; }
     * { box-sizing: border-box; }
     body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #fff; color: #000; }
-    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
     .header-left { width: 140px; display: flex; align-items: center; }
     .header-center { flex: 1; text-align: center; display: flex; align-items: center; justify-content: center; }
-    .header-center img { height: 93px; max-width: 200px; object-fit: contain; }
+    .header-center img { height: 140px; max-width: 300px; object-fit: contain; }
     .header-right { width: 140px; display: flex; align-items: center; justify-content: flex-end; }
     .header-right img { height: 93px; width: 140px; object-fit: contain; }
-    .kurban-title { font-size: 36px; font-weight: bold; color: #1a2a50; text-align: center; margin: 20px 0 30px 0; }
+    .kurban-title { font-size: 24px; font-weight: bold; color: #1a2a50; text-align: center; margin: 15px 0 25px 0; }
     table { width: 100%; border-collapse: collapse; margin-top: 8px; }
     th { border: 1.5px solid #000; padding: 10px 14px; text-align: left; font-size: 16px; font-weight: bold; background: #fff; }
     td { border: 1.5px solid #000; padding: 8px 14px; font-size: 16px; }
