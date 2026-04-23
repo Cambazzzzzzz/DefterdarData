@@ -499,7 +499,11 @@ function filterKurbanlar() {
             <div id="row-print-menu-${k.id}" class="dropdown-menu" style="display:none;position:absolute;top:100%;right:0;margin-top:4px;background:var(--card-bg);border:1px solid var(--border);border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15);min-width:180px;z-index:1000;white-space:nowrap">
               <div onclick="yazdirKurbanSatir(${k.id})" style="padding:10px 14px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:background 0.2s" onmouseover="this.style.background='var(--hover-bg)'" onmouseout="this.style.background='transparent'">
                 <i class="fa-solid fa-print" style="width:20px;color:var(--accent)"></i>
-                <span>Yazdır</span>
+                <span>Yazdır (Yatay)</span>
+              </div>
+              <div onclick="yazdirKurbanDikey(${k.id}, ${k.kurban_no}, '${k.tur}')" style="padding:10px 14px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:background 0.2s" onmouseover="this.style.background='var(--hover-bg)'" onmouseout="this.style.background='transparent'">
+                <i class="fa-solid fa-print" style="width:20px;color:var(--green)"></i>
+                <span>Yazdır (Dikey)</span>
               </div>
               <div onclick="excelIndirKurbanSatir(${k.id})" style="padding:10px 14px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:background 0.2s" onmouseover="this.style.background='var(--hover-bg)'" onmouseout="this.style.background='transparent'">
                 <i class="fa-solid fa-file-excel" style="width:20px;color:var(--green)"></i>
@@ -1124,53 +1128,19 @@ function yazdir(tip) {
 }
 
 async function yazdirKurban(kurbanId, kurbanNo, tur) {
-  // Modal ile yazdırma yönü seç
-  openModal('Yazdırma Yönü Seçin', `
-    <div style="text-align:center;margin-bottom:24px">
-      <div style="font-size:48px;margin-bottom:12px">🖨️</div>
-      <div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:8px">Kurban #${kurbanNo}</div>
-      <div style="font-size:13px;color:var(--text2)">Yazdırma yönünü seçin</div>
-    </div>
-    
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
-      <div class="card" style="cursor:pointer;border:2px solid var(--border);transition:all 0.2s;padding:24px;text-align:center" 
-           onclick="yazdirKurbanYon(${kurbanId}, ${kurbanNo}, '${tur}', 'portrait')"
-           onmouseover="this.style.borderColor='var(--accent)';this.style.background='var(--glow2)'"
-           onmouseout="this.style.borderColor='var(--border)';this.style.background='transparent'">
-        <i class="fa-solid fa-file-lines" style="font-size:48px;color:var(--accent);margin-bottom:12px"></i>
-        <div style="font-size:15px;font-weight:600;margin-bottom:4px">Dikey</div>
-        <div style="font-size:12px;color:var(--text3)">Portrait (A4 Dikey)</div>
-      </div>
-      
-      <div class="card" style="cursor:pointer;border:2px solid var(--border);transition:all 0.2s;padding:24px;text-align:center" 
-           onclick="yazdirKurbanYon(${kurbanId}, ${kurbanNo}, '${tur}', 'landscape')"
-           onmouseover="this.style.borderColor='var(--accent)';this.style.background='var(--glow2)'"
-           onmouseout="this.style.borderColor='var(--border)';this.style.background='transparent'">
-        <i class="fa-solid fa-file" style="font-size:48px;color:var(--green);margin-bottom:12px;transform:rotate(90deg)"></i>
-        <div style="font-size:15px;font-weight:600;margin-bottom:4px">Yatay</div>
-        <div style="font-size:12px;color:var(--text3)">Landscape (A4 Yatay)</div>
-      </div>
-    </div>
-    
-    <div style="background:var(--bg4);border-radius:8px;padding:12px;font-size:12px;color:var(--text3);text-align:center">
-      <i class="fa-solid fa-info-circle" style="color:var(--accent)"></i>
-      Yazdırma penceresi açıldıktan sonra yazıcı ayarlarından da değiştirebilirsiniz
-    </div>
-    
-    <div class="form-actions" style="margin-top:16px">
-      <button class="btn btn-secondary" onclick="closeModal()">
-        <i class="fa-solid fa-times"></i> İptal
-      </button>
-    </div>
-  `, false, 'print');
-}
-
-async function yazdirKurbanYon(kurbanId, kurbanNo, tur, orientation) {
-  closeModal();
+  // Direkt yatay yazdır (varsayılan)
   toast('Yazdırma hazırlanıyor...');
   const hisseler = await api('GET', '/kurbanlar/' + kurbanId + '/hisseler');
   const kurbanData = _kurbanlar.find(k => k.id === kurbanId) || {};
-  const html = kurbanYazdirHTML(kurbanNo, tur, hisseler, kurbanData, orientation);
+  const html = kurbanYazdirHTML(kurbanNo, tur, hisseler, kurbanData, 'landscape');
+  printHTML(html);
+}
+
+async function yazdirKurbanDikey(kurbanId, kurbanNo, tur) {
+  toast('Yazdırma hazırlanıyor...');
+  const hisseler = await api('GET', '/kurbanlar/' + kurbanId + '/hisseler');
+  const kurbanData = _kurbanlar.find(k => k.id === kurbanId) || {};
+  const html = kurbanYazdirHTML(kurbanNo, tur, hisseler, kurbanData, 'portrait');
   printHTML(html);
 }
 
@@ -1193,14 +1163,16 @@ function yazdirilabilirHTML(tip) {
     '.stats{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px}' +
     '.stat{background:#f0f4ff;border:1px solid #c0d0ff;border-radius:6px;padding:10px 16px;min-width:100px}' +
     '.stat .v{font-size:22px;font-weight:bold;color:#1a2a50}.stat .l{font-size:10px;color:#666;text-transform:uppercase}' +
-    '.footer{margin-top:30px;font-size:10px;color:#999;display:flex;justify-content:space-between;border-top:1px solid #ddd;padding-top:10px}' +
+    '.footer{margin-top:30px;font-size:12px;color:#333;display:flex;justify-content:space-between;align-items:center;border-top:1px solid #ddd;padding-top:10px}' +
+    '.footer-left{font-weight:bold;font-size:14px}' +
+    '.footer-right{font-size:11px;color:#666}' +
     '@media print{body{margin:10px}}';
   return '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + baslik + '</title>' +
     '<style>' + printStyle + '</style></head><body>' +
     '<div class="header">' +
     '<div style="display:flex;align-items:center;gap:10px">' +
     '<img src="http://127.0.0.1:4500/icder.png" style="height:48px;object-fit:contain" onerror="this.style.display=\'none\'" />' +
-    '<div class="header-left">İÇDER<small>' + baslik + ' &mdash; ' + new Date().toLocaleDateString('tr-TR') + '</small></div>' +
+    '<div class="header-left"><strong>İÇDER</strong><small>' + baslik + ' &mdash; ' + new Date().toLocaleDateString('tr-TR') + '</small></div>' +
     '</div>' +
     '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">' +
     '<img src="http://127.0.0.1:4500/cad.png" style="height:48px;object-fit:contain" onerror="this.style.display=\'none\'" />' +
@@ -1208,7 +1180,10 @@ function yazdirilabilirHTML(tip) {
     '</div>' +
     '</div>' +
     (icerik ? icerik.innerHTML : '') +
-    '<div class="footer"><span>İÇDER</span></div>' +
+    '<div class="footer">' +
+    '<div class="footer-left">İÇDER</div>' +
+    '<div class="footer-right">Created by İsmail Demircan</div>' +
+    '</div>' +
     '</body></html>';
 }
 
@@ -1246,14 +1221,16 @@ function kurbanYazdirHTML(kurbanNo, tur, hisseler, kurbanData, orientation = 'po
     .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
     .header-left { width: 140px; display: flex; align-items: center; }
     .header-center { flex: 1; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 12px; }
-    .header-center img { height: 140px; max-width: 300px; object-fit: contain; }
+    .header-center img { height: 180px; max-width: 400px; object-fit: contain; }
     .kurban-id { font-size: 32px; font-weight: bold; color: #1a2a50; text-align: center; margin: 0; }
     .header-right { width: 140px; display: flex; align-items: center; justify-content: flex-end; }
     .header-right img { height: 93px; width: 140px; object-fit: contain; }
     table { width: 100%; border-collapse: collapse; margin-top: 8px; }
     th { border: 1.5px solid #000; padding: 10px 14px; text-align: left; font-size: 16px; font-weight: bold; background: #fff; }
     td { border: 1.5px solid #000; padding: 8px 14px; font-size: 16px; }
-    .footer { position: fixed; bottom: 12mm; left: 15mm; right: 15mm; text-align: center; font-size: 12px; color: #888; border-top: 1px solid #ddd; padding-top: 6px; }
+    .footer { position: fixed; bottom: 12mm; left: 15mm; right: 15mm; display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #333; border-top: 1px solid #ddd; padding-top: 6px; }
+    .footer-left { font-weight: bold; font-size: 14px; }
+    .footer-right { font-size: 11px; color: #666; }
     @media print { body { margin: 0; } }
   `;
 
@@ -1261,13 +1238,13 @@ function kurbanYazdirHTML(kurbanNo, tur, hisseler, kurbanData, orientation = 'po
     ? '<img src="' + bayrakSrc + '" alt="Bayrak" style="height:93px;width:140px;object-fit:contain" onerror="this.style.visibility=\'hidden\'"/>'
     : '';
 
-  return '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Kurban #' + kurbanNo + '</title>' +
+  return '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Kurban : ' + kurbanNo + '</title>' +
     '<style>' + printStyle + '</style></head><body>' +
     '<div class="header">' +
     '<div class="header-left">' + turkBayrakSVG + '</div>' +
     '<div class="header-center">' +
     '<img src="' + logoSrc + '" alt="Logo" onerror="this.style.visibility=\'hidden\'"/>' +
-    '<div class="kurban-id">Kurban #' + kurbanNo + '</div>' +
+    '<div class="kurban-id">Kurban : ' + kurbanNo + '</div>' +
     '</div>' +
     '<div class="header-right">' + bayrakImg + '</div>' +
     '</div>' +
@@ -1279,7 +1256,10 @@ function kurbanYazdirHTML(kurbanNo, tur, hisseler, kurbanData, orientation = 'po
     '</tr></thead>' +
     '<tbody>' + rows + '</tbody>' +
     '</table>' +
-    '<div class="footer">İÇDER</div>' +
+    '<div class="footer">' +
+    '<div class="footer-left">İÇDER</div>' +
+    '<div class="footer-right">Created by İsmail Demircan</div>' +
+    '</div>' +
     '</body></html>';
 }
 
