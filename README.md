@@ -1,46 +1,77 @@
 # İÇDER Kurban Programı
 
-**İÇDER & Defterdar İşbirliği**
+**İÇDER & Defterdar İşbirliği ile Kurban Organizasyon Yönetim Sistemi**
 
-## Özellikler
+## 🎯 Özellikler
 
-- ✅ Kurban organizasyonu yönetimi
-- ✅ Hisse takibi ve bağışçı yönetimi
-- ✅ Yazdırma sistemi (sadece logolar, kuruluş ismi yok)
-- ✅ Excel raporlama
-- ✅ Çıkışta zorunlu yedekleme
-- ✅ Yeşil İslami tema
-- ✅ Giriş/kayıt sistemi yok (direkt kullanım)
+- 🐄 **Kurban Yönetimi** - Büyükbaş ve küçükbaş kurban takibi
+- 👥 **Bağışçı Yönetimi** - Detaylı bağışçı kayıtları
+- 📊 **Hisse Sistemi** - 7 hisseli kurban yönetimi
+- 📈 **Raporlama** - Excel ve yazdırma özellikleri
+- 💾 **Otomatik Yedekleme** - Verileriniz güvende
+- 🌐 **Ağ Erişimi** - Aynı WiFi ağındaki cihazlardan erişim
+- 🎨 **Modern Arayüz** - Koyu yeşil tema
 
-## Kurulum
+## 🚀 Kurulum
 
+### Gereksinimler
+- Node.js 18 veya üzeri
+- Windows işletim sistemi
+
+### Adımlar
+
+1. Repoyu klonlayın:
+```bash
+git clone https://github.com/Cambazzzzzzz/icder-kurban.git
+cd icder-kurban
+```
+
+2. Bağımlılıkları yükleyin:
 ```bash
 npm install
+```
+
+3. Uygulamayı başlatın:
+```bash
 npm run electron
 ```
 
-## EXE Oluşturma
+## 📦 Build
+
+Windows için executable oluşturmak için:
 
 ```bash
-npm run build
+npm run build:win
 ```
 
-## Özellikler
+Build dosyası `dist/` klasöründe oluşturulacaktır.
 
-### Yazdırma Sistemi
-- **Kurban Yazdır**: Sol üst Türk bayrağı, orta logo, sağ üst destekçi bayrağı
-- **Bağışçı Listesi**: Sadece sol üst logo
-- **Kuruluş ismi yazmaz**: Sadece logolar görünür
+## 🌐 Railway Deploy
 
-### Çıkış Sistemi
-- Uygulama kapatılırken zorunlu yedek alma
-- Yedek almadan çıkış yapılamaz
-- Excel formatında yedekleme
+Railway'de deploy etmek için:
 
-### Tema
-- Yeşil İslami tema (dini yeşil)
-- Koyu/açık mod desteği
+1. Railway'de proje oluştur
+2. GitHub reposunu bağla
+3. Root directory: `./`
+4. Environment variables ayarla
+5. Deploy!
 
-## Lisans
+## 📝 Lisans
 
-© 2025 İÇDER & Defterdar İşbirliği
+Copyright © 2025 İÇDER & Defterdar
+
+## 🔧 Teknik Detaylar
+
+- **Framework:** Electron
+- **Backend:** Express.js
+- **Database:** SQLite (sql.js)
+- **UI:** Vanilla JavaScript + CSS
+- **Port:** 4500
+
+## 📞 Destek
+
+Herhangi bir sorun veya öneriniz için issue açabilirsiniz.
+
+---
+
+**İÇDER Kurban Programı** - İÇDER & Defterdar İşbirliği
