@@ -245,7 +245,14 @@ body {
   display:flex; flex-direction:column;
   padding:12px 0 16px;
   overflow-y:auto;
+  overflow-x:hidden;
 }
+
+/* Sidebar scrollbar */
+.sidebar::-webkit-scrollbar { width:6px; }
+.sidebar::-webkit-scrollbar-track { background:transparent; }
+.sidebar::-webkit-scrollbar-thumb { background:var(--border2); border-radius:3px; }
+.sidebar::-webkit-scrollbar-thumb:hover { background:var(--accent); }
 .sidebar-logo-area {
   padding:8px 16px 16px;
   border-bottom:1px solid var(--border);
